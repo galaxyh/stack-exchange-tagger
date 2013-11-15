@@ -5,5 +5,7 @@
 	<classpathentry kind="lib" path="lib/hadoop-client-1.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/hadoop-core-1.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/hadoop-tools-1.2.1.jar"/>
+	<classpathentry kind="lib" path="lib/lingpipe-4.1.0.jar"/>
+	<classpathentry kind="lib" path="lib/opencsv-2.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
