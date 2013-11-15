@@ -1,8 +1,6 @@
 .DS_Store
 
 *.class
+.settings/
+bin/
 
-# Package Files #
-*.jar
-*.war
-*.ear
