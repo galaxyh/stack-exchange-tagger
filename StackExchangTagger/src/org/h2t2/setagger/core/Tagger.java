@@ -13,7 +13,7 @@ public class Tagger {
 		/*
 		 * Arguments: -p: pre-processing
 		 */
-		if (args.length < 3 && !"-p".equals(args[0])) {
+		if (args.length < 3 || (args.length > 1 && !"-p".equals(args[0]))) {
 			System.out.println("Dataset preprocessing\n  Usage: -p <input> <output>");
 			return;
 		}
