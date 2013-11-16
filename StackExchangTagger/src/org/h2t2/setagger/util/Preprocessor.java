@@ -28,7 +28,10 @@ public class Preprocessor {
 	 * Pre-process StackExchange dataset.
 	 * 
 	 * @param input
+	 *            A CSV file, each line contains 4 fields: ID, title, body, code, tags.
 	 * @param output
+	 *            A CSV file, each line contains 5 fields: ID, title, body without code and unnecessary words, code,
+	 *            tags.
 	 * @throws IOException
 	 */
 	public static void process(String input, String output) throws IOException {
@@ -49,7 +52,9 @@ public class Preprocessor {
 
 	/**
 	 * @param record
-	 * @return A String array contains: Line number, Title, Body without code, Code, Tags
+	 *            Contain 4 fields: ID, title, body with code, tags.
+	 * @return A String array contain 5 fields: ID, title, body, code, tags.
+	 * @author Yu-chun Huang
 	 */
 	private static String[] extractCode(String[] record) {
 		StringBuffer newContent = new StringBuffer();
@@ -78,32 +83,34 @@ public class Preprocessor {
 		return record;
 	}
 
-    /**
-      This function removes stop words and applys stemming to the title and body fields.
-      @param record Contain 5 fields: ID, title, body, code, tags.
-      @return 5 fields same as parameter but remove stop words in title and body and also do the stemming.
-      @author Isaac
-    */
+	/**
+	 * This function removes stop words and applys stemming to the title and body fields.
+	 * 
+	 * @param record
+	 *            Contain 5 fields: ID, title, body, code, tags.
+	 * @return 5 fields same as parameter but remove stop words in title and body and also do the stemming.
+	 * @author Isaac
+	 */
 	private static String[] getUsefulToken(String[] record) {
-        RegExTokenizerFactory RTF = new RegExTokenizerFactory("(\\w\\S*\\w)|([a-zA-Z])");
-        LowerCaseTokenizerFactory LTF = new LowerCaseTokenizerFactory(RTF);
-        EnglishStopTokenizerFactory ETF = new EnglishStopTokenizerFactory(LTF);
-        PorterStemmerTokenizerFactory PTF = new PorterStemmerTokenizerFactory(ETF);
-        String token;
+		RegExTokenizerFactory RTF = new RegExTokenizerFactory("(\\w\\S*\\w)|([a-zA-Z])");
+		LowerCaseTokenizerFactory LTF = new LowerCaseTokenizerFactory(RTF);
+		EnglishStopTokenizerFactory ETF = new EnglishStopTokenizerFactory(LTF);
+		PorterStemmerTokenizerFactory PTF = new PorterStemmerTokenizerFactory(ETF);
+		String token;
 
-        char [] chars = record[1].toCharArray();
-        Tokenizer tokenizer = PTF.tokenizer(chars, 0, chars.length);
-        record[1] = "";
-        while((token = tokenizer.nextToken()) != null){
-            record[1] += token + " ";
-        }
+		char[] chars = record[1].toCharArray();
+		Tokenizer tokenizer = PTF.tokenizer(chars, 0, chars.length);
+		record[1] = "";
+		while ((token = tokenizer.nextToken()) != null) {
+			record[1] += token + " ";
+		}
 
-        chars = record[2].toCharArray();
-        tokenizer = PTF.tokenizer(chars, 0, chars.length);
-        record[2] = "";
-        while((token = tokenizer.nextToken()) != null){
-            record[2] += token + " ";
-        }
+		chars = record[2].toCharArray();
+		tokenizer = PTF.tokenizer(chars, 0, chars.length);
+		record[2] = "";
+		while ((token = tokenizer.nextToken()) != null) {
+			record[2] += token + " ";
+		}
 
 		return record;
 	}
