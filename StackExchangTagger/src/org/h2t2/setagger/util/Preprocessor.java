@@ -23,6 +23,15 @@ public class Preprocessor {
 	 * Pattern matching regular expression for extracting code.
 	 */
 	private static final Pattern codePattern = Pattern.compile("(?is)<code>(.*?)</code>");
+	private static PorterStemmerTokenizerFactory psTokenizer;
+
+	public Preprocessor() {
+		// Initialize psTokenizer for this.getUsefulToken(String[] record).
+		RegExTokenizerFactory rtf = new RegExTokenizerFactory("(\\w\\S*\\w)|([a-zA-Z])");
+		LowerCaseTokenizerFactory ltf = new LowerCaseTokenizerFactory(rtf);
+		EnglishStopTokenizerFactory etf = new EnglishStopTokenizerFactory(ltf);
+		psTokenizer = new PorterStemmerTokenizerFactory(etf);
+	}
 
 	/**
 	 * Pre-process StackExchange dataset.
@@ -34,7 +43,7 @@ public class Preprocessor {
 	 *            tags.
 	 * @throws IOException
 	 */
-	public static void process(String input, String output) throws IOException {
+	public void process(String input, String output) throws IOException {
 		CSVReader reader = new CSVReader(new FileReader(input));
 		CSVWriter writer = new CSVWriter(new FileWriter(output), ',');
 
@@ -53,10 +62,10 @@ public class Preprocessor {
 	/**
 	 * @param record
 	 *            Contain 4 fields: ID, title, body with code, tags.
-	 * @return A String array contain 5 fields: ID, title, body, code, tags.
+	 * @return A String array contain 5 fields: ID, title, body without code, code, tags.
 	 * @author Yu-chun Huang
 	 */
-	private static String[] extractCode(String[] record) {
+	private String[] extractCode(String[] record) {
 		StringBuffer newContent = new StringBuffer();
 		StringBuffer codeContent = new StringBuffer();
 
@@ -79,7 +88,7 @@ public class Preprocessor {
 		return newRecord;
 	}
 
-	private static String[] removeHtmlTag(String[] record) {
+	private String[] removeHtmlTag(String[] record) {
 		return record;
 	}
 
@@ -91,22 +100,18 @@ public class Preprocessor {
 	 * @return 5 fields same as parameter but remove stop words in title and body and also do the stemming.
 	 * @author Isaac
 	 */
-	private static String[] getUsefulToken(String[] record) {
-		RegExTokenizerFactory RTF = new RegExTokenizerFactory("(\\w\\S*\\w)|([a-zA-Z])");
-		LowerCaseTokenizerFactory LTF = new LowerCaseTokenizerFactory(RTF);
-		EnglishStopTokenizerFactory ETF = new EnglishStopTokenizerFactory(LTF);
-		PorterStemmerTokenizerFactory PTF = new PorterStemmerTokenizerFactory(ETF);
+	private String[] getUsefulToken(String[] record) {
 		String token;
 
 		char[] chars = record[1].toCharArray();
-		Tokenizer tokenizer = PTF.tokenizer(chars, 0, chars.length);
+		Tokenizer tokenizer = psTokenizer.tokenizer(chars, 0, chars.length);
 		record[1] = "";
 		while ((token = tokenizer.nextToken()) != null) {
 			record[1] += token + " ";
 		}
 
 		chars = record[2].toCharArray();
-		tokenizer = PTF.tokenizer(chars, 0, chars.length);
+		tokenizer = psTokenizer.tokenizer(chars, 0, chars.length);
 		record[2] = "";
 		while ((token = tokenizer.nextToken()) != null) {
 			record[2] += token + " ";

@@ -17,12 +17,13 @@ public class Tagger {
 			return;
 		}
 
-		try {
-			Preprocessor.process(args[1], args[2]);
-		} catch (IOException e) {
-			System.out.println("Fail to pre-process the dataset!");
-			e.printStackTrace();
+		if ("-p".equals(args[0])) { // Do dataset pre-processing.
+			try {
+				new Preprocessor().process(args[1], args[2]);
+			} catch (IOException e) {
+				System.out.println("Fail to pre-process the dataset!");
+				e.printStackTrace();
+			}
 		}
 	}
-
 }
