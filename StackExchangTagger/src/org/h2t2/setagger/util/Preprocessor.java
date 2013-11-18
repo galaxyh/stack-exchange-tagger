@@ -90,7 +90,7 @@ public class Preprocessor {
 
 	/**
 	 * @param record
-	 *            Contain 4 fields: ID, title, body without code, code, tags.
+	 *            Contain 5 fields: ID, title, body without code, code, tags.
 	 * @return A String array contain 5 fields: ID, title, body without HTML tags and codes, code, tags.
 	 * @author TL
 	 */
