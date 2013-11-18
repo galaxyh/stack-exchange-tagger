@@ -3,4 +3,4 @@
 *.class
 .settings/
 bin/
-
+.DS_Store

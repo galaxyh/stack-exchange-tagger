@@ -10,20 +10,20 @@ public class Tagger {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		/*
-		 * Arguments: -p: pre-processing
-		 */
-		if (args.length < 3 && !"-p".equals(args[0])) {
+		// Arguments:
+		// -p: pre-processing
+		if (args.length < 3 || (args.length > 1 && !"-p".equals(args[0]))) {
 			System.out.println("Dataset preprocessing\n  Usage: -p <input> <output>");
 			return;
 		}
 
-		try {
-			Preprocessor.process(args[1], args[2]);
-		} catch (IOException e) {
-			System.out.println("Fail to pre-process the dataset!");
-			e.printStackTrace();
+		if ("-p".equals(args[0])) { // Do dataset pre-processing.
+			try {
+				new Preprocessor().process(args[1], args[2]);
+			} catch (IOException e) {
+				System.out.println("Fail to pre-process the dataset!");
+				e.printStackTrace();
+			}
 		}
 	}
-
 }
