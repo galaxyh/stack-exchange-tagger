@@ -50,7 +50,7 @@ public class Preprocessor {
 		String[] record;
 		while ((record = reader.readNext()) != null) {
 			record = extractCode(record);
-			record = removeHtmlTag(record);
+			record = removeHtmlTags(record);
 			record = getUsefulToken(record);
 			writer.writeNext(record);
 		}
@@ -88,7 +88,14 @@ public class Preprocessor {
 		return newRecord;
 	}
 
-	private String[] removeHtmlTag(String[] record) {
+	/**
+	 * @param record
+	 *            Contain 4 fields: ID, title, body without code, code, tags.
+	 * @return A String array contain 5 fields: ID, title, body without HTML tags and codes, code, tags.
+	 * @author TL
+	 */
+	private String[] removeHtmlTags(String[] record) {
+		record[2] = HtmlTagHandler.removeHtmlTags(record[2]);
 		return record;
 	}
 
