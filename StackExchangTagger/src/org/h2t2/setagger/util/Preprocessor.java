@@ -105,26 +105,37 @@ public class Preprocessor {
 	 */
 	private String[] getUsefulToken(String[] record) {
 		String token;
+        StringBuilder str = new StringBuilder();
+        boolean isFirst = true;
 
 		char[] chars = record[1].toCharArray();
 		Tokenizer tokenizer = psTokenizer.tokenizer(chars, 0, chars.length);
-		record[1] = "";
 		while ((token = tokenizer.nextToken()) != null) {
-			record[1] += token + " ";
+            if(isFirst){
+                str.append(token);
+                isFirst = false;
+            }
+            else{
+                str.append(" ").append(token);
+            }
 		}
+		record[1] = str.toString();
 
+        str.delete(0, str.length());
+        isFirst = true;
 		chars = record[2].toCharArray();
 		tokenizer = psTokenizer.tokenizer(chars, 0, chars.length);
-		record[2] = "";
 		while ((token = tokenizer.nextToken()) != null) {
-			record[2] += token + " ";
+            if(isFirst){
+                str.append(token);
+                isFirst = false;
+            }
+            else{
+                str.append(" ").append(token);
+            }
 		}
+		record[2] = str.toString();
 
 		return record;
 	}
-
-    public static void main(String[] args) throws IOException {
-        Preprocessor p = new Preprocessor();
-        p.process(args[0], args[1]);
-    }
 }
