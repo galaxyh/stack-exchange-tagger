@@ -23,15 +23,11 @@ public class Preprocessor {
 	 * Pattern matching regular expression for extracting code.
 	 */
 	private static final Pattern codePattern = Pattern.compile("(?is)<code>(.*?)</code>");
-	private static PorterStemmerTokenizerFactory psTokenizer;
-
-	public Preprocessor() {
-		// Initialize psTokenizer for this.getUsefulToken(String[] record).
-		RegExTokenizerFactory rtf = new RegExTokenizerFactory("(\\w\\S*\\w)|([a-zA-Z])");
-		LowerCaseTokenizerFactory ltf = new LowerCaseTokenizerFactory(rtf);
-		EnglishStopTokenizerFactory etf = new EnglishStopTokenizerFactory(ltf);
-		psTokenizer = new PorterStemmerTokenizerFactory(etf);
-	}
+	private static final Pattern tokenPattern = Pattern.compile("(\\w\\S*\\w)|([a-zA-Z])");
+	private static PorterStemmerTokenizerFactory psTokenizer = new PorterStemmerTokenizerFactory(
+                                                               new EnglishStopTokenizerFactory(
+                                                               new LowerCaseTokenizerFactory(
+                                                               new RegExTokenizerFactory( tokenPattern ) )));
 
 	/**
 	 * Pre-process StackExchange dataset.
@@ -126,4 +122,9 @@ public class Preprocessor {
 
 		return record;
 	}
+
+    public static void main(String[] args) throws IOException {
+        Preprocessor p = new Preprocessor();
+        p.process(args[0], args[1]);
+    }
 }
