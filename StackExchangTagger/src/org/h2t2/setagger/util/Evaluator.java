@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.h2t2.setagger.eval;
+package org.h2t2.setagger.util;
 
 import java.util.ArrayList;
 import java.util.List;
