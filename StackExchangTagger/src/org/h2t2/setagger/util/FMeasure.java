@@ -15,8 +15,8 @@ public class FMeasure {
 
 	/**
 	 * F1 measure is given by the formula: 2 * TP / ( 2 * TP + FP + FN). <BR/>
-	 * Note that, for this particular implementation, when true positive, false positive, false
-	 * negative are all zero. F1 score is defined as 1.
+	 * Note that, when true positive, false positive, and false negative are all zero, F1 score is undefined, and NaN
+	 * will be returned.
 	 * 
 	 * @param truePositive
 	 *            True positive count.
@@ -29,18 +29,17 @@ public class FMeasure {
 	public static double f1(long truePositive, long falsePositive, long falseNegative) {
 		long denominator = 2 * truePositive + falsePositive + falseNegative;
 		if (denominator == 0) {
-			return 1; // When TP, FP, FN are all zero. We define F1 score to be 1.
+			return Double.NaN; // When TP, FP, FN are all zero. F1 score is undefined.
 		} else {
 			return 2 * (double) truePositive / denominator;
 		}
 	}
 
 	/**
-	 * Micro-averaged F-measure gives equal weight to each individual and is therefore considered as
-	 * an average over all the individual/category pairs. It tends to be dominated by the
-	 * classifiers performance on common categories. <BR/>
-	 * Note that, for this particular implementation, when true positive, false positive, false
-	 * negative are all zero. F1 score is defined as 1.
+	 * Micro-averaged F-measure gives equal weight to each individual and is therefore considered as an average over all
+	 * the individual/category pairs. It tends to be dominated by the classifiers performance on common categories. <BR/>
+	 * Note that, when true positive, false positive, and false negative are all zero, F1 score is undefined, and NaN
+	 * will be returned.
 	 * 
 	 * @param countsList
 	 *            A List of long[]. Each row contains: <BR/>
@@ -72,10 +71,10 @@ public class FMeasure {
 	}
 
 	/**
-	 * Macro-averaged F-measure gives equal weight to each category, regardless of its frequency. It
-	 * is influenced more by the classifier's performance on rare categories. <BR/>
-	 * Note that, for this particular implementation, when true positive, false positive, false
-	 * negative are all zero. F1 score is defined as 1.
+	 * Macro-averaged F-measure gives equal weight to each category, regardless of its frequency. It is influenced more
+	 * by the classifier's performance on rare categories. <BR/>
+	 * Note that, when true positive, false positive, and false negative are all zero, F1 score is undefined, and NaN
+	 * will be returned.
 	 * 
 	 * @param countsList
 	 *            A List of long[]. Each row contains: <BR/>
@@ -90,13 +89,19 @@ public class FMeasure {
 		}
 
 		double sumF1 = 0; // Sum of all F1 scores.
+		double f1Score = 0;
 
 		for (long[] counts : countsList) {
 			if (counts.length != 3) {
 				throw new IllegalArgumentException();
 			}
 
-			sumF1 += f1(counts[0], counts[1], counts[2]);
+			f1Score = f1(counts[0], counts[1], counts[2]);
+			if (Double.isNaN(f1Score)) {
+				return Double.NaN; // When TP, FP, FN are all zero. F1 score is undefined.
+			}
+
+			sumF1 += f1Score;
 		}
 
 		return sumF1 / countsList.size();

@@ -14,8 +14,8 @@ public class TagEvaluator {
 
 	/**
 	 * Calculate F1 score of the predicted tags. <BR/>
-	 * Note that, for this particular implementation, when true positive, false positive, false
-	 * negative are all zero. F1 score is defined as 1.
+	 * Note that, for this particular implementation, when true positive, false positive, false negative are all zero.
+	 * F1 score is defined as 1.
 	 * 
 	 * @param trueTags
 	 *            Ground truth tags (separated by space)
@@ -30,13 +30,13 @@ public class TagEvaluator {
 
 	/**
 	 * Calculate Micro-F1 score of predicted tags of a set of articles. <BR/>
-	 * Note that, for this particular implementation, when true positive, false positive, false
-	 * negative are all zero. F1 score is defined as 1.
+	 * Note that, for this particular implementation, when true positive, false positive, false negative are all zero.
+	 * F1 score is defined as 1.
 	 * 
 	 * @param tagsList
 	 *            A List of tag string arrays. <BR/>
-	 *            For the tag string array, index 0 is ground truth tags, and index 1 is predicted
-	 *            tags. Both tag string are space-separated.
+	 *            For the tag string array, index 0 is ground truth tags, and index 1 is predicted tags. Both tag string
+	 *            are space-separated.
 	 * @return Micro-F1 score of predicted tags of a set of articles.
 	 */
 	public static double microF1(List<String[]> tagsList) {
@@ -45,13 +45,13 @@ public class TagEvaluator {
 
 	/**
 	 * Calculate Macro-F1 score of predicted tags of a set of articles. <BR/>
-	 * Note that, for this particular implementation, when true positive, false positive, false
-	 * negative are all zero. F1 score is defined as 1.
+	 * Note that, for this particular implementation, when true positive, false positive, false negative are all zero.
+	 * F1 score is defined as 1.
 	 * 
 	 * @param tagsList
 	 *            A List of tag string arrays. <BR/>
-	 *            For the tag string array, index 0 is ground truth tags, and index 1 is predicted
-	 *            tags. Both tag string are space-separated.
+	 *            For the tag string array, index 0 is ground truth tags, and index 1 is predicted tags. Both tag string
+	 *            are space-separated.
 	 * @return Macro-F1 score of predicted tags of a set of articles.
 	 */
 	public static double macroF1(List<String[]> tagsList) {
@@ -59,8 +59,8 @@ public class TagEvaluator {
 	}
 
 	/**
-	 * Calculate true positive, false positive, and false negative counts of the given predicted tag
-	 * string.
+	 * Calculate true positive, false positive, and false negative counts of the given predicted tag string. <BR/>
+	 * When ground truth and prediction are all empty, the prediction is correct. Set true positive as 1
 	 * 
 	 * @param trueTags
 	 *            Ground truth tags (separated by space)
@@ -82,12 +82,19 @@ public class TagEvaluator {
 		// Index 0: true positive; 1: false positive; 2: false negative
 		long[] result = new long[3];
 
+		// When ground truth and prediction are all empty, the prediction is correct. Set true positive as 1 and
+		// return immediately.
+		if (trueTokens.length == 0 && predictTokens.length == 0) {
+			result[0] = 1;
+			return result;
+		}
+
 		// True positive
 		for (String predictToken : predictTokens) {
 			for (String trueToken : trueTokens) {
 				if (predictToken.equals(trueToken)) {
 					result[0]++;
-					continue;
+					break;
 				}
 			}
 		}
@@ -104,13 +111,12 @@ public class TagEvaluator {
 	}
 
 	/**
-	 * Calculate true positive, false positive, and false negative counts of the given predicted tag
-	 * string list.
+	 * Calculate true positive, false positive, and false negative counts of the given predicted tag string list.
 	 * 
 	 * @param tagsList
 	 *            A List of tag string arrays. <BR/>
-	 *            For the tag string array, index 0 is ground truth tags, and index 1 is predicted
-	 *            tags. Both tag string are space-separated.
+	 *            For the tag string array, index 0 is ground truth tags, and index 1 is predicted tags. Both tag string
+	 *            are space-separated.
 	 * @return A list of arrays containing the following information: <BR/>
 	 *         index 0: true positive count, <BR/>
 	 *         index 1: false positive count, and <BR/>
