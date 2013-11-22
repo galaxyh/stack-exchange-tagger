@@ -10,7 +10,7 @@ import java.util.List;
  * @author Yu-chun Huang
  * 
  */
-public class Evaluator {
+public class TagEvaluator {
 
 	/**
 	 * Calculate F1 score of the predicted tags. <BR/>
