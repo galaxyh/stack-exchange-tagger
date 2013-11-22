@@ -14,14 +14,14 @@ public class TagEvaluator {
 
 	/**
 	 * Calculate F1 score of the predicted tags. <BR/>
-	 * Note that, for this particular implementation, when true positive, false positive, false negative are all zero.
-	 * F1 score is defined as 1.
+	 * Note that, for this particular implementation, when ground truth and prediction are all empty, the prediction is
+	 * correct, so 1.0 will be returned.
 	 * 
 	 * @param trueTags
 	 *            Ground truth tags (separated by space)
 	 * @param predictTags
 	 *            Predicted tags (separated by space)
-	 * @return
+	 * @return F1 score of the predicted tags.
 	 */
 	public static double f1(String trueTags, String predictTags) {
 		long[] result = getPredictResult(trueTags, predictTags);
@@ -30,8 +30,8 @@ public class TagEvaluator {
 
 	/**
 	 * Calculate Micro-F1 score of predicted tags of a set of articles. <BR/>
-	 * Note that, for this particular implementation, when true positive, false positive, false negative are all zero.
-	 * F1 score is defined as 1.
+	 * Note that, for this particular implementation, when ground truth and prediction are all empty, the prediction is
+	 * correct, so 1.0 will be returned.
 	 * 
 	 * @param tagsList
 	 *            A List of tag string arrays. <BR/>
@@ -45,8 +45,8 @@ public class TagEvaluator {
 
 	/**
 	 * Calculate Macro-F1 score of predicted tags of a set of articles. <BR/>
-	 * Note that, for this particular implementation, when true positive, false positive, false negative are all zero.
-	 * F1 score is defined as 1.
+	 * Note that, for this particular implementation, when ground truth and prediction are all empty, the prediction is
+	 * correct, so 1.0 will be returned.
 	 * 
 	 * @param tagsList
 	 *            A List of tag string arrays. <BR/>
@@ -60,7 +60,7 @@ public class TagEvaluator {
 
 	/**
 	 * Calculate true positive, false positive, and false negative counts of the given predicted tag string. <BR/>
-	 * When ground truth and prediction are all empty, the prediction is correct. Set true positive as 1
+	 * When ground truth and prediction are all empty, the prediction is correct. Set true positive as 1.
 	 * 
 	 * @param trueTags
 	 *            Ground truth tags (separated by space)
