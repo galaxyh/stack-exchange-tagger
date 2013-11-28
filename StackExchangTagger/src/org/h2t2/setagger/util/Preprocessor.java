@@ -34,10 +34,14 @@ public class Preprocessor {
      * @throws IOException
      */
     public void process(String input) throws IOException {
-        CSVReader reader = new CSVReader(new FileReader(input));
+        CSVReader reader = new CSVReader(new FileReader(input), ',', '"', '\0');
 
         String[] record;
         while ((record = reader.readNext()) != null) {
+            if(record.length < 4){
+                System.err.println("csv read error");
+                System.exit(1);
+            }
             record = extractCode(record);
             record = removeHtmlTags(record);
             tfIdfHandler.addDoc(record);
