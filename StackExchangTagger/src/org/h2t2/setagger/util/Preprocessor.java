@@ -12,70 +12,60 @@ import java.util.regex.Pattern;
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
 
-import com.aliasi.tokenizer.*;
-
 /**
  * StackExchange dataset preprocessor
  * 
  */
 public class Preprocessor {
-	/**
-	 * Pattern matching regular expression for extracting code.
-	 */
-	private static final Pattern codePattern = Pattern.compile("(?is)<code>(.*?)</code>");
-	private static final Pattern tokenPattern = Pattern.compile("(\\w\\S*\\w)|([a-zA-Z])");
-	private static PorterStemmerTokenizerFactory psTokenizer = new PorterStemmerTokenizerFactory(
-                                                               new EnglishStopTokenizerFactory(
-                                                               new LowerCaseTokenizerFactory(
-                                                               new RegExTokenizerFactory( tokenPattern ) )));
+    /**
+     * Pattern matching regular expression for extracting code.
+     */
+    private static final Pattern codePattern = Pattern.compile("(?is)<code>(.*?)</code>");
 
-	/**
-	 * Pre-process StackExchange dataset.
-	 * 
-	 * @param input
+    /**
+     * Pre-process StackExchange dataset.
+     * 
+     * @param input
      *            A CSV file, each line contains 4 fields (3 fields if the input is the data to be predicted): ID,
      *            title, body, code, tags.
-	 * @param output
+     * @param output
      *            A CSV file, each line contains 5 fields (4 fields if the input is the data to be predicted): ID,
      *            title, body without code and unnecessary words, code, tags.
-	 * @throws IOException
-	 */
-	public void process(String input, String output) throws IOException {
-		CSVReader reader = new CSVReader(new FileReader(input));
-		CSVWriter writer = new CSVWriter(new FileWriter(output), ',');
+     * @throws IOException
+     */
+    public void process(String input) throws IOException {
+        CSVReader reader = new CSVReader(new FileReader(input));
 
-		String[] record;
-		while ((record = reader.readNext()) != null) {
-			record = extractCode(record);
-			record = removeHtmlTags(record);
-			record = getUsefulToken(record);
-			writer.writeNext(record);
-		}
+        String[] record;
+        while ((record = reader.readNext()) != null) {
+            record = extractCode(record);
+            record = removeHtmlTags(record);
+            tfIdfHandler.addDoc(record);
+        }
 
-		writer.close();
-		reader.close();
-	}
+        tfIdfHandler.print();
 
-	/**
-	 * @param record
+        reader.close();
+    }
+
+    /**
+     * @param record
      *            Contain 4 fields (3 fields if the input is the data to be predicted): ID, title, body with code, tags.
-     * @return A String array contain 5 fields (4 fields if the input is the data to be predicted): ID, title, body
-     *            without code, code, tags.
-	 * @author Yu-chun Huang
-	 */
-	private String[] extractCode(String[] record) {
-		StringBuffer newContent = new StringBuffer();
-		StringBuffer codeContent = new StringBuffer();
+     * @return A String array contain 5 fields (4 fields if the input is the data to be predicted): ID, title, body *            without code, code, tags.  * @author Yu-chun Huang
+     */
+    private String[] extractCode(String[] record) {
+        StringBuffer newContent = new StringBuffer();
+        StringBuffer codeContent = new StringBuffer();
 
-		Matcher matcher = codePattern.matcher(record[2]);
-		while (matcher.find()) {
-			String codeString = matcher.group(1);
-			codeContent.append(codeString + " ");
-			if (codeString != null) {
-				matcher.appendReplacement(newContent, " ");
-			}
-		}
-		matcher.appendTail(newContent);
+        Matcher matcher = codePattern.matcher(record[2]);
+        while (matcher.find()) {
+            String codeString = matcher.group(1);
+            codeContent.append(codeString + " ");
+            if (codeString != null) {
+                matcher.appendReplacement(newContent, " ");
+            }
+        }
+        matcher.appendTail(newContent);
 
         String[] newRecord;
         if (record.length == 3) {
@@ -105,51 +95,6 @@ public class Preprocessor {
      */
     private String[] removeHtmlTags(String[] record) {
         record[2] = HtmlTagHandler.removeHtmlTags(record[2]);
-        return record;
-    }
-
-    /**
-     * This function removes stop words and applys stemming to the title and body fields.
-     * 
-     * @param record
-     *         Contain 5 fields (4 fields if the input is the data to be predicted): ID, title, body, code, tags.
-     * @return 5 fields (4 fields if the input is the data to be predicted) same as parameter but remove stop words in
-     *         title and body and also do the stemming.
-     * @author Isaac
-     */
-    private String[] getUsefulToken(String[] record) {
-        String token;
-        StringBuilder str = new StringBuilder();
-        boolean isFirst = true;
-
-        char[] chars = record[1].toCharArray();
-        Tokenizer tokenizer = psTokenizer.tokenizer(chars, 0, chars.length);
-        while ((token = tokenizer.nextToken()) != null) {
-            if(isFirst){
-                str.append(token);
-                isFirst = false;
-            }
-            else{
-                str.append(" ").append(token);
-            }
-        }
-        record[1] = str.toString();
-
-        str.delete(0, str.length());
-        isFirst = true;
-        chars = record[2].toCharArray();
-        tokenizer = psTokenizer.tokenizer(chars, 0, chars.length);
-        while ((token = tokenizer.nextToken()) != null) {
-            if(isFirst){
-                str.append(token);
-                isFirst = false;
-            }
-            else{
-                str.append(" ").append(token);
-            }
-        }
-        record[2] = str.toString();
-
         return record;
     }
 }
