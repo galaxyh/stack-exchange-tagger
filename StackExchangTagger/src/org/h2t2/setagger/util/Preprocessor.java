@@ -34,7 +34,7 @@ public class Preprocessor {
      * @throws IOException
      */
     public void process(String input) throws IOException {
-        CSVReader reader = new CSVReader(new FileReader(input), ',', '"', '\0');
+        CSVReader reader = new CSVReader(new FileReader(input), ',', '"', '\0', 1);
 
         String[] record;
         while ((record = reader.readNext()) != null) {
