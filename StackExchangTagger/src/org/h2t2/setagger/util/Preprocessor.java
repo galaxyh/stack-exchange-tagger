@@ -47,6 +47,7 @@ public class Preprocessor {
 		while ((record = reader.readNext()) != null) {
 			try {
 				record = extractCode(record);
+				record = reduceCodeSyntax(record);
 				record = removeHtmlTags(record);
 				record = getUsefulToken(record);
 				writer.writeNext(record);
@@ -97,6 +98,20 @@ public class Preprocessor {
 
         return newRecord;
     }
+	
+	/**
+     * @param record
+     *         Contain 5 fields : ID, title, body without code, code, tags.
+     * @return A String array contain 5 fields : ID, title, body without HTML tags and codes, 
+     *         one line code with reduced syntax , tags.
+     * @author Li-Yuan
+     */
+    private String[] reduceCodeSyntax(String[] record) {
+        record[3] = record[3].replaceAll("[^a-zA-Z ]", " ");
+        return record;
+    }
+	
+	
 
     /**
      * @param record
