@@ -51,7 +51,8 @@ public class Preprocessor {
     /**
      * @param record
      *            Contain 4 fields (3 fields if the input is the data to be predicted): ID, title, body with code, tags.
-     * @return A String array contain 5 fields (4 fields if the input is the data to be predicted): ID, title, body *            without code, code, tags.  * @author Yu-chun Huang
+     * @return A String array contain 5 fields (4 fields if the input is the data to be predicted): ID, title, body *            without code, code, tags.  
+     * @author Yu-chun Huang
      */
     private String[] extractCode(String[] record) {
         StringBuffer newContent = new StringBuffer();
