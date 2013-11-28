@@ -23,11 +23,10 @@ public class Preprocessor {
 	 * Pattern matching regular expression for extracting code.
 	 */
 	private static final Pattern codePattern = Pattern.compile("(?is)<code>(.*?)</code>");
-	private static final Pattern tokenPattern = Pattern.compile("(\\w\\S*\\w)|([a-zA-Z])");
 	private static PorterStemmerTokenizerFactory psTokenizer = new PorterStemmerTokenizerFactory(
                                                                new EnglishStopTokenizerFactory(
                                                                new LowerCaseTokenizerFactory(
-                                                               new RegExTokenizerFactory( tokenPattern ) )));
+                                                               IndoEuropeanTokenizerFactory.INSTANCE )));
 
 	/**
 	 * Pre-process StackExchange dataset.
@@ -41,8 +40,8 @@ public class Preprocessor {
 	 * @throws IOException
 	 */
 	public void process(String input, String output) throws IOException {
-		CSVReader reader = new CSVReader(new FileReader(input));
 		CSVWriter writer = new CSVWriter(new FileWriter(output), ',');
+        CSVReader reader = new CSVReader(new FileReader(input), ',', '"', '\0', 1);
 
 		String[] record;
 		while ((record = reader.readNext()) != null) {
