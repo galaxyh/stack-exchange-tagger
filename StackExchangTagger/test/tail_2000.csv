@@ -1,0 +1,1951 @@
+"6034104","TabHost / TabWidget - Scale Background Image?","<p>I need to scale my TabWidget background images so they maintain aspect ratio.<br>
+I am using a TabHost with a TabWidget.  I am then using setBackgroundDrawable to set the images.</p>
+
+<p>I found a close answer here - <a href=""http://stackoverflow.com/questions/2409521/background-in-tab-widget-ignore-scaling/4462802#4462802"">Background in tab widget ignore scaling</a>.  However, I'm not sure just where to add the new Drawable code.  (Working with the HelloTabWidget example, none of my modules use RelativeLayout, and I don't see any layout for ""tabcontent"".)</p>
+
+<p>I also found this thread - <a href=""http://stackoverflow.com/questions/1400782/android-scale-a-drawable-or-background-image"">Android: Scale a Drawable or background image?</a>.  According to it, it sounds like I would have to pre-scale my images, which defeats the whole purpose of making them scaleable.</p>
+
+<p>I also found another thread where someone subclassed the Drawable class so it would either not scale, or it would scale properly.  I can't find it now, but that seems like a LOT to go through when you should just be able to do something simple like mTab.setScaleType(centerInside).</p>
+
+<p>Here's my code:</p>
+
+<p>main.xml:</p>
+
+<pre><code>&lt;?xml version=""1.0"" encoding=""utf-8""?&gt;
+&lt;TabHost xmlns:android=""http://schemas.android.com/apk/res/android""
+    android:id=""@android:id/tabhost""
+    android:layout_width=""fill_parent""
+    android:layout_height=""fill_parent""
+    android:background=""@drawable/main_background""&gt; 
+    &lt;LinearLayout
+        android:orientation=""vertical""
+        android:layout_width=""fill_parent""
+        android:layout_height=""fill_parent""&gt;
+    &lt;FrameLayout
+            android:id=""@android:id/tabcontent""
+            android:layout_width=""fill_parent""
+            android:layout_height=""fill_parent""
+            android:layout_weight=""1""/&gt;        
+    &lt;TabWidget
+            android:id=""@android:id/tabs""
+            android:layout_width=""fill_parent""
+            android:layout_height=""wrap_content"" 
+            android:layout_weight=""0""/&gt;
+    &lt;/LinearLayout&gt;
+&lt;/TabHost&gt;
+</code></pre>
+
+<p>main activity:</p>
+
+<pre><code>        tabHost.setOnTabChangedListener(new OnTabChangeListener() { 
+            TabHost changedTabHost = getTabHost();
+            TabWidget changedTabWidget = getTabWidget();
+            View changedView = changedTabHost.getTabWidget().getChildAt(0);
+
+            public void onTabChanged(String tabId) { 
+                int selectedTab = changedTabHost.getCurrentTab();
+                TabWidget tw = getTabWidget();
+
+                if(selectedTab == 0) {
+                    //setTitle(""Missions Timeline"");
+                    View tempView = tabHost.getTabWidget().getChildAt(0);
+                    tempView.setBackgroundDrawable(getResources().getDrawable(R.drawable.tab_timeline_on));
+                    tempView = tabHost.getTabWidget().getChildAt(1);
+                    tempView.setBackgroundDrawable(getResources().getDrawable(R.drawable.tab_map_off));
+                    tempView = tabHost.getTabWidget().getChildAt(2);
+                    tempView.setBackgroundDrawable(getResources().getDrawable(R.drawable.tab_search_off));
+                    tempView = tabHost.getTabWidget().getChildAt(3);
+                    tempView.setBackgroundDrawable(getResources().getDrawable(R.drawable.tab_news_off));
+                    tempView = tabHost.getTabWidget().getChildAt(4);
+                    tempView.setBackgroundDrawable(getResources().getDrawable(R.drawable.tab_license_off));
+                            //ImageView iv = (ImageView)tabHost.getTabWidget().getChildAt(0).findViewById(android.R.id.icon); 
+                            //iv.setImageDrawable(getResources().getDrawable(R.drawable.tab_timeline_on)); 
+                            //iv = (ImageView)tabHost.getTabWidget().getChildAt(1).findViewById(android.R.id.icon); 
+                            //iv.setImageDrawable(getResources().getDrawable(R.drawable.tab_map_off)); 
+                    } else if (selectedTab == 1) {
+                        //setTitle(""Spinoffs Around You"");
+                        View tempView = tabHost.getTabWidget().getChildAt(0);
+                        tempView.setBackgroundDrawable(getResources().getDrawable(R.drawable.tab_timeline_off));
+                        tempView = tabHost.getTabWidget().getChildAt(1);
+                        tempView.setBackgroundDrawable(getResources().getDrawable(R.drawable.tab_map_on));
+                        tempView = tabHost.getTabWidget().getChildAt(2);
+                        tempView.setBackgroundDrawable(getResources().getDrawable(R.drawable.tab_search_off));
+                        tempView = tabHost.getTabWidget().getChildAt(3);
+                        tempView.setBackgroundDrawable(getResources().getDrawable(R.drawable.tab_news_off));
+                        tempView = tabHost.getTabWidget().getChildAt(4);
+                        tempView.setBackgroundDrawable(getResources().getDrawable(R.drawable.tab_license_off));
+}
+</code></pre>
+
+<p>I also tried 9patch images, but they wind up being too small.</p>
+
+<p>So, what's the best way to go about this?</p>
+","android background scale android-tabhost tabwidget"
+"6034105","Java ImageIO: Exception Weirdness","<p>In my application I was trying to save a <code>BufferedImage</code> to a PNG file using <code>ImageIO</code>. The file is chosen by the user so I need to react to errors that might happend (e.g. user tries to save in a location he has no write permission for). However I am unable to catch the <code>IOException</code> that occurs.</p>
+
+<p>The following code shows the problem. Trying to save to ""/foo"" should throw an exception for most users on *nix systems, since they do not have write permission in the root directory.</p>
+
+<pre><code>import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
+public class IOTest {
+
+    public static void main(String[] args) {
+        BufferedImage img = new BufferedImage(640, 480,
+                BufferedImage.TYPE_INT_RGB);
+        try {
+            File f = new File(""/foo"");
+            ImageIO.write(img, ""png"", f);
+        } catch (IOException e) {
+            System.out.println(""Caught IOException!"");
+        }
+    }
+}
+</code></pre>
+
+<p>However, the exception is not caught. Output: </p>
+
+<pre><code>    java.io.FileNotFoundException: /foo (Permission denied)
+    at java.io.RandomAccessFile.open(Native Method)
+    at java.io.RandomAccessFile.&lt;init&gt;(RandomAccessFile.java:233)
+    at javax.imageio.stream.FileImageOutputStream.&lt;init&gt;(FileImageOutputStream.java:69)
+    at com.sun.imageio.spi.FileImageOutputStreamSpi.createOutputStreamInstance(FileImageOutputStreamSpi.java:55)
+    at javax.imageio.ImageIO.createImageOutputStream(ImageIO.java:419)
+    at javax.imageio.ImageIO.write(ImageIO.java:1530)
+    at IOTest.main(IOTest.java:16)
+Exception in thread ""main"" java.lang.NullPointerException
+    at javax.imageio.ImageIO.write(ImageIO.java:1538)
+    at IOTest.main(IOTest.java:16)
+</code></pre>
+
+<p>Note that <code>FileNotFoundException</code> is a subclass of <code>IOException</code> so it should get caught. A second catch block did not help either: </p>
+
+<pre><code>catch (FileNotFoundException e) {
+    System.out.println(""Caught FileNotFoundException!"");
+} catch (IOException e) {
+    System.out.println(""Caught IOException!"");
+}
+</code></pre>
+
+<p>What am I doing wrong?</p>
+","java exception io ioexception filenotfoundexception"
+"6034106","If a struct cannot inherit another class or struct, why does Int32 have a ToString() method?","<pre><code>int a = 2;
+
+Console.WriteLine(a.ToString()); // displays 2
+
+// definition of ToString() here - public override string ToString();
+</code></pre>
+
+<p>Now, here are some of my understandings:</p>
+
+<ol>
+<li>All the classes in .net get a <code>ToString()</code> method, which is inherited from the <code>Object</code> class.</li>
+<li>A structure cannot be derived from a Class or another struct. <code>int</code> is a structure of type <code>Int32</code>, which  gets a couple of <code>ToString()</code> [With Parameters] methods from the Interfaces which it implements.</li>
+<li>There is also a <code>ToString()</code> [without params] function in struct <code>Int32</code></li>
+</ol>
+
+<p>According to <a href=""http://msdn.microsoft.com/en-us/library/system.int32.tostring.aspx"" rel=""nofollow"">http://msdn.microsoft.com/en-us/library/system.int32.tostring.aspx</a>,</p>
+
+<blockquote>
+  <p>struct Int32 overrides ValueType.ToString() method</p>
+</blockquote>
+
+<p>If a struct cannot inherit some class or struct, can you please explain how this <code>ToString()</code> method is available for <code>Int32</code>?</p>
+","c# .net"
+"6034107","do a hide on two jquery variables at once (basic question)","<p>i cant seem to get this right and would like to know the exact syntax to use.</p>
+
+<p>say i have two variables defined in jQuery</p>
+
+<pre><code>var cat = $('#cat');
+var dog = $('#dog');
+</code></pre>
+
+<p>i want for example... hide both divs.</p>
+
+<p>i know without the vars it would be <code>$('#cat, #dog').hide();</code>
+no matter how i do it with the variables i cant get it to work.</p>
+
+<pre><code>(cat,dog).hide();
+</code></pre>
+
+<p>thanks!</p>
+","jquery"
+"6034108","CString value changing after calling UpdateData(TRUE)","<p>I have an application in which I have an Edit Box. This edit box allows users to enter any character upto 20 characters.</p>
+
+<p>Now I have written a function for handling the edit changed for event </p>
+
+<blockquote>
+  <p>ON_EN_CHANGE</p>
+</blockquote>
+
+<pre><code>void CDlgFloatingEdit::OnEditChanged() {    UpdateData(TRUE); }
+</code></pre>
+
+<p>Now when I enter a text value of 20 characters when i debug i find that until the UpdateData(TRUE) is called in this function the value of the CString gets saved properly and once the UpdateData(TRUE) is called the value gets set to NULL.</p>
+
+<p>Another observation when I enter all characters as 4 then it works properly. But when I enter all characters as 1 then the value gets set to NULL.</p>
+
+<p>I am not getting any clue on why this has to happen.</p>
+","c++ cstring vc"
+"6034109","C# socket message decompression","<p>i am new to the C# world. I am using it for fast deployment of a solution to capture a live feed which comes in this form (curly brackets for clarity): {abcde}{CompressedMessage}, where {abcde} constitutes 5 characters indicating the length of the compressed message. The CompressedMessage is compressed using XCeedZip.dll, and needs to be uncompressed using the dll's uncompress method. The uncompress method returns an integer value indicating success or failure (of various sorts, eg no license failure, uncompression failure etc). I am receiving failure 1003 <a href=""http://doc.xceedsoft.com/products/XceedZip/"" rel=""nofollow"">http://doc.xceedsoft.com/products/XceedZip/</a> for reference of the return values from the uncompress method.</p>
+
+<pre><code>while(true){    
+byte[] receiveByte = new byte[1000];
+sock.Receive(receiveByte);
+string strData =System.Text.Encoding.ASCII.GetString(receiveByte,0,receiveByte.Length);
+string cMesLen = strData.Substring(0,5); // length of compressed message;
+string compressedMessageStr = strData.Substring(5,strData.Length-5);
+byte[] compressedBytes = System.Text.Encoding.ASCII.GetBytes(compressedMessageStr);
+//instantiating xceedcompression object     
+XceedZipLib.XceedCompression obXCC = new XceedZipLib.XceedCompression();
+obXCC.License(""blah"");
+// uncompress method reference http://doc.xceedsoft.com/products/XceedZip/
+// visual studio displays Uncompress method signature as Uncompress(ref object vaSource, out object vaUncompressed, bool bEndOfData)
+object oDest;
+object oSource = (object)compressedBytes;
+int status = (int) obXCC.Uncompress(ref oSource, out oDest, true);
+Console.WriteLine(status); /// prints 1003 http://doc.xceedsoft.com/products/XceedZip/
+}                                                       
+</code></pre>
+
+<p>So basically my question boils down to invocation of the uncompress method and correct way of passing the parameters. I am in unfamiliar territory in the .net world, so i won't be surprised if the question is really simplistic.</p>
+
+<p>Thanks for replies ..</p>
+
+##################################### updates
+
+<p>I am now doing the following:</p>
+
+<pre><code>int iter = 1;
+int bufSize = 1024;
+byte[] receiveByte = new byte[bufSize];
+while (true){
+  sock.Receive(receiveByte);
+  //fetch compressed message length;
+  int cMesLen = Convert.ToInt32(System.Text.Encoding.ASCII.GetString(receiveByte,0,5));
+  byte[] cMessageByte = new byte[cMesLen];
+  if (i==1){
+    if (cMesLen &lt; bufSize){
+      for (int i = 5; i &lt; 5+cMesLen; ++i){
+        cMessageByte[i-5] = b[i];
+      }
+    }
+  }
+  XceedZipLib.XceedCompression obXCC = new XceedZipLib.XceedCompression();
+  obXCC.License(""blah"");
+  object oDest;
+  object oSource = (object) cMessageByte;
+  int status = (int) obXCC.Uncompress(ref oSource, out oDest, true);
+  if (iter==1){
+    byte[] testByte = objectToByteArray(oDest);
+    Console.WriteLine(System.Text.Encoding.ASCII.GetString(testByte,0,testByte.Length));
+  }      
+}
+
+private byte[] objectToByteArray(Object obj){
+  if (obj==null){
+    return null;
+  }
+  BinaryFormatter bf = new BinaryFormatter();
+  MemoryStream ms = new MemoryStream();
+  bf.Serialize(ms,obj);
+  return ms.ToArray();
+}
+</code></pre>
+
+<p>Problem is the testByte writeline command prints out gibberish. Any suggestions on how to move forward on this ? the status variable of uncompress is good and equal to 0 now.   </p>
+","c# sockets dll byte"
+"6034110","php combat system: issue with loops","<p>Folks at gamedev shot me down so I'd like to try here. </p>
+
+<p>Here's my problem. Two users have a speed variable, based on who has the faster speed is who hits the most, and first. So here are some imaginary stats:</p>
+
+<blockquote>
+  <p>UserA has 2,000 speed</p>
+  
+  <p>UserB has 4,000 speed</p>
+</blockquote>
+
+<p>UserB has 2x the amount of speed, thus would hit first, and would get two hits before UserA gets a shot, so the battle would go as follows:</p>
+
+<pre><code>UserB hits UserA
+UserB hits UserA
+***UserA hits UserB
+UserB hits UserA
+UserB hits UserA
+***UserA hits UserB
+</code></pre>
+
+<p>In that pattern. The concept itself is simple, but I'm having big problems with the execution. I need to loop this so I can do the damage calculations and insert battle events into the database, but how can I - within the loop - tell php who gets to hit this round and how many more hits they get, and so on? </p>
+
+<p>Any ideas?</p>
+","php"
+"6034111","Reading your own application file in android?","<p>I want to read my own android application file from code.
+I mean to say suppose my filename is abc.apk which has got installed on the phone.Now through the same application (abc.apk) , I want to read abc.apk file byte by byte .
+Is it possible through code.</p>
+
+<p>EDIT : I am editing the question for further usage.
+How can I get the current filename of my android application through native code.</p>
+
+<p>Thanks ,
+Chetan</p>
+","android android-ndk"
+"6034112","kohana transaction with orm","<p>is it possible (how) to use mysql transactions and rollbacks using kohana ORM ?</p>
+","php orm kohana"
+"6034113","SQLAlchemy inheritance with relationship is None in instantiated object","<p>I would like to have a 'relationship' in an inherited (mixin) class.</p>
+
+<p>However, when I create the inherited object, the relationship object is None. I cannot append to it.</p>
+
+<p>How do I resolve this?</p>
+
+<p>Here is code based upon the <a href=""http://docs.sqlalchemy.org/en/rel_0_7/orm/extensions/declarative.html#mixing-in-relationships"" rel=""nofollow"">documentation</a></p>
+
+<pre><code>from sqlalchemy import Column, Integer, String, DateTime, Boolean, BigInteger, Float
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship, backref
+from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
+class Target(Base):
+    __tablename__ = ""target""
+    id = Column(Integer, primary_key=True)
+
+class RefTargetMixin(object):
+    @declared_attr
+    def target_id(cls):
+        return Column('target_id', ForeignKey('target.id'))
+
+    @declared_attr
+    def target(cls):
+        return relationship(""Target"",
+            primaryjoin=""Target.id==%s.target_id"" % cls.__name__
+        )
+
+class Foo(RefTargetMixin, Base):
+    __tablename__ = 'foo'
+    id = Column(Integer, primary_key=True)
+
+print repr(RefTargetMixin.target)
+print repr(Foo.target)
+print repr(Foo().target)
+</code></pre>
+
+<p>The output is:</p>
+
+<pre><code>&lt;sqlalchemy.orm.properties.RelationshipProperty object at 0x24e7890&gt;
+&lt;sqlalchemy.orm.attributes.InstrumentedAttribute object at 0x24e7690&gt;
+None
+</code></pre>
+
+<p>In general, I should be able to append to the relationship object (target), but here I cannot because it is None. Why?</p>
+","python sqlalchemy mixins single-table-inheritance"
+"6034114","how to recursively delete all nodes in JTree?","<p>in a <code>JTree</code> comprised of <code>DefaultMutableTreeNodes</code>, how would you traverse and delete starting from a given Node and all it's ancestors?</p>
+
+<p>it should delete starting at it's deepest level , backing upwards to the given Node. the given starting node should be the last thing to remove.</p>
+","java swing jtree treemodel"
+"6034115","stringTokenizer method error","<p>I am trying to use stringTokenizer method for reading a 2D array stored in a file in the format..</p>
+
+<pre><code>1 1
+1 1 
+</code></pre>
+
+<p>the code is...</p>
+
+<pre><code>BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+for(int i=0;i&lt;n;i++)
+                for(int j=0;j&lt;n;j++){
+                    StringTokenizer tok = new StringTokenizer(in.readLine());
+                    t[i][j]=Integer.parseInt(tok.nextToken());
+                }
+</code></pre>
+
+<p>when i run this i am getting the java.lang.NullPointerException error.However if i use this in file </p>
+
+<pre><code>1 1 1 1
+</code></pre>
+
+<p>the code works!
+<br>why is it happening?</p>
+","java nullpointerexception stringtokenizer"
+"6034116","Alternative to FileReader() javascript","<p>I pretty much don't know how to come up with an altertnative to FileReader() in this situation.  I know that I can call if FileReader() is undefined to do something else, but what else is my option.</p>
+
+<p>Thanks,</p>
+
+<p>HTML - </p>
+
+<pre><code>&lt;form method='post' enctype='multipart/form-data' action='#'&gt;
+&lt;div style=""height: 200px;""&gt;
+&lt;div class=""droparea spot logoupload""&gt;
+&lt;div class=""instructions""&gt;&lt;img class=""previewlogo"" src=""http://wmemusic.com/wme/admin/img/loginlogo.jpg"" alt=""Click or Drag image here to add login logo""/&gt;
+&lt;/div&gt;
+&lt;input type=""file"" class=""droparea spot logoupload"" name=""logo"" onchange=""readURL(this);""/&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/form&gt;
+</code></pre>
+
+<p>CSS -</p>
+
+<pre><code>.droparea {
+                position:relative;
+                text-align: center;
+                min-height:100px;
+                margin:0;
+            }
+
+            .droparea div, .droparea input {
+                position: absolute;
+                top:0;
+                right:2px;
+                width: 100%;
+                height: 100%;
+            }
+            .droparea input {
+                cursor: pointer; 
+                opacity: 0; 
+            }
+            .droparea .instructions {
+                border: 2px dashed #ddd;
+                max-height:200px;
+                height:auto;
+                min-height:100px;
+                overflow:hidden
+            }
+            .droparea .instructions.over {
+                border: 2px dashed #000;
+                background: #ffa;
+            }
+
+
+            #areas { width: 480px; }
+            div.spot {
+
+                margin: 5px auto;
+
+            }
+          .logoupload {width: 262px;
+                min-height: 100px;
+                height:auto;}
+</code></pre>
+
+<p>JAVASCRIPT - </p>
+
+<pre><code>function readURL(input) {
+if (input.files &amp;&amp; input.files[0]) {
+    var reader = new FileReader();
+    var imgHeight = $("".previewlogo"").height();
+
+    reader.onload = function(e) {
+        $('.previewlogo').attr('src', e.target.result)
+        $('.droparea').attr('style', 'height:', imgHeight, 'px;')
+    };
+
+    reader.readAsDataURL(input.files[0]);
+}
+}
+</code></pre>
+
+<p>I could use this to detect it: <code>if (typeof FileReader !== ""undefined"")</code></p>
+","javascript html css filereader"
+"6034117","Rectangle Button - Change the 'Grey colour' after tapped?","<p>Ok so I use the iPhone SDK</p>
+
+<p>On IB I used a rectangle button, once you press that button and hold, it goes a gray colour - I want to change that gray color to an image I made.</p>
+
+<p>So once the user touches the button, it goes to the image which I made.</p>
+
+<p>Thanks</p>
+","iphone objective-c interface"
+"6034118","Does CouchDB support unqiue key constraint?","<p>I come from a RDBMS background, and I have an application here which requires good scalability and low latency. I want to give CouchDB a try. However, I need to detect when a particular INSERT operation fails due to a unique key constraint. Does CouchDB support this? I took a look at the docs, but I could not come across anything relevant.</p>
+","couchdb unique-constraint"
+"6034119","ClickOnce Deployment from Web Error: Application validation did not succeed. Unable to continue","<p>I have made a paste on paste bin that has the full error/stack trace here --> <a href=""http://pastebin.com/i6xx0GrT"" rel=""nofollow"">http://pastebin.com/i6xx0GrT</a></p>
+
+<p>This is a windows forms application that is deployed using ClickOnce. The actual exe that is created, NFSL.exe, seems to be the issue. I have tried messing with just about any option I can think of to get this working. It installs and runs fine on the development machine, but not from any other machine. Please help, I feel like I have exhausted all options at this point.</p>
+","vb.net deployment clickonce"
+"6034120","On iPad [MFMessageComposeViewCont canSendText] returns YES?","<p>It's surprised that I can send message on my iPad.
+The method <code>[MFMessageComposeViewController canSendText]</code> returns <code>YES</code> even on iPad.
+I don't know why. It was OK when I tested about 2 month ago.</p>
+
+<p>The iOS version is 5.1 (9B176) and the device is iPad 2 (new Pad has the problem as well).
+The xcode version is 4.3.1</p>
+
+<p>Has anybody met the same problem?</p>
+
+<hr>
+
+<p>@jrturton: Yes, you're right. When I turn iMessage off, <code>[MFMessageComposeViewController canSendText]</code> returns <code>NO</code>.
+It seems that <code>[MFMessageComposeViewController canSendText]</code> can NOT be used to find whether the device could send SMS. So how?</p>
+","iphone ios ipad"
+"6034121","Polygon Chain - Conversion to non-crossing while preserving shape?","<p>I have polygon chains similar to the following...</p>
+
+<p><img src=""http://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Self_crossed_polygonal_chain.svg/220px-Self_crossed_polygonal_chain.svg.png"" alt=""alt text""></p>
+
+<p>...given the chain in the image, how would I go about calculating a chain that defines <em>the same shape</em> but without crossing paths?</p>
+
+<p>Specifically, in the case of the image's input chain, the result I want looks like this:</p>
+
+<p><em>A1</em>,<br>
+<em>A2</em>,<br>
+Intersect between <em>A2</em> and <em>A3</em>,<br>
+Intersect between <em>A3</em> and <em>A4</em>,<br>
+<em>A4</em>,<br>
+<em>A5</em>,<br>
+Intersect between <em>A3</em> and <em>A4</em>,<br>
+<em>A3</em>,<br>
+Intersect between <em>A3</em> and <em>A2</em>,<br>
+<em>A6</em></p>
+
+<p>I'm looking for an algorithm to accomplish this for any chain, but I'm not sure what I'm trying to do is even called, which makes searching for a solution tricky.</p>
+
+<p>If there's a name for what I'm trying to do it would be of great help to know it.</p>
+
+<p>Thank you for any assistance!</p>
+","c++ c geometry computational-geometry"
+"6034122","Reinstall/Upgrade Windows Services using Visual Studio-integrated Project","<p>What (potentially free) installer software can I use that integrates with Visual Studio, so that I can install a new version of a Windows Service over an existing one. If at all possible, I'd like the installer to be able to stop the old service, remove the old service, install the new version (or just upgrade in-place), and then start the service again. Right now we're using a Visual Studio Deployment Project that creates an MSI, but that won't replace/upgrade a Windows service, nor can it start and stop the service for us.</p>
+
+<p>The services are on a remote computer, so nothing can be done on the local development machine.</p>
+
+<p>Any recommendations would be appreciated. Thanks!</p>
+",".net visual-studio windows-services installer upgrade"
+"6034123","How to call a script in an iframe from the parent page?","<p>I am trying to call a script in an IFrame from the parent page from the code behind. The C# I use to call the function:</p>
+
+<pre><code>protected void Page_Load(object sender, EventArgs e)
+{
+    ...
+    string scr = ""document.getElementById('mapframe').contentWindow.addPoint(0, 0);""
+    ClientScript.RegisterStartupScript(GetType(), Guid.NewGuid().ToString(), scr , true);
+}
+</code></pre>
+
+<p>The iFrame's HTML:</p>
+
+<pre><code> &lt;iframe name=""mapframe"" id=""mapframe"" src=""Map.html"" style=""width:100%;height:360px;""&gt;&lt;/iframe&gt;
+</code></pre>
+
+<p>And the Javascript in the IFrame:</p>
+
+<pre><code>          function addPoint(lat, lon) {
+              var myLatlng = new google.maps.LatLng(lat, lon);
+              var marker = new google.maps.Marker({
+                  position: myLatlng,
+                  map: map,
+                  title: ""Hit""
+              });
+          }
+</code></pre>
+
+<p>However, this causes this error: ""Unable to get property 'addPoint' of undefined or null reference"". What is causing this error? I have checked to ensure that contentWindow is not null.</p>
+","c# javascript asp.net iframe"
+"6034124","Maximum length of an SQL Query","<pre>SELECT f.* 
+FROM feeds f, 
+     user_feeds uf 
+WHERE (f.id=uf.feed_id and uf.user_id in (1,2,5,6,23,45)) 
+ORDER BY created_at DESC
+</pre>
+
+<p>This is a query used to construct a user's feeds. The issue I have with this query is that the ""uf.user_id in ()"" increases as the number of users he follows increase.</p>
+
+<p>What is the allowed max length of an SQL query ?
+Is there a better way to implement my above query ?</p>
+
+<p>Note: I am using ActiveRecord. And I am using Postgres.</p>
+","sql ruby postgresql activerecord"
+"6034125","Start cell from same page, iText","<p>I want to add two rows in my report header and comment.</p>
+
+<pre><code>    mainTable.addCell(headingCell);
+    mainTable.addCell(commentCell);
+</code></pre>
+
+<p>Now when i am adding comment which have text more than total space on the page, it is starting comment from new page instead of starting from same page. from next page it is breaking text for each page but shifting from first page.</p>
+
+<p>I want to start comment from first page and flow to next pages.</p>
+","java itext"
+"6034126","How do you stop autorotate when a modal view is active?","<p>My application crashes if I attempt to rotate the iPad when a modal view is present. How do you stop autorotation while modal views are present or better yet how do you make it so that modal view rotates along with everything else (when the application crashes everything rotates but the modal view)? Many thanks!</p>
+","iphone xcode modalviewcontroller autorotate"
+"6034127","ASP.Net MVC with 2 Submit Buttons","<p>I have a view with 2 submit buttons. Both must submit the form data to the controller, but the actions the perform are different.</p>
+
+<p>If the user clicks Button A, the form is submitted, the model is modified, and the model is returned to the form with some updated information. I'd also like to make a  visible if Button A was clicked. So, initially, the  is not visible, but if button A has been clicked, when the view is re-displayed, the  must be visible. (Possible?)</p>
+
+<p>Then, if button B is clicked, the form is submitted, and the details are persisted to the database.</p>
+
+<p>Is this possible? Can I do some JQuery actions (Make a table visible) and then submit to the controller, and when the view is re-drawn, the table will be visible?</p>
+","asp.net asp.net-mvc"
+"6034128","How to create a link/button on a web-site to download and install browser extensions","<p>I'm creating a web-site for a company which has browser extensions for Google Chrome, FireFox and Opera. And there's a page from where the site users are intended to download and install those extensions. However I'm not sure how this should technically work. What kind of links/buttons should I create for the users to download those extensions?</p>
+","google-chrome-extension extension firefox-addon"
+"6034129","Adding a slide to jcarousel scroller?","<p>Is it possible to add a scroller like this, <a href=""http://imageflow.finnrudolph.de/"" rel=""nofollow"">http://imageflow.finnrudolph.de/</a> to jcarousel? All I want to do is to add a slider to move the content with... I don't want the left and right arrowbutton to move the content with.</p>
+
+<p>Thanks!</p>
+","javascript slider jcarousel scroller"
+"6034130","How should I handle errors inside or outside a Perl module?","<p>I started learning how to make a module in perl with <a href=""http://perldoc.perl.org/perltoot.html"" rel=""nofollow"">perltoot</a>:</p>
+
+<pre><code> package Person;
+ use strict;
+
+ my($NAME, $AGE, $PEERS) = ( 0 .. 2 );
+
+ sub new {
+    my $self = [];
+    $self-&gt;[$NAME] = undef;
+    $self-&gt;[$AGE] = undef;
+    $self-&gt;[$PEERS] = [];
+    bless($self);
+    return $self;
+ }
+
+ sub name {
+    my $self = shift;
+    if (@_) { $self-&gt;[$NAME] = shift }
+    return $self-&gt;[$NAME];
+ }
+
+ sub age {
+    my $self = shift;
+    if (@_) { $self-&gt;[$AGE] = shift }
+    return $self-&gt;[$AGE];
+ }
+
+ sub peers {
+    my $self = shift;
+    if (@_) { @{ $self-&gt;[$PEERS] } = @_ }
+    return @{ $self-&gt;[$PEERS] };
+ }
+
+ 1;
+</code></pre>
+
+<ul>
+<li>I would like to know how, if possible
+with sample code should I threat any
+errors within the module and outside
+it ?</li>
+</ul>
+
+<p>For example:</p>
+
+<pre><code> use Person;
+ $test= Person-&gt;new() or die Person-&gt;Error;
+</code></pre>
+
+<p>or</p>
+
+<pre><code>sub new {
+   my $self = [];
+   $self-&gt;[$NAME] = undef;
+   $self-&gt;[$AGE] = undef;
+   $self-&gt;[$PEERS] = [];
+   bless($self);
+   #########
+   # some error happened here and I need to say something
+   #########
+   return $self;
+}
+</code></pre>
+
+<ul>
+<li>If I call anything else within the
+module that had a error, problem,
+missing argument how is the correct
+way to tell there was an error ?</li>
+</ul>
+
+<p>PS: Hope my question is not too off and hi everyone :)</p>
+","perl error-handling perl-module"
+"6034131","Goodstein's theorem without transfinite induction","<p>Is it possible to prove <a href=""http://en.wikipedia.org/wiki/Goodstein%27s_theorem"" rel=""nofollow"">Goodstein's theorem </a> without transfinite induction? Is there such a proof?</p>
+","reference-request logic proof-theory"
+"6034132","Does destroying GtkBuilder destroy all created widgets?","<p>Question regarding GtkBuilder.
+When we unref builder pointer does it destroys all the screens/widgets the builder had created? </p>
+
+<pre><code>if( builder_ptr )
+    g_object_unref(G_OBJECT(builder_ptr));
+</code></pre>
+
+<p>Suppose we have created one screen using Glade/XML with some 2-3 top_level windows in it  </p>
+
+<pre><code>gtk_builder_add_from_file(builder_ptr, ""Test.glade"", &amp;error )
+</code></pre>
+
+<p>and generated GtkBuilder pointer (as above) so after deleting this pointer does it deletes created Windows or do we need to manually delete these windows?</p>
+
+<p>Thanks,<br>
+PP.</p>
+","gtk gtk+"
+"6034133","Altering the column in sql server","<p>I am using SQL Server 2005. When I try to set the primary key constraint for a column in the alter statement. it committed error. i used this following query,</p>
+
+<pre><code>alter table ""table name"" modify(field__name integer(size) primary key);
+</code></pre>
+
+<p>can u say what the error actually.. expect ur valuable answer.. if u know other methods send me the query..</p>
+","sql-server-2005"
+"6034134","Relative URL for HTML links in Site Template","<p>I have several links inside content editor webparts and on webpages that reference the site they are in. For example:</p>
+
+<pre><code> &lt;a href=""/sites/ABC/page.aspx""&gt;Link&lt;/a&gt;
+</code></pre>
+
+<p>Site ABC is being saved as a site template, and will be deployed several times.</p>
+
+<p>How can I create a dynamic link that will update when the site template is deployed?</p>
+
+<p>For example: </p>
+
+<pre><code>&lt;a href=""{dynamic site URL}/page.aspx""&gt;Link&lt;/a&gt;
+</code></pre>
+
+<p>So if site DEF were deployed, it's URL would result, instead of a link back to ABC (the template).</p>
+
+<p>Thanks in advance.</p>
+","site-template url html"
+"6034135","syslog and other logs are not updated in my ubuntu server","<p>I installed ubuntu 11.10 and it was running for 1 month and suddenly it stopped updating syslog and other log files. I went into dmesg and I saw following messages.</p>
+
+<pre><code>[   14.355780] init: Failed to spawn ufw pre-start process: unable to execute: No such file or directory
+[   14.356531] init: Failed to spawn ufw post-stop process: unable to execute: No such  file or directory
+[   14.360755] init: Failed to spawn ufw pre-start process: unable to execute: No such file or directory
+[   14.361364] init: Failed to spawn ufw post-stop process: unable to execute: No such file or directory
+[   14.522792] e1000e 0000:00:19.0: irq 42 for MSI/MSI-X
+[   14.575477] e1000e 0000:00:19.0: irq 42 for MSI/MSI-X
+[   14.575935] ADDRCONF(NETDEV_UP): eth0: link is not ready
+[   14.611221] EXT4-fs (dm-0): re-mounted. Opts: errors=remount-ro,usrjquota=quota.user,grpjquota=quota.group,jqfmt=vfsv0
+[   14.836157] init: dbus pre-start process (670) terminated with status 127
+[   14.837366] init: rsyslog main process (671) terminated with status 127
+[   14.837380] init: rsyslog main process ended, respawning
+[   14.861273] hda_codec: ALC892: BIOS auto-probing.
+[   14.867999] HDMI status: Pin=7 Presence_Detect=0 ELD_Valid=0
+[   14.868136] input: HDA Intel PCH HDMI/DP,pcm=3 as /devices/pci0000:00/0000:00:1b.0/sound/card0/input2
+[   14.868255] input: HDA Intel PCH Headphone as /devices/pci0000:00/0000:00:1b.0/sound/card0/input3
+[   15.924667] init: Failed to spawn ufw pre-start process: unable to execute: No such file or directory
+[   15.925410] init: Failed to spawn ufw post-stop process: unable to execute: No such file or directory
+[   15.951254] init: ssh main process (682) terminated with status 255
+[   15.992341] init: ssh main process (792) terminated with status 255
+[   16.034530] init: ssh main process (853) terminated with status 255
+[   16.076510] init: ssh main process (902) terminated with status 255
+[   16.091932] init: failsafe main process (676) killed by TERM signal
+[   16.102916] Adding 8290300k swap on /dev/mapper/cryptswap1.  Priority:-1 extents:1 across:8290300k
+[   16.271947] e1000e: eth0 NIC Link is Up 100 Mbps Full Duplex, Flow Control: Rx/Tx
+[   16.271951] e1000e 0000:00:19.0: eth0: 10/100 speed: disabling TSO 
+[   16.272341] ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+[   16.770224] init: apport pre-start process (1050) terminated with status 1
+[   16.804903] init: apport post-stop process (1067) terminated with status 1
+</code></pre>
+","ubuntu syslog rsyslog"
+"6034136","Read Timed Out on FTP upload","<p>Every time i try to upload a website with any ftp client i get Read Timed Out error. The file is copied on the server but it's 0kb size. I searched everywehre on the net, and tried several things; passive mode, disabling the firewall, making a trace route test to see if the firewall blocks any port... but i'm getting the same error Read Timed Out.</p>
+
+<p>I've chatted with the technical support yesterday and the technician told me that there's a saturation of 98% on my channel (i don't even know what does that mean but i was happy to know that), and ask me to call next day because he can not manage this issue directly. I called them today two times, and they did the same test and they don't see any problem!! 
+This error is driving me crazy now five days, please help if you have experimented that or if you have any suggestion!</p>
+
+<p>(yes one more thing; this happens on Mac OsX(SL), on windows everything is ok. Even after i've installed the OsX, i'm getting the same thing.)</p>
+","ftp"
+"6034137","Unable to reteive array values","<p>I have a HTML form where I will be sending all the information to the server side. One of my field is like</p>
+
+<pre><code>&lt;option value=""bus_info[{$k-&gt;bus_id},{$k-&gt;route_from},{$k-&gt;route_to}]""&gt;{$k-&gt;route_from} To {$k-&gt;route_to},{$k-&gt;bus_time}&lt;/option&gt;
+</code></pre>
+
+<p>And when check in PHP side</p>
+
+<pre><code>$bus_information[] = $_REQUEST['bid'];
+
+var_dump($bus_information);`
+</code></pre>
+
+<p>it shows the following result :</p>
+
+<pre><code>array
+  0 =&gt; string 'bus_info[1,Guwahati,Amguri]' (length=27)
+</code></pre>
+
+<p>Now how can I retrieve the elements from the array ? I tried <code>echo $bus_information[0][0];</code> but it shows the result <code>b</code> ! Why so</p>
+","php arrays"
+"6034138","In Perl, how can I create a hash table from two equal length arrays?","<p>I am trying to create a hash from 2 different arrays that are the same length. The elements of the 1st array will be the ""keys,"" and the elements of the second array will be the values.</p>
+
+<p>I tried the following code: FYI: the array ""vss"" refers to virtual server names, and ""vsports"" refers to tcp ports.</p>
+
+<pre><code>my %vsnhash;
+@vsnhash {@vss} = @vsports;
+print Dumper(\%vsnhash); 
+</code></pre>
+
+<p>This works for me as long as all the elements (names) in the 1st array are unique. If they are not, I cannot access all the keys=>values in the hash because of a duplicated key. </p>
+
+<p>How can I create an additional unique ""level"" or ""key"" to the hash that I could use to reference the data with duplicate names(or ""keys"") ? </p>
+
+<p>Any suggestions or alternate solutions would be very helpful.
+Thanks   </p>
+","arrays perl hash"
+"6034139","Most comprehensive, foolproof way to determine available features in .NET MF 4.1?","<p>I'm just starting to learn the .NET Micro Framework, and coming from C# I have quickly realized (and can certainly understand why) several classes are not available in the MF.  The tricky part for me is actually determining what the available features are.  It would be great if there was a webpage where I could type in something that I want, and it would tell me if it's available, and if not, what the closest match is.</p>
+
+<p>For example, if I wanted a <code>List&lt;T&gt;</code>, maybe it would tell me to use an <code>ArrayList</code>.  Or it would suggest a <code>Hashtable</code> instead of <code>Dictionary</code>.</p>
+
+<p>I usually google, or hope that MSDN will point me in the right direction.  However, today I wanted to use <code>System.Nullable</code>, and it was apparently not available.  I couldn't find an appropriate assembly to add from the Add References dialog.  Google failed me as well, and when I went to check <code>System.Nullable</code> at MSDN, I couldn't find references to the .NET MF anywhere.</p>
+
+<p>So I am basically assuming at this point, that <code>System.Nullable</code> isn't available, but for those trying to do some .NET MF development, is there a better way to quickly ascertain whether or not a particular class is okay to use?</p>
+",".net-micro-framework"
+"6034140","<cfcatch> not 'catching' an error","<p>I've got an image processing CFC to handle uploaded images. In the method, I'm creating an new image of the uploaded file with <code>ImageNew()</code> and then resizing it if needed (along with some other validation to make sure it's an image). Here's a snippet of the code:</p>
+
+<pre><code>&lt;cftry&gt;
+        &lt;cfset ImageScaleToFit(#local.uploadedImage#, 72, """", ""highestPerformance"")&gt;
+        &lt;cfimage action=""write"" source=""#local.uploadedImage#"" destination=""#local.newThumbName#"" overwrite=""yes"" &gt;
+        &lt;cfcatch type=""any""&gt;
+            &lt;cfset local.response['catcher'] = #cfcatch.Detail#&gt;
+            &lt;cfset local.response['success'] = false&gt;
+            &lt;cfreturn local.response&gt;
+        &lt;/cfcatch&gt;
+    &lt;/cftry&gt;
+</code></pre>
+
+<p>After I upoloaded the code to the production server it began throwing an error because ""highestPerformance"" isn't an available option for image compression on the production server.</p>
+
+<p>As a backup for <code>&lt;cftry&gt;</code> exception handling I have the Application.cfc send me an email of the details while masking the errors from the user in the event the 'try' doesn't cathc the error.</p>
+
+<p>Throughout the CFC the <code>&lt;cftry&gt;</code> catches the error and sends it back to my page. where it gets output to the console.</p>
+
+<p>My question is, why does this particular block of code not work with <code>&lt;cftry&gt;</code> and the error gets sent directly to the exception handling in my Application.CFC?</p>
+
+<p>Is there some sort of ""error threshold"" that my built-in exception handling can't handle?</p>
+
+<p>BTW, ""highPerformance"" works for some reason  even though the documentation at Adobe says ""highestPerformance"" is an available option...</p>
+
+<p><strong>EDIT:</strong></p>
+
+<p>Here's the error I'm getting from the Application.cfc</p>
+
+<p><code>Could not initialize class javax.media.jai.JAI</code></p>
+
+<p>And the stack trace:</p>
+
+<p><code>ava.lang.NoClassDefFoundError: Could not initialize class javax.media.jai.JAI at coldfusion.image.Image.resizeImageWithJAI(Image.java:1189) at coldfusion.image.Image.resize(Image.java:1119) at coldfusion.image.Image.scaleToFit(Image.java:974) at coldfusion.image.Image.scaleToFit(Image.java:959) at coldfusion.runtime.CFPage.ImageScaleToFit(CFPage.java:6189) at cfspecials2ecfc103515531$funcUPLOADFILEXHR.runFunction(C:\cfc\thecfc.cfc:143) at coldfusion.runtime.UDFMethod.invoke(UDFMethod.java:418) at coldfusion.filter.SilentFilter.invoke(SilentFilter.java:47) at coldfusion.runtime.UDFMethod$ReturnTypeFilter.invoke(UDFMethod.java:360) at coldfusion.runtime.UDFMethod$ArgumentCollectionFilter.invoke(UDFMethod.java:324) at coldfusion.filter.FunctionAccessFilter.invoke(FunctionAccessFilter.java:59) at coldfusion.runtime.UDFMethod.runFilterChain(UDFMethod.java:277) at coldfusion.runtime.UDFMethod.invoke(UDFMethod.java:192) at coldfusion.runtime.CfJspPage._invokeUDF(CfJspPage.java:2471) at cfspecials2ecfc103515531$funcMULTIUPLOAD.runFunction(C:\cfc\thecfc.cfc:32) at coldfusion.runtime.UDFMethod.invoke(UDFMethod.java:418) at coldfusion.filter.SilentFilter.invoke(SilentFilter.java:47) at coldfusion.runtime.UDFMethod$ReturnTypeFilter.invoke(UDFMethod.java:360) at coldfusion.runtime.UDFMethod$ArgumentCollectionFilter.invoke(UDFMethod.java:324) at coldfusion.filter.FunctionAccessFilter.invoke(FunctionAccessFilter.java:59) at coldfusion.runtime.UDFMethod.runFilterChain(UDFMethod.java:277) at coldfusion.runtime.UDFMethod.invoke(UDFMethod.java:463) at coldfusion.runtime.TemplateProxy.invoke(TemplateProxy.java:453) at coldfusion.runtime.TemplateProxy.invoke(TemplateProxy.java:320) at coldfusion.filter.ComponentFilter.invoke(ComponentFilter.java:183) at coldfusion.filter.ApplicationFilter.invoke(ApplicationFilter.java:282) at coldfusion.filter.RequestMonitorFilter.invoke(RequestMonitorFilter.java:48) at coldfusion.filter.MonitoringFilter.invoke(MonitoringFilter.java:40) at coldfusion.filter.PathFilter.invoke(PathFilter.java:86) at coldfusion.filter.ExceptionFilter.invoke(ExceptionFilter.java:70) at coldfusion.filter.ClientScopePersistenceFilter.invoke(ClientScopePersistenceFilter.java:28) at coldfusion.filter.BrowserFilter.invoke(BrowserFilter.java:38) at coldfusion.filter.NoCacheFilter.invoke(NoCacheFilter.java:46) at coldfusion.filter.GlobalsFilter.invoke(GlobalsFilter.java:38) at coldfusion.filter.DatasourceFilter.invoke(DatasourceFilter.java:22) at coldfusion.xml.rpc.CFCServlet.invoke(CFCServlet.java:138) at coldfusion.xml.rpc.CFCServlet.doPost(CFCServlet.java:289) at javax.servlet.http.HttpServlet.service(HttpServlet.java:760) at org.apache.axis.transport.http.AxisServletBase.service(AxisServletBase.java:327) at javax.servlet.http.HttpServlet.service(HttpServlet.java:853) at coldfusion.bootstrap.BootstrapServlet.service(BootstrapServlet.java:89) at jrun.servlet.FilterChain.doFilter(FilterChain.java:86) at com.seefusion.Filter.doFilter(Filter.java:49) at com.seefusion.SeeFusion.doFilter(SeeFusion.java:1494) at jrun.servlet.FilterChain.doFilter(FilterChain.java:94) at coldfusion.monitor.event.MonitoringServletFilter.doFilter(MonitoringServletFilter.java:42) at coldfusion.bootstrap.BootstrapFilter.doFilter(BootstrapFilter.java:46) at jrun.servlet.FilterChain.doFilter(FilterChain.java:94) at jrun.servlet.FilterChain.service(FilterChain.java:101) at jrun.servlet.ServletInvoker.invoke(ServletInvoker.java:106) at jrun.servlet.JRunInvokerChain.invokeNext(JRunInvokerChain.java:42) at jrun.servlet.JRunRequestDispatcher.invoke(JRunRequestDispatcher.java:286) at jrun.servlet.ServletEngineService.dispatch(ServletEngineService.java:543) at jrun.servlet.jrpp.JRunProxyService.invokeRunnable(JRunProxyService.java:203) at jrunx.scheduler.ThreadPool$DownstreamMetrics.invokeRunnable(ThreadPool.java:320) at jrunx.scheduler.ThreadPool$ThreadThrottle.invokeRunnable(ThreadPool.java:428) at jrunx.scheduler.ThreadPool$UpstreamMetrics.invokeRunnable(ThreadPool.java:266) at jrunx.scheduler.WorkerThread.run(WorkerThread.java:66)</code></p>
+","exception-handling coldfusion"
+"6034141","Converting table to ... and return it","<p>Good day, I would like to know how to convert table to ... and return it.</p>
+
+<pre><code>function GetArgsNormal(...)
+    return ...;
+end
+local a,b,c=GetArgsNormal(1,2,3); --this works
+print(""a b c:"",a,b,c);
+function GetArgsTable(t,...)
+    for i,v in pairs(t)do
+        ({...})[i]=v;
+    end
+    return ...;
+end
+local d,e,f=GetArgsTable({1,2,3},nil); --result: d=nil, e=nil, f=nil
+print(""def:"",d,e,f);
+</code></pre>
+
+<p>I tried all possible ways, which I had in my mind, but without success:(</p>
+
+<p>Could anyone help me in this, please?</p>
+
+<p>And yes, could you please answer instead of down-voting?!</p>
+","lua lua-table"
+"6034142","In python, how would I open a PIL or Imagemagick Image as a file","<p>I'm taking uploaded files which I can save to S3 using SimpleS3:</p>
+
+<pre><code>from simples3.bucket import S3Bucket
+upload = request.POST['image']
+s = S3Bucket(""cdn"", s3.access_key, s3.secret_key)
+s.put(upload.filename, upload.file.read())
+</code></pre>
+
+<p>Somewhere between saving that as a file and uploading it I save the file which is an image as a thumbnail using PIL or Imagemagick depending on what kind of image file was uploaded. The process there is to turn the File into an Image. My question is how do I open that Image as a file? I'm trying to upload the thumbnail to Amazon's S3 exactly as I do above. My code below is the idea of what I'm attempting:</p>
+
+<pre><code>thumb = self._im.copy() #where _im is the Image
+s = S3Bucket(""cdn"", s3.access_key, s3.secret_key)
+s.put(self.filename+ext, thumb)
+</code></pre>
+
+<p>I've tried with no success:</p>
+
+<pre><code>f = open(thumb, ""rb"")
+s.put(self.filename+ext, f.read()
+</code></pre>
+
+<p>What does work, but is incredibly inefficient, is writing the file to the drive using the Image.save function and then opening it as a file:</p>
+
+<pre><code>thumb.save(self.filename+ext)
+f = open(self.filename+ext, 'r')
+s.put(self.filename+ext, f.read())
+</code></pre>
+","python file-io amazon-s3 imagemagick python-imaging-library"
+"6034143","Preventing a complete rebuild using branches with GIT and Visual Studio 2005","<p>One of the problem I faced when using branches in GIT was that it was very easy when switching branches to cause visual studio 2005 to cause a complete rebuild of the source because of the time/date being changed when switching branches.</p>
+
+<p>My typical layout is this.<br>
+svn/remote<br>
+master<br>
+test</p>
+
+<p>When switch between either the test and the master branch even though both of them shared exactly the same timestamp on the project. It would cause visual studio 2005 to rebuild the complete project again.</p>
+
+<p>To resolve this issue, my solution was to create another GIT repository but to make a new repository that pulled from the main repository c:/myPrimary 'test' branch. This way, even though both master and test branches had their own folder via the extra repository this resolved having to do a complete recompilation of the source code when switching between the two.</p>
+
+<p>Just checking if anyone else have had this problem and the solution they have come up with resolving it. Please note, a complete recompilation of the source code is in the area of 20 minutes.</p>
+","c++ svn git visual-studio-2005 visual-c++-2005"
+"6034144","notepad++ convert ansi to utf-8 problem","<p>I have a some website, I can send my turkish character with jquery ajax in firefox, but Internet explorer doesnt send my turkish character, I looked my file that jquery ajax source file in notepad, this files coedpage is ANSI. When I convert to utf-8 without bom and close file, File is again ANSI when I reopen.. How can i convert my file ansi to utf-8 ?</p>
+","utf-8 notepad++ ansi"
+"6034145","Unable to update listbox from database","<p>In my application I have listBox and its items source is ObservableCollection, but when I add data, this listBox won't update. In constructor i use:
+<code>listBoxPersons.ItemsSource = UserContacts;</code>
+and user UserContacts is static ObservableCollection, which is initialised from database and when I open the programm, it shows correct data. But when I add new item into database and in same time using same code <code>listBoxPersons.ItemsSource = UserContacts;</code>, then listBox won't display added item. But when I logout and login again to my application, it displays my added items.</p>
+","c# wpf database listbox itemssource"
+"6034146","Creating a DSA Signature from the Linux command line","<p>I'm looking for a Linux/Unix command-line tool to create a DSA signature from a given file/data and a private key </p>
+
+<p>I know about the xmlsec1 tool from:
+<a href=""http://www.aleksey.com/xmlsec/"" rel=""nofollow"">http://www.aleksey.com/xmlsec/</a></p>
+
+<p>But I would like something simpler. The openssl tool doesn't appear to have this function.
+It seems that OpenSSL provides this function as a developer library, but not as a tool.</p>
+
+<p>Thanks!</p>
+","unix cryptography dsa"
+"6034147","Change the URL in chrome after the page has loaded","<p>I've written the following script to change the URL of a tab in Chrome, but can't figure out how to get it to automatically run on every page.</p>
+
+<pre><code>  var nytimes = /.*nytimes\.com.*/;
+  var patt = /(&amp;gwh=).*$/;
+
+  function updateUrl(tab){
+   if(tab.url.match(nytimes))
+   {
+    var newUrl = tab.url.replace(patt,"""");
+    chrome.tabs.update(tab.id, {url: newurl});
+   }
+  }
+ chrome.tabs.onUpdated.addListener(function(tab) {updateUrl(tab);});
+</code></pre>
+
+<p>I put that into my background page, but it isn't working. Do I need to put the code somewhere else to get it to run?</p>
+","google-chrome-extension"
+"6034148","Some useful site with examples C++ and Java?","<p>Could someone post some good links with examples of programs with code in C++ and(or) Java?</p>
+","java c++ website"
+"6034149","The ASP.NET MVC Routing Querystring vs Embedded Value Bewilderment","<p>This has probably been asked already - if so sorry! I couldn't find it.
+I am unsure as to how asp is able to decide when to use a query string and ""normal looking paths"" (Embedded values)
+Take this for example: </p>
+
+<pre><code>routes.MapRoute(
+
+    ""SomePage"",
+    ""Net/Fix/{value}"",
+    new { controller = ""Net"", action = ""Index"" }
+    );
+
+routes.MapRoute(
+    ""Default"", // Route name
+    ""{controller}/{action}/{id}"", // URL with parameters
+    new { controller = ""Home"", action = ""Index"", id = UrlParameter.Optional } // Parameter defaults
+);
+</code></pre>
+
+<p>I don't know how to explain - I will try.. If I am wrong please explain it </p>
+
+<p>Question 1.
+Is the first argument in mapRoute so that we can specify which routing we want to take place when using hyperlinks?</p>
+
+<p>Question 2.
+What does the second argument do? 
+It appears as if the second argument gives you the option of specifying how the routing should occur as below: ""Net/Fix/hello"" or by specifying placeholders in the form of {controller}/{action}/{somevar}</p>
+
+<p>Question 3: 
+I assume if nothing is used in question 2 scenario - this specifies default routing that should take place? </p>
+
+<p>Question 4: 
+How does ASP.NET infer whether to use a query string or an embedded value..</p>
+
+<p>Because for example when I decide to call my page </p>
+
+<pre><code>http:/localhost:portno/Net/Fix/hello
+</code></pre>
+
+<p>It dutifully prints hello.. but when I do <em>this</em></p>
+
+<pre><code>http:/localhost:portno/Net/Index/hello
+</code></pre>
+
+<p>It doesn't work.. unless I do </p>
+
+<pre><code>http:/localhost:portno/Net/Index?value=hello..
+</code></pre>
+
+<p>Question is... <em>why?!!!</em></p>
+
+<p>I hope questions were clear.. I will reply to answers (if any later).</p>
+","c# asp.net asp.net-mvc-2 asp.net-mvc-routing"
+"6034150","AJAX 403 forbidden when making ajax request","<p>The website initiates ajax request but always get return 403 error for all browsers.</p>
+
+<p>I tested it by initiating the same call in firebug console, it works (status: 200)</p>
+
+<p>What is the problem can be deduced?</p>
+
+<pre><code>jQuery.ajax({ 
+    url: ""cart_ajax_get_product.php"", 
+    data: {id: 355, qty: 1}, 
+    success: function(data) { }); }, 
+    error: function(err) { } 
+});
+</code></pre>
+
+<p>Thanks</p>
+","ajax general-network-error"
+"6034151","How to release anonymous delegates / closures correctly in C#?","<p>I'm working on a GUI application, which relies heavily on <code>Action&lt;&gt;</code> delegates to customize behavior of our UI tools. I'm wondering if the way we are doing this has any potential issues, e.g. whether the implementation keeps references to captured variables, class instances that declare the delegates etc? </p>
+
+<p>So let's say we have this class <code>MapControl</code>, which wraps a stateful GUI control. The map has different kinds of tools (Drawing, Selection, etc.), represented by <code>ITool</code> interface. You can set the tool with <code>StartTool()</code>, but you can only have one tool active at a time, so when another tool is set previous one is stopped using <code>StopTool()</code>. When tool is stopped, a caller-specified callback delegate is executed.</p>
+
+<pre><code>public class MapControl
+{
+    ITool _currentTool;
+    Action&lt;IResult&gt; _onComplete;
+
+    public void StartTool(ToolEnum tool, Action&lt;IResult&gt; onComplete) {
+
+        //If tool is active, stop it first
+        if (_currentTool != null) StopTool();
+
+        _onComplete = onComplete;
+
+        //Creates a tool class, etc.
+        _currentTool = CreateTool(tool) as ITool;
+    }
+
+    public void StopTool() {
+
+        //Execute callback delegate
+        IResult result = _currentTool.GetResult();
+        if (_onComplete != null)
+            _onComplete(result);
+
+        //Nix the references to callback and tool
+        _onComplete = null;
+        _currentTool = null;
+    }
+}
+</code></pre>
+
+<p>In the application's <code>ViewModel</code> class we set some tool like this:</p>
+
+<pre><code>class ViewModel
+{
+    private MapControl _mapControl = new MapControl();
+    public void SetSomeTool() 
+    {
+        //These variables will be captured in the closure
+        var someClassResource = this.SomeClassResource;
+        var someLocalResource = new object();
+
+        //Start tool, specify callback delegate as lambda
+        _mapControl.StartTool(ToolEnum.SelectTool, (IResult result) =&gt; {
+
+            //Do something with result and the captured variables
+            someClassResource.DoSomething(result, someLocalResource);
+        });
+    }
+}
+</code></pre>
+
+<p>In our case the <code>ViewModel</code> class is attached to the main window of a WPF application, and there can only be one instance of <code>ViewModel</code> during the application lifetime. Would it change anything if this weren't the case, and the classes which declare the delegates would be more transient?</p>
+
+<p>My question is, am I disposing of the callback delegates correctly? Are there any scenarios, where this can cause memory bloat by holding on to references it shouldn't?</p>
+
+<p>More generally, what's the safe and correct way of disposing anonymous delegates?</p>
+","c# lambda delegates closures"
+"6034152","Prime Appearances in Fibonacci Number Factorizations","<p>Okay, THIS one is considerably more analytical... :P<br>
+(Used <a href=""http://forum.projecteuler.net/viewtopic.php?f=17&amp;t=1302"" rel=""nofollow"">my post here</a> as a basis.)</p>
+
+<p>When successive Fibonacci numbers are factored, the primes appear in a specific order, which goes<br>
+$2, 3, 5, 13, 7, 17, 11, \dots$<br>
+(repeated factors are not included, such as the 2s in 8, the 3 in 21, the 2 in 34, and the 5 in 55).</p>
+
+<p>Some primes don't appear until $F_{p}$, where $p$ is the prime. The list starts off<br>
+$2, 3, 7, 23, 43, 67, \dots$<br>
+(Edit: Thanks to Gerry and Qiaochu for the correction.)</p>
+
+<p>I shall call these ""First Prime Appearances"", or FPAs for short. So therefore, the 5th FPA is 43.</p>
+
+<p>My question is thus: what is the density of the FPA primes relative to all primes?</p>
+","number-theory prime-numbers fibonacci-numbers"
+"6034153","Getting mouse presses on a console window for python","<p>Is there some sort of way to get mouse presses on console windows in python? I know you can do this, because if you're running windows you can open up the cmd and type ""edit"". How would you do this for example in python? Thanks.</p>
+","python console window cmd"
+"6034154","Reset background to transparent with tmux?","<p>I recently set up <a href=""https://github.com/erikw/tmux-powerline"" rel=""nofollow"">tmux-powerline</a> and noticed that the background color on the status-left, if changed, refuses to go back to default and transparent (if transparency is enabled). <img src=""http://i.stack.imgur.com/6HhDD.png"" alt=""tmux-powerline broken""></p>
+
+<p>I was able to fix the status-right (because it's before the background is changed), but it seems impossible to clear/erase the background after it's set for a section. I'd love to be wrong about this, though, and was wondering if anyone knows of a solution?</p>
+
+<p><code>set -g status-left='#[bg=colour89]ANYTHING CAN GO HERE[#bg=default] AND HERE TOO!'</code></p>
+
+<p>I'd expect to have the background cleared out (bg=default at the beginning would have it stay transparent, and works for status-right), but I get a dark grey instead.</p>
+
+<p>TERM = screen-256</p>
+","terminal tmux urxvt"
+"6034155","Sencha Touch Update Contents of a tabPanel with Buttons","<p>I've been trying to learn Sencha Touch and I'm stuck on something that is probably pretty obvious. I'm trying to update a tabPanel with a button event. I'd like for a tap on the first button to load 'maptestPanel' in the same panel. This is a map loaded from its own js file. </p>
+
+<p>The map panel looks ok by itself:</p>
+
+<pre><code> maptestPanel =  new Ext.Panel({
+                      layout: 'fit',
+                      fullscreen: true,
+                      items: [map]
+                  });
+</code></pre>
+
+<p>But I'm not seeing how to properly place it in the tabPanel </p>
+
+<p>The code is:</p>
+
+<pre><code>Ext.setup({
+    icon: 'icon.png',
+    tabletStartupScreen: 'tablet_startup.png',
+    phoneStartupScreen: 'phone_startup.png',
+    glossOnIcon: false,
+    onReady: function() {
+
+    var navBar = new Ext.Toolbar({
+        dock : 'top',
+        title: 'Some App Name',
+    });
+
+    var topPanel = new Ext.Panel({
+        dockedItems: [navBar],
+        fullscreen : true,
+        //html: 'Test Panel'
+    });
+
+
+    var tapHandler = function(button, event) {
+            btnPanel.update(maptestPanel); //I'm sure part of the problem is here   
+    }   
+
+
+    var SomeDate1 = new Ext.Button({
+        text:""Some date"",
+        minWidth:200,
+        height: 45,
+        cls:""listButtonTop"",
+        handler:tapHandler                  
+        });
+
+    var SomeDate2 = new Ext.Button({
+        text:""Another Date"",
+        minWidth:200,
+        height: 45,
+        cls:""listButton""
+    });
+
+    var SomeDate3 = new Ext.Button({
+        text:""And Another Date"",
+        minWidth:200,
+        height: 45,
+        cls:""listButtonBottom""
+    });
+
+
+    var btnPanel = new Ext.Panel ({
+        id: 'date',
+        items: [SomeDate1,SomeDate2,SomeDate3],         
+    });
+
+    var tabpanel = new Ext.TabPanel({
+        layout: 'card',
+        tabBar: {
+            dock: 'bottom',
+            layout: {
+                pack: 'center'
+            }
+        },
+        fullscreen: true,
+        ui: 'dark',
+        cardSwitchAnimation: {
+            type: 'slide',
+            cover: true
+        },
+        defaults: {
+            scroll: 'vertical'
+        },
+        items: [{
+            title: 'Maps',
+            //html: '&lt;h1&gt;Place holder&lt;/h1&gt;',
+            iconCls: 'maps',
+            cls: 'card1',
+            items: [btnPanel]               
+        }, {
+            title: 'Favs',
+            html: '&lt;h1&gt;Place holder&lt;/h1&gt;',
+            iconCls: 'favorites',
+            cls: 'card2',
+            badgeText: '4',
+            layout: 'fit'
+            //items: [SomeList, SomeOtherList, AnotherList]
+        }, {
+           title: 'Info',
+            html: '&lt;h1&gt;Place holder&lt;/h1&gt;',
+            cls: 'card4',
+            iconCls: 'info'
+        }]
+    });
+   }
+});
+</code></pre>
+
+<p>Thanks for any advice or a steer in the right direction.</p>
+","button sencha-touch tabpanel"
+"6034156","OAuth 2 status and new API","<p>OAuth 2 is getting more popular, however its proposed <a href=""http://tools.ietf.org/html/draft-ietf-oauth-v2-23"" rel=""nofollow"">standard is still a draft</a>, and is now at version 23, while <a href=""http://oauth.net/2/"" rel=""nofollow"">most implementations</a> lag well behind that. So my question is - if I'm going to build my new webservice API featuring OAuth 2, should I regard current draft as stable enough? Is there any roadmap documents as for when it would be official? Are there any recommended reference implementations - client/server side - that I could use to test against them? I'm seeing now that everybody implements different thing and calls it ""OAuth 2"" - so what should I use to not have my API obsolete before it's released? What should I test against?  </p>
+","web-services oauth-2.0"
+"6034157","alloc init inside methods","<p>I have two methods in the same application </p>
+
+<p>The first is in the Fraction Class</p>
+
+<pre><code> -(Fraction *) divide: (Fraction *) f
+ {
+ Fraction *result = [[Fraction alloc] init];
+ result.numerator = numerator * f.denominator
+ [result reduce];
+ return result;
+ }
+</code></pre>
+
+<p>the second is in the calculator class</p>
+
+<pre><code>-(Fraction *) performOperation: (char) op
+   {
+ Fraction *result;
+ switch (op) {
+ case '+':
+ result = [operand1 add: operand2];
+ break;
+ .
+ .
+ .
+ .
+ etc
+
+break;
+}
+accumulator.numerator = result.numerator;
+accumulator.denominator = result.denominator;
+return accumulator;
+}
+</code></pre>
+
+<p>Why does the first need to alloc and init the *result instance variable
+in the first method but not the second? Is it because it's calling another method
+ [result reduce] or because its returning a value? or something else?
+The second method seems to simply instantiate a temp variable result of type Fraction
+without initializing or creating memory.</p>
+
+<p>Thanks</p>
+","objective-c ios"
+"6034158","Dynamic Table Layout using PHP Logic","<p>I have simple table that has about 80 rows, which I populate dynamically using PHP. What I am trying to do is to layout those rows in chunks for each column. So if I have 80 rows, I would like 4 columns of 20 rows or so, maybe the last column has less or more depending on the total number of rows. The total number of rows can change!</p>
+
+<p>I am having trouble coming up with an implementation method that will not get messy! Anyone know of a simple way that I can implement this.</p>
+
+<p>I have tried using a counter as I loop the data to populate the table and when a multiple of of 20 is reached move to the next block but that didn't work for me as I had extra rows left over.</p>
+
+<pre><code>foreach($indexes as $index){
+
+    $counter++;
+
+    echo '&lt;tr&gt;';
+
+    if($counter &gt; 20){
+
+        $multiplier = $counter / 20;
+
+        $head = '&lt;td&gt;&lt;/td&gt;';
+
+        for($i=1; $i&lt;$multiplier; $i++){
+
+            $head .= '&lt;td&gt;&lt;/td&gt;';
+
+        }
+
+    }
+
+    if($counter &lt; 20){
+
+        $head = ''; 
+
+    }
+
+    echo ""$head&lt;td&gt;$index&lt;/td&gt;&lt;td&gt;&lt;input id='$index' name='$index' type='checkbox' /&gt;&lt;/td&gt;"";  
+
+    echo '&lt;/tr&gt;';
+
+}
+</code></pre>
+
+<p>Thanks all for any help</p>
+","php html css"
+"6034159","Get list of users belonging to a role using Authorization Manager (AzMan)","<p>Using ASP.NET (C#) I have set up Authorization Manager to allow me to handle roles on a website. Added users to roles is simple <code>Roles.AddUserToRole(""DOMAIN\\UserName"", ""role"")</code>. However I want to list the users belonging to a role, but since they are stored as SID's, displaying them would not be that helpful. To get the users, I am thinking XML would have to be used, although is it possible to use COM Interop to both do that and get the user name? Either way, how can I get the users belonging to a role?</p>
+
+<p>The table to manage roles would basically be like this:</p>
+
+<pre><code>Role    User
+----    ----
+admin   DOMAIN\UserName [delete]
+        DOMAIN\UserName2 [delete]
+        [add user text box]
+news    DOMAIN\UserName3 [delete]
+        [add user text box]
+</code></pre>
+","c# asp.net authorization azman authorizationmanager"
+"6034160","jQuery live() not showing text cursor in Firefox","<p>I'm using the jQuery <code>live()</code> function to change the border colour of form text inputs to give users a better indication of what element they are currently typing in. It's easier for me to use <code>live()</code> over <code>bind()</code> as there are certain instances where new form inputs are inserted into the page dynamically.</p>
+
+<p>From reading through the jQuery <a href=""http://api.jquery.com/live/"" rel=""nofollow"">documentation for <code>live()</code></a> I understand that each handler must return false to prevent other handlers from executing. Whether or not I'm misinterpreting what this actually means, here is the code I have to add and remove the border colour from my form inputs.</p>
+
+<pre><code>$('input.highlight').live({
+    focus: function() {
+        $(this).parent('span').addClass('input-focus');
+        return false;
+    },
+    blur: function() {
+        $(this).parent('span').removeClass('input-focus');
+        return false;
+    }
+});
+</code></pre>
+
+<p>This works perfectly in Chrome and Safari except in Firefox the flashing text cursor does not appear inside the form input when it has focus. If I remove <code>return false;</code> it shows. Could this be a jQuery bug that I've encountered?</p>
+","javascript jquery firefox"
+"6034161","How to store images in mongoDB?","<p>I am using <code>pymongo</code> to store user comments in my Django project. I need to save comment images to the database and then show it on a page which is generated by a Django template,
+but when I use <code>request.FILES.get (...)</code>, <code>read(...)</code>, the line does not save in Mongo, because it is not encoded in <code>utf-8</code>.</p>
+
+<p>How can I properly save an image into <code>mongoDB</code> and then show on an HTML page?</p>
+","python django mongodb pymongo"
+"6034162","Why does a JTextField shrink in size to 0 when passed a large column's number?","<p>Apparently if the columns size is more than 70 the field get's displayed with a size where you cannot even type a single character?
+I'm talking about:</p>
+
+<pre><code>new JTextField(70);
+</code></pre>
+","java swing"
+"6034163","Paypal - redirect after payment to my own page","<p>I would like to automatically redirecta a user after successful payment to my own ""thank you"" page. Currently I am working with Paypal under the sandbox account and on my localhost.</p>
+
+<p>Is there any way to do it? I tried to browse through the admin account in sandbox, but I didn't find something useful...</p>
+","ruby-on-rails paypal paypal-sandbox"
+"6034164","Quit an applescript application after the execution of a shell script","<p>I was wondering if it is possible for an applescript application to run a shell script, then quit before the execution of the shell script is completed. This would be useful when running a server for a given amount of time. Instead of needing the applescript to be constantly running in the background, is there any way to run a function independently?</p>
+
+<pre><code>set server_name to text returned of (display dialog ""Choose server."" default answer """")
+set success to do shell script ""if [ -f \""/Users/jessefrohlich/Documents/Minecraft/"" &amp; server_name &amp; ""/minecraft_server.jar\"" ]; then
+    echo 1;
+else
+    echo 0;
+fi""
+if success is equal to ""1"" then
+    do shell script ""cd /Users/jessefrohlich/Documents/Minecraft/"" &amp; server_name &amp; ""
+    java -Xmx1024M -Xms1024M -jar minecraft_server.jar""
+else
+    display dialog ""Sorry, the file you chose is invalid.""
+end if
+</code></pre>
+
+<p>When the above is run as an application, it will launch the server properly. However, the application <code>runScript.app</code> will continue to run. The server will keep running even if the applescript is force quit. Is there any way to have it quit automatically, as soon as the server is launched?</p>
+
+<p>Thanks</p>
+","shell applescript quit nonlinear-functions"
+"6034165","Create environment variable via Winform application, very slow","<p>In a Winform application, I create some Environment Variable (Windows 7). The creation works but it’s very slow, around 9sec to create one.</p>
+
+<p>I use this code :</p>
+
+<pre><code>Environment.SetEnvironmentVariable(
+    variableName, 
+    value, 
+    EnvironmentVariableTarget.Machine
+);
+</code></pre>
+
+<p>Is it strange, isn’t it ?</p>
+
+<p><strong>See the log :</strong></p>
+
+<pre><code>5/01/2012 08:22:09 : MyVar1
+5/01/2012 08:22:18 : MyVar2
+5/01/2012 08:22:26 : MyVar3
+</code></pre>
+","c# winforms environment-variables"
+"6034166","Reading NIC bandwidth usage instantly","<p>I want to create a script that runs on a linux server, that script should read bandwidth usage of NICs installed on other servers and then store them in memcached.</p>
+
+<p>So I need a command that reads bandwidth usage of other servers on the same LAN, and the command should be as quick as possible.</p>
+
+<p>Thanks,</p>
+","linux networking monitoring bandwidth nic"
+"6034167","Don't click item in tableviewrow titanium","<p>I create a tableview and tableviewrows is customized.In item rows,has text and image..If I click text or image,will get event click row of tableview but if i click outside them,i can't get event click..Can you help me.</p>
+","click titanium tableview"
+"6034168","script to create windows 7 new sticky note","<p>I wrote a program that will take text on my clipboard and write it to a temp file and then open that temp file in notepad. The program is called paste.exe and I put it in my path, so I could just WIN+R, type paste and have a the text pasted to a new text file. This is a huge time saver for me personally.</p>
+
+<p>I'd like to create a similar program that will create a new Windows 7 sticky note with what's on my clipboard but I'm having a hard time finding a way to automate the process.</p>
+
+<p>stikynot.exe is Sticky Notes and as best I can tell there are no command line arguments.</p>
+
+<p>Any suggestions?</p>
+","windows-7 clipboard sticky-notes"
+"6034169","Induced $\sigma$-algebra vs. product $\sigma$-algebra","<p>Let $(E,\mathscr E)$ be a measurable space and $(S,2^S)$ be a finite set. Let 
+$$
+  \xi:(E,\mathscr E)\to(S,2^S)
+$$
+be a mesaurable function, i.e. $\xi^{-1}(s)\in \mathscr E$ for any $s\in S$. Now, let us denote by $\Omega = E^{\mathbb N_0}$ and by $\mathscr F$ its product $\sigma$-algebra. Also, let $\Sigma = S^{\mathbb N_0}$ and let $\mathscr S$ be the correspondent product $\sigma$-algebra.</p>
+
+<p>Let $\eta:\Omega\to\Sigma$ be the element-wise extension of $\xi$, i.e.
+$$
+  \eta(\omega_0,\omega_1,\dots) = (\xi(\omega_0),\xi(\omega_1),\dots).
+$$</p>
+
+<p>I wonder if $\mathscr S$ is different from 
+$$
+  \mathscr C = \{A\subseteq \Sigma:\eta^{-1}(A)\in \mathscr F\}.
+$$
+It is clear that $\mathscr S\subseteq \mathscr C$ - but can the strict inclusion actually happen?</p>
+","measure-theory"
+"6034170","How to calculate 3D coordinates of a point in OpenCV","<p>I have got a calibrated stereo-camera system and pixel positions of the same object in views of both cameras. Is there any easy way to calculate 3D world coordinates of the object using OpenCv (and intrinsic/extrinsic parameters) or do I have to deal with 3D lines generated for both cameras and transformations between them? Does CvReprojectImageTo3D can help?
+Many Thanks</p>
+","image image-processing opencv computer-vision cv"
+"6034171","Memory leak regarding NSRange","<pre><code>NSString *mob = (__bridge_transfer NSString *)ABMultiValueCopyValueAtIndex(mobNum, emailCounter);
+                mob = [ApplicationSingleton FindMobileNumber:mob];
+                if ([favos rangeOfString:mob].location != NSNotFound)
+</code></pre>
+
+<p>it gives below message when checking for memory leaks...</p>
+
+<p>the receiver of message ""rangeOfString:"" is nil and returns a value of type NSRange that will be garbage</p>
+
+<p>can anyone please help me...
+Thanks in advance...</p>
+","iphone ios memory-management nsrange"
+"6034172","Event action on clicking a hyperlink from a textbox","<p>Restating my question to be simpler....</p>
+
+<p>I want to be able to link an Action Script event to clicking text within a text box.The only thing I can see is to just create a basic Hyper Link, but not apply any action:</p>
+
+<p><img src=""http://i.stack.imgur.com/pmp3u.png"" alt=""enter image description here""></p>
+
+<p>I have been messing around for over an hour but just can't see a way to apply actionscript and all the tutorials on the internet seem to target ActionScript 3 or not do exactly what I want.</p>
+
+<p>The reason for this is that there is background music to the site and when YouTube is launched, it needs to be muted. I know the code to mute and have done this on custom objects before, but I can't see any way to apply script to a textbox hyperlink.</p>
+
+<p>Whilst I would ideally like to do it this way, I am happy to consider any solution resulting in opening a page and muting the site.</p>
+
+<p>To be honest, I tried doing a quick switch to AS3, but as there are so many problems that would need addressing, I would rather spend the time converting the site to HTML/Jquery or even Silverlight.... I just hope there is something small I have overlooked which can get this done without too many changes needed.</p>
+","flash actionscript flash-cs5"
+"6034173","Facebook dialog post with embedded swf showing only sometimes","<p>I'm trying to do a basic facebook wall post with an embedded flash object based on the following documentation:</p>
+
+<p><a href=""https://developers.facebook.com/docs/reference/dialogs/feed/"" rel=""nofollow"">https://developers.facebook.com/docs/reference/dialogs/feed/</a></p>
+
+<p>I'd like to do this using just a direct URL, like (note parameters get encoded):</p>
+
+<pre><code>https://www.facebook.com/dialog/feed?
+app_id=SOME_APP_ID&amp;
+link=http://www.myregisteredfbdomain.com/someurl&amp;
+picture=http://www.myregisteredfbdomain.com/cfg/media/imagelink.png&amp;
+name=Flash%20Test&amp;
+caption=Just%20a%20test&amp;
+description=A%20Description&amp;
+redirect_uri=http://www.myregisteredfbdomain.com/someurl&amp;
+source=http://www.myregisteredfbdomain.com/facebook/aflashfile.swf
+</code></pre>
+
+<p>Although I've also tried it using javascript, with the same result:</p>
+
+<pre><code>&lt;script&gt; 
+  FB.init({appId: SOME_APP_ID, status: true, cookie: true});
+
+  function postToFeed() {
+     var obj = {
+       method: 'feed',
+       redirect_uri: 'http://www.myregisteredfbdomain.com/someurl',
+       link: 'http://www.myregisteredfbdomain.com/someurl',
+       picture: 'http://www.myregisteredfbdomain.com/cfg/media/imagelink.png',
+       name: 'Flash Test',
+       description: 'A Description',
+       source: 'http://www.myregisteredfbdomain.com/facebook/aflashfile.swf'
+     };
+
+     function callback(response) {
+       document.getElementById('msg').innerHTML = ""Post ID: "" + response['post_id'];
+     }
+  FB.ui(obj, callback);
+  }
+&lt;/script&gt;
+</code></pre>
+
+<p>When I do the post under my development fb account, the post shows up fine, and I can click on the icon which displays the flash correctly. </p>
+
+<p>However when I post under my own personal fb account, the post shows with the image only, but no flash activation when I click it - it just goes to the link/redirect link I defined.</p>
+
+<p>Can anyone give me any pointers as to why this might be the case?</p>
+","facebook flash swf"
+"6034174","allow secure form data to posted to my rails api","<p>I am creating a rails app which will help out businesses. These businesses have thousands of employees who will need a user account on this app.</p>
+
+<p>I would like the business to be able to implement a form on their local intranet which can be submitted by users when they want to sign up to my app. This form posts some semi-sensitive fields to my rails API about their currently logged in user, such as their name and email address which would be populated by their server side code.</p>
+
+<p>I can use this information to aid in the process of signing the user up to my site, and in identifying which business they actually do belong to. However, the form information along with an API key will need encrypting to avoid any data being stolen or a business being spoofed.</p>
+
+<p><strong>What methods of encryption are there out there that can be implemented on a variety of different languages and frameworks, and that involve the least amount of fuss to implement for the business?</strong></p>
+
+<p>OPEN SSL with Public and Private key encryption does seem like a good choice, but this does require some exchanging and creating of keys and can get complicated. Are there easier options?</p>
+","ruby-on-rails security api https openssl"
+"6034175","Can I open local .doc file in Google Docs without logging in Google account?","<p>I have .doc file on my hard drive. I want to open this document in Google Docs. But if there is no Google account, can I handle it ? And is there any solution to open .doc file without MS Office ?</p>
+","google-docs google-drive doc"
+"6034176","Exclude reply ID from discussion board in Sharepoint 2010 programatically","<p>I am using Microsoft Visual studio 2010 and Sharepoint 2010 to customized web site. 
+I am using <code>ContentByQueryWebpart</code> to add discssion board automatically to a page when it is created. My problem is, along with discussion subject, id of all replies are displayed underneath the subject of discussion.</p>
+
+<p>My code is:</p>
+
+<p>I have a list named Discussion. </p>
+
+<pre><code>   // Add Team Discussion List
+    id = web.Lists.Add(""Discussion"", """", SPListTemplateType.DiscussionBoard);
+    var teamDiscussionList = web.Lists[id];
+    teamDiscussionList.OnQuickLaunch = true;
+    teamDiscussionList.Update();
+</code></pre>
+
+<p>Following are the code to add discussion board automatically to site when new item is added: </p>
+
+<pre><code>SPList blogList = web.Lists[""Discussion""]; 
+
+                if (blogList != null)
+                {
+
+                    ContentByQueryWebPart blogWebpart = new ContentByQueryWebPart();
+                    blogWebpart.Title = ""Discussion board_ Write message!"";
+                    blogWebpart.ChromeType = PartChromeType.TitleOnly;
+                    blogWebpart.WebUrl = blogList.ParentWeb.ServerRelativeUrl;
+                    blogWebpart.DisplayName = blogList.Folders.List.Title;
+                    blogWebpart.ListGuid = blogList.ID.ToString();
+                    blogWebpart.ListName = blogList.Title;
+                    wpManager.AddWebPart(blogWebpart, ""LeftZone2"", 0);
+                    wpManager.SaveChanges(blogWebpart);
+
+                }
+</code></pre>
+
+<p>But along with the main subject of discussion, I am getting id of replies included in that topic.<br>
+For example:</p>
+
+<pre><code>Meeting on Friday
+    01
+    02
+Sharepoint meeting
+    03
+    04
+</code></pre>
+
+<p>Whereas my requirment is </p>
+
+<pre><code>Meeing on Friday
+Sharepoint Meeting
+</code></pre>
+
+<p>What should be done to exclude replie's id ?</p>
+
+<p>Thankyou.</p>
+","c# asp.net visual-studio-2010 web-applications sharepoint2010"
+"6034177","Need help with friendly URL's in Wordpress","<p>I'm creating som custom templates in Wordpress and I'm passing some data in the URL's.</p>
+
+<p>Currently my URL looks like this:
+<a href=""http://www.mysite.com/designers/?id=43&amp;name=designer+name"" rel=""nofollow"">http://www.mysite.com/designers/?id=43&amp;name=designer+name</a></p>
+
+<p>The URL contains designer ID and designer name.</p>
+
+<p>I would really like to use this:
+<a href=""http://www.mysite.com/designers/designer+name/"" rel=""nofollow"">http://www.mysite.com/designers/designer+name/</a></p>
+
+<p>My permalink structure is set to <code>/%category%/%postname%/</code></p>
+
+<p>My .htaccess file looks like this:</p>
+
+<pre><code># BEGIN WordPress
+&lt;IfModule mod_rewrite.c&gt;
+RewriteEngine On
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+&lt;/IfModule&gt;
+# END WordPress
+</code></pre>
+
+<p>I've looked at <a href=""http://codex.wordpress.org/Using_Permalinks"" rel=""nofollow"">http://codex.wordpress.org/Using_Permalinks</a>, but not become any wiser.</p>
+
+<p>I got two questions:</p>
+
+<ol>
+<li>Is there any point in changing the above URL regarding SEO</li>
+<li>How can I get the ""pretty"" URL?</li>
+</ol>
+
+<hr>
+
+<p><strong>UPDATE</strong><br>
+I'm adding some more info for clarification.</p>
+
+<ul>
+<li>I'm developing the site myself  </li>
+<li>The template is 100% custom template  </li>
+<li>Based on info from $_GET, I load data from my custom DB table and display this on page  </li>
+<li>My site has an avarage of between 3-400 unique visitors per day. At peak I have 2000 unique visitors per day.</li>
+<li>I'm developing an online fashion magazine</li>
+<li><p>My URL is currently being created like this:  </p>
+
+<p><code>Url = get_permalink().'?bid='.$brand-&gt;id.'&amp;name='.$brand-&gt;name;</code></p></li>
+<li><p>I've used similar method here:<br>
+<a href=""http://storelocator.no/search/?brandID=4673&amp;storeID=0&amp;brand=Moods+of+Norway"" rel=""nofollow"">http://storelocator.no/search/?brandID=4673&amp;storeID=0&amp;brand=Moods+of+Norway</a></p></li>
+</ul>
+
+<p>Using Custom Post Type was an option I considered, but I needed my own table structurem because designers / brands are linked up against galleries (and more links to other tables to come). So saving brands data in WP POST  table was not going to work.</p>
+
+<p>So I need to know this:</p>
+
+<ul>
+<li><strong>What do I need to do with my Permalink structure?</strong></li>
+<li><strong>What do I need to do with my .htaccess file?</strong></li>
+</ul>
+","3.0 php permalinks rewrite-rules"
+"6034178","Doesn't go to the right frame","<p>I have three frames. The first frame is the original. When the marker hits the right answer (target i should say), it must proceed to frame 3. If the answer is wrong it should go to frame 2. But the things when the marker hits the right answer the frame that is being shown is frame 2 and not frame 3. Why is that so?</p>
+
+<pre><code>marker._x = 93.0;
+marker._y = 62.0;
+status.text = ""ANSWER""
+
+marker.onPress = function() 
+{
+    this.startDrag();
+}
+marker.onRelease = marker.onReleaseOutside = function()
+{
+    this.stopDrag();
+    if(eval(this._droptarget)==A)
+    {
+        this._x = A._x;
+        this._y = A._y;
+        status.text = ""CORRECT"";
+
+        gotoAndPlay(""3"");
+
+    }
+    else if(eval(this._droptarget)==B)
+    {
+        this._x = B._x;
+        this._y = B._y;
+        status.text = ""WRONG"";
+
+        gotoAndPlay(""2"");
+
+    }
+    else if(eval(this._droptarget)==C)
+    {
+        this._x = C._x;
+        this._y = C._y;
+        status.text = ""WRONG"";
+        gotoAndPlay(""2"");
+    }
+    else if(eval(this._droptarget)==D)
+    {
+        this._x = D._x;
+        this._y = D._y;
+        status.text = ""WRONG"";
+        gotoAndPlay(""2"");
+    }
+    else
+    {
+marker._x = 93.0;
+marker._y = 62.0;
+    status.text = """"
+    }
+
+}
+</code></pre>
+","flash actionscript-2"
+"6034179","drag img into rect?","<p>In Kineticjs I want to drag an img into a rect shape.</p>
+
+<p>I was wondering if anyone could tell me how to do that?
+I know how to drag a shape or image around, but i want to drag the img into the shape.</p>
+
+<p>Thanks,</p>
+","drag-and-drop kineticjs"
+"6034180","How can I add a horizontal ruler to a printout using the plainTextFormatter","<p>I've tried using:</p>
+
+<pre><code>textToPrint = [textToPrint stringByAppendingString:@""----------------------------------------------------------------------------------------------------------------------------------------------\n\n""];
+</code></pre>
+
+<p>but this doesn't work when the font type or size change. Any solutions without using a different formatter?</p>
+","iphone ios ipad printing"
+"6034181","How to use single key shortcut in WinForms? If possible","<p>What I am trying to do is to use single letters to navigate through the menu strip. I know that I can use <code>&amp;</code> to show which letter I might click to represent each item.</p>
+
+<p>But how do I actually set up single key shortcuts?</p>
+
+<p>I was looking through properties panel but none of them seem to do this.</p>
+
+<p>Oh wait, is that even possible? Or should I use <kbd>ALT</kbd> + <kbd>Key</kbd> to do this? Regular programs use <kbd>ALT</kbd> + <kbd>Key</kbd> combinations.</p>
+
+<p>Regards.</p>
+","c# winforms keyboard-shortcuts menuitem menubar"
+"6034182","Bitwise subtraction","<p>Given the enum:</p>
+
+<pre><code>[Flags]
+enum foo
+{
+a = 1,
+b = 2,
+c = 4
+}
+</code></pre>
+
+<p>then</p>
+
+<pre><code>foo example = a | b;
+</code></pre>
+
+<p>If I don't know if foo contains <code>c</code>, previously I have been writing the following</p>
+
+<pre><code>if (example &amp; foo.c == foo.c)
+    example  = example ^ foo.c;
+</code></pre>
+
+<p>Is there a way to do this without checking for the existance of <code>foo.c</code> in <code>example</code>?</p>
+
+<p>As when it comes to additions, I can just do an <strong><code>OR</code></strong>, and if the enum value already exists in <code>example</code> then it doesnt matter.</p>
+","c# bitwise bitmask"
+"6034183","Can't access the web on a BlackBerry after BES activation","<p>What should a user do who can't access the web on a BlackBerry after BES activation? (Having email and other information syncing via the BEs requires a working data connection.)</p>
+","blackberry"
+"6034184",".cpp files are converted to .cc files, when the project is imported to eclipse","<p>I want to open the autodock source code in Eclipse. So I imported the source using the ""Makefile Project with Existing Code"" option.</p>
+
+<p>The original source had files of .cpp extension. But after importing the source all the cpp files are changed to .cc extension.</p>
+
+<p>How do I import the source and keep the same file extension? I'm using Eclipse Indigo CDT.</p>
+","c++ eclipse-cdt eclipse-indigo"
+"6034185","inserting values into multiple tables using hibernate","<pre><code>i have existing tables hotel and hotel_services.
+
+hotel table contains:
+hotel_id
+hotel_name
+
+hotel_services contains:
+hotel_id
+hotel_service_name
+
+each hotel can offer several services, so in my form user could enter as many services as he wants at a time.
+so for instance,
+hotel name: HOTEL1
+hotel_services:
+1. hotel_service1
+2. hotel_service2
+3. hotel_service3
+
+my question is how should i do it in hibernate in such a way that i'll be able to insert all the data into their respective tables(which are hotels and hotel_services tables).
+
+thanks for the help.. 
+</code></pre>
+","hibernate"
+"6034186","Running NSTimer at 0.03seconds repeating - increasing accuracy","<pre><code>        recordingTimer = [NSTimer scheduledTimerWithTimeInterval:0.03
+                                                          target:self
+                                                        selector:@selector(recordingTimerSelector:)
+                                                        userInfo:nil
+                                                         repeats:YES];
+</code></pre>
+
+<p>This needs to be very accurate. I've been experimenting with it, and it seems to skip a beat every now and again. Is there a better way to run a method every 0.03 seconds?</p>
+","objective-c nstimer"
+"6034187","Small Business Server 2008 Not Responding to External DNS Queries","<p>I have just deployed SBS 2008 Standard and am able to do DNS Queries against the internal DNS Server, however, none of the clients are able to collect a response.</p>
+
+<p>I have checked the Firewall configuration, and DNS is allowed through, and I checked the DNS Configurations as best I could.</p>
+
+<p>I can't test with domain-joined PC's as this is a new deploy and I can't access <a href=""http://connect"" rel=""nofollow"">http://connect</a>.</p>
+
+<p>Other services work, I set up remote Workplace access and tested it and RDP earlier from a remote location.  Also, Exchange is able to send / receive mail.</p>
+","windows-server-2008 dns windows-sbs-2008 small-business"
+"6034188","Flex Mobile : How to skin view?","<p>I would like to know if it's possible to skin view for my Flex <strong>mobile</strong> application :</p>
+
+<p>My <em>ActivityView.as</em></p>
+
+<pre><code>public class ActivityView extends View
+</code></pre>
+
+<p>My <em>ActivityViewSkin.mxml</em> (It skin associated)</p>
+
+<pre><code>&lt;?xml version=""1.0"" encoding=""utf-8""?&gt;
+&lt;s:Skin xmlns:fx=""http://ns.adobe.com/mxml/2009""
+    xmlns:s=""library://ns.adobe.com/flex/spark""&gt;
+
+&lt;fx:Metadata&gt;   
+    [HostComponent(""com.corp.views.activity.ActivityView"")]
+    ...
+</code></pre>
+
+<p>It's a good way for mobile development ?</p>
+
+<p>And how can I use this in <strong>this skin</strong> :</p>
+
+<pre><code>&lt;s:navigationContent&gt;
+</code></pre>
+
+<p>Thank you very much !</p>
+
+<p>Anthony</p>
+","skinning flex-mobile flex4.6"
+"6034189","rdiff-backup changes permissions of source directory","<p>I recently found rdiff-backup which seems to be very useful incremental alternative to rsync.
+But there's an issue, while trying to use the rdiff-backup to make a mirror of a folder in other one, it changes permissions of source folder ( specially it changes the read-only 400 to 644 )
+Any suggestion on how to fix it?</p>
+","backup rsync rdiff-backup"
+"6034190","Drop Down List (in Update Panel) causing FULL PostBack!","<p>I have a problem with my AJAX and ASP.NET 3.5 :(
+Problem is really weird, as I'm using the same thing on different page and it works fine in there, but on this specific page, this is not working.</p>
+
+<p>Here's what I have:</p>
+
+<pre><code>    &lt;asp:UpdatePanel ID=""upMain"" runat=""server"" UpdateMode=""Conditional"" Visible=""true"" RenderMode=""Inline""&gt;
+                &lt;ContentTemplate&gt;
+&lt;asp:DropDownList ID=""ddlNewService_PortTelco"" runat=""server"" Width=""250"" CssClass=""dropdown"" AutoPostBack=""true"" OnSelectedIndexChanged=""Provision_PortedTelcoChanged""&gt;&lt;/asp:DropDownList&gt;
+&lt;/ContentTemplate&gt;
+&lt;/asp:UpdatePanel&gt;
+</code></pre>
+
+<p>On the way before the DropDown there is one DIV (html one), and then few asp:Panels.
+I do not understand why this is causing a FULL POST BACK ?!</p>
+
+<p>Any ideas ? Thanks</p>
+","asp.net ajax ajaxcontroltoolkit"
+"6034191","Parse JSON or XML in Status","<p>I wonder how Facebook parse the status or comment.
+For example , when I post a status like this :  <code>""Let's have party @Tony, @Michel . 5pm at @Larry 's house.""</code></p>
+
+<p>You can see there are 3 User objects in the status : <code>@Tony, @Michel, @Larry</code>.  But they are in different section in the status .
+How can you store the status in the database. I have an idea : </p>
+
+<pre><code>Let's have party &lt;user&gt;&lt;name&gt;Tony&lt;/name&gt;&lt;uri&gt;/user/1/&lt;/uri&gt;&lt;/user&gt;, &lt;user&gt;&lt;name&gt;Michel&lt;/name&gt;&lt;uri&gt;/user/2/&lt;/uri&gt;&lt;/user&gt; . 5pm at &lt;user&gt;&lt;name&gt;Larry&lt;/name&gt;&lt;uri&gt;/user/3/&lt;/uri&gt;&lt;/user&gt; 's house.""
+</code></pre>
+
+<p>But I have problem while parsing the status in client side.
+Have you got any idea or experience ?
+Thank you very much.</p>
+","xml facebook json status"
+"6034192","Javascript resize on every image load","<p>I've got this code:</p>
+
+<pre><code>while ($row = mysql_fetch_assoc($result1)) {
+echo ""
+&lt;a href='#'id='VV"".$row['id'].""'&gt;
+&lt;p&gt;"".$row['title'].""&lt;/p&gt;
+&lt;p&gt;"".$row['date'].""&lt;/p&gt;
+&lt;img onload='scale()' id='II"".$row['id'].""' src='../res/videos/img/"".$row['img'].""'/&gt;
+&lt;/a&gt;
+&lt;script type='text/javascript'&gt;
+function scale(){
+    var image = document.getElementById('II"".$row['id'].""');
+    var width = image.width;
+    var height = image.height;
+    if (width &gt; 150) {
+    image.style.width = '150px';
+    image.style.height = 'auto';
+    }
+    width = image.width;
+    height = image.height;
+    if (height &gt; 80) {
+    image.style.height = '80px';
+    image.style.width = 'auto';
+    }
+    width = image.width;
+    height = image.height;
+}
+VV"".$row['id']."".onclick = function() {
+var Result = '"".$row['id'].""';
+location.href='loged.php?Result=' + Result;
+     }
+&lt;/script&gt;
+"";
+}?&gt;
+</code></pre>
+
+<p>I want the resize function be called on every image loaded, but it is called when the last image is loaded, and only the last image takes effect. What should i change?</p>
+","php javascript"
+"6034193","Update database with big CSV","<p>I need every day update ~ 10.000 items in my MySql. I have upload a CSV file and try to update my database data. I am forking with two field. My problem is that works but in some time I get 504 Gateway Time-out and my upload is not able to finish the process.</p>
+
+<p>here is my code</p>
+
+<pre><code>if(is_uploaded_file($_FILES[""filename""][""tmp_name""])){
+        //      
+        move_uploaded_file($_FILES[""filename""][""tmp_name""], """".$_SERVER[""DOCUMENT_ROOT""].""/upload/"".$_FILES[""filename""][""name""]);
+    $file_path="""".$_SERVER[""DOCUMENT_ROOT""].""/upload/"".$_FILES[""filename""][""name""]."""";
+
+    $file=file_get_contents("""".$file_path."""");
+    $file=iconv(""windows-1251"", ""utf-8"",$file);
+    file_put_contents("""".$file_path."""",$file);
+
+if(!setlocale(LC_ALL, 'ru_RU.utf8')) setlocale(LC_ALL, 'en_US.utf8'); if(setlocale(LC_ALL, 0) == 'C') die('       (ru_RU.utf8, en_US.utf8)');
+    if (($handle_f = fopen($file_path, ""r"")) !== FALSE) { 
+        //   csv
+        while (($data_f = fgetcsv($handle_f,99999,"";""))!== FALSE) {
+            //   ean13 
+            $sql=""SELECT id_product FROM ps_product WHERE reference = '"".$data_f[0].""'"";
+            $id_product = Db::getInstance()-&gt;getValue($sql,0);  
+
+            //   ,    
+            if ($id_product) {      
+                $sql=mysql_query(""UPDATE `ps_product` SET `quantity` ='"".$data_f[1].""' WHERE `reference`='"".$data_f[0].""'"");
+                echo ""&lt;p style='color:green'&gt;Items&lt;b&gt;"".$data_f[0].""&lt;/b&gt; updated&lt;/p&gt;"";
+            } else{
+                echo ""&lt;p style='color:red  '&gt;Items&lt;b&gt;"".$data_f[0].""&lt;/b&gt; not found&lt;/p&gt;"";
+            }
+        }
+      echo ""&lt;b&gt;Update is complited&lt;/b&gt;"";  
+
+    }else{
+        echo ""Can`t open imported file"";
+    }
+}else{
+    echo '
+    &lt;h2&gt;Quantity update:&lt;/h2&gt;
+    &lt;form action=""'.$_SERVER[""PHP_SELF""].'"" method=""post"" enctype=""multipart/form-data""&gt;
+              &lt;input type=""file"" name=""filename""&gt;&lt;br&gt;
+              &lt;input type=""submit"" value=""Load""&gt;&lt;br&gt;
+    &lt;/form&gt;
+    ';
+}
+</code></pre>
+
+<p>Now I split in excel for many files with ~ 1000 per fail and update database. It takes some time. Can you give me an idea, or maybe I have some error in my code? Update using ajax as I think will not help.</p>
+","php sql query csv phpmyadmin"
+"6034194","Difficulty adding a new view to a Roo-generated project","<p>I'm trying to add my custom view and controller to a VERY basic roo-generated project.</p>
+
+<p>By using Spring Tool Suite (STS, Spring 3.1) I created a new project and then ran the following 3 commands:</p>
+
+<pre><code>    persistence setup --database MYSQL --provider HIBERNATE --userName *** --password *** --databaseName ***
+    entity jpa --class com.demoing.domain.Customer --testAutomatically 
+    field string --fieldName firstName --notNull 
+    field string --fieldName lastName --notNull 
+    controller scaffold --class com.demoing.controller.CustomerController --entity com.demoing.domain.Customer
+</code></pre>
+
+<p>After generating these, the application can be started on the server.</p>
+
+<p>However, when I add a new .jspx file (Like home.jspx) the application says ""Resource not found"" when going to the specific link. I added to jspx next to other views in src/main/webapp/WEB-INF/views/home.jspx</p>
+
+<p>I've added the view's definition in views.xml and manually created a controller as seen below:</p>
+
+<pre><code>package com.demoing.domain;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+@Scope(value = ""session"")
+@RequestMapping(""/home"")
+public class HomeController {
+    @RequestMapping(produces=""text/html"")
+    public String home(HttpServletRequest request, Model uiModel ){
+
+        return ""home"";
+    }
+}
+</code></pre>
+
+<p>And the views definition:</p>
+
+<pre><code>  &lt;definition name=""home"" extends=""public""&gt;
+    &lt;put-attribute name=""body"" value=""/WEB-INF/views/home.jspx"" /&gt;
+  &lt;/definition&gt;
+</code></pre>
+
+<p>All I want is to display a completely new, empty page. However when I go to ""project/home"" it says ""resource not found"".</p>
+
+<p>I really don't understand what I'm missing and I hope someone with a bit more experience with these things can help me out.</p>
+","java spring spring-mvc view spring-roo"
+"6034195","Decreasing sequence of closed set in a metric space is convergent?","<p>Let $\{E_n\}$ be a collection of bounded and closed subsets in a metric space $X$ such that $E_{n+1} \subset E_n$ and $lim_{n\to\infty} diam E_n = 0$.</p>
+
+<p>It's a theorem that if $X$ is complete, then $\bigcap_{n\in \mathbb{N}} E_n$ is a singleton.</p>
+
+<p>However, i have proved that $\bigcap_{n\in \mathbb{N}} E_n$ is a singleton where $Int(E_n) ≠\emptyset$ even if $X$ is not complete, but just an arbitrary metric space.</p>
+
+<p>I don't actually believe my proof.. Is it true? Or please give me a counterexample!</p>
+","general-topology metric-spaces"
