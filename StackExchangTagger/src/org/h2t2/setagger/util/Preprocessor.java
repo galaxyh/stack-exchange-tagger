@@ -45,10 +45,14 @@ public class Preprocessor {
 
 		String[] record;
 		while ((record = reader.readNext()) != null) {
-			record = extractCode(record);
-			record = removeHtmlTags(record);
-			record = getUsefulToken(record);
-			writer.writeNext(record);
+			try {
+				record = extractCode(record);
+				record = removeHtmlTags(record);
+				record = getUsefulToken(record);
+				writer.writeNext(record);
+			}catch (ArrayIndexOutOfBoundsException e){
+				continue;
+			}
 		}
 
 		writer.close();
