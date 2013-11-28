@@ -77,7 +77,6 @@ public class Preprocessor {
 		}
 		matcher.appendTail(newContent);
 
-		String[] newRecord = new String[5];
         String[] newRecord;
         if (record.length == 3) {
             newRecord = new String[4];
