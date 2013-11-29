@@ -116,7 +116,7 @@ public class Tagger {
 	}
 
 	private static void printUsage() {
-		System.out.println("Dataset preprocessing:\n    Usage: -p <input> <output>");
+		System.out.println("Dataset preprocessing:\n    Usage: -pre <input> <output>");
 		System.out
 		        .println("Train and predict:\n    Usage: -tp <model name> <train data> <predict data> <predict output> [additional training arguments]");
 		System.out
