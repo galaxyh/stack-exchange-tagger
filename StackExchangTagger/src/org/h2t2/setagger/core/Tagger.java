@@ -2,6 +2,7 @@ package org.h2t2.setagger.core;
 
 import java.io.IOException;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.h2t2.setagger.util.Preprocessor;
 
 public class Tagger {
@@ -38,6 +39,8 @@ public class Tagger {
 			return;
 		}
 
+		StopWatch stopWatch = new StopWatch();
+
 		if ("-pre".equals(args[0])) { // Do dataset pre-processing.
 			if (args.length < 3) {
 				printUsage();
@@ -45,7 +48,11 @@ public class Tagger {
 			}
 
 			try {
+				System.out.println("Preprocessing...");
+				stopWatch.start();
 				new Preprocessor().process(args[1], args[2]);
+				stopWatch.stop();
+				System.out.println("Done. (" + stopWatch.toString() + ")\n");
 			} catch (IOException e) {
 				System.out.println("Fail to pre-process the dataset!");
 				e.printStackTrace();
@@ -66,12 +73,37 @@ public class Tagger {
 			}
 
 			// Do training and prediction
-			Model model = getModelObject(args[1]);
+			ModelBase model = getModelObject(args[1]);
+
+			System.out.println("Load training data...");
+			stopWatch.start();
 			model.loadTrainData(args[2]);
+			stopWatch.stop();
+			System.out.println("Done. (" + stopWatch.toString() + ")\n");
+
+			System.out.println("Training...");
+			stopWatch.reset();
+			stopWatch.start();
 			model.train(trainArgs);
+			stopWatch.stop();
+			System.out.println("Done. (" + stopWatch.toString() + ")\n");
+
+			System.out.println("Load data to be predicted");
+			stopWatch.reset();
+			stopWatch.start();
 			model.loadPredictData(args[3]);
+			System.out.println("Done. (" + stopWatch.toString() + ")\n");
+
+			System.out.println("Predicting...");
+			stopWatch.reset();
+			stopWatch.start();
 			model.predict();
+			stopWatch.stop();
+			System.out.println("Done. (" + stopWatch.toString() + ")\n");
+
+			System.out.println("Saving prediction result...");
 			model.savePrediction(args[4]);
+			System.out.println("Done.\n");
 		} else if ("-t".equals(args[0])) { // Do training
 			if (args.length < 4) {
 				printUsage();
@@ -88,10 +120,24 @@ public class Tagger {
 			}
 
 			// Do training
-			Model model = getModelObject(args[1]);
+			ModelBase model = getModelObject(args[1]);
+
+			System.out.println("Load training data...");
+			stopWatch.start();
 			model.loadTrainData(args[2]);
+			stopWatch.stop();
+			System.out.println("Done. (" + stopWatch.toString() + ")\n");
+
+			System.out.println("Training...");
+			stopWatch.reset();
+			stopWatch.start();
 			model.train(trainArgs);
+			stopWatch.stop();
+			System.out.println("Done. (" + stopWatch.toString() + ")\n");
+
+			System.out.println("Saving model...");
 			model.saveModel(args[3]);
+			System.out.println("Done.\n");
 		} else if ("-p".equals(args[0])) { // Do prediction
 			if (args.length < 5) {
 				printUsage();
@@ -99,17 +145,34 @@ public class Tagger {
 			}
 
 			// Do prediction
-			Model model = getModelObject(args[1]);
+			ModelBase model = getModelObject(args[1]);
+
+			System.out.println("Load model...");
 			model.loadModel(args[2]);
+			System.out.println("Done.\n");
+
+			System.out.println("Load data to be predicted...");
+			stopWatch.reset();
+			stopWatch.start();
 			model.loadPredictData(args[3]);
+			System.out.println("Done. (" + stopWatch.toString() + ")\n");
+
+			System.out.println("Predicting...");
+			stopWatch.reset();
+			stopWatch.start();
 			model.predict();
+			stopWatch.stop();
+			System.out.println("Done. (" + stopWatch.toString() + ")\n");
+
+			System.out.println("Saving prediction result...");
 			model.savePrediction(args[4]);
+			System.out.println("Done.\n");
 		}
 	}
 
-	private static Model getModelObject(String modelName) {
-		if ("Dummy".equals(modelName)) {
-			return new DummyModel();
+	private static ModelBase getModelObject(String modelName) {
+		if ("cooccurrence".equals(modelName)) {
+			return new Cooccurrence();
 		} else {
 			return null;
 		}

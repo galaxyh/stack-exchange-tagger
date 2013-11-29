@@ -16,7 +16,7 @@ import au.com.bytecode.opencsv.CSVWriter;
  * @author Yu-chun Huang
  * 
  */
-public abstract class Model {
+public abstract class ModelBase {
 	private List<Data> trainData;
 	private List<Data> predictData;
 
@@ -37,13 +37,7 @@ public abstract class Model {
 					continue; // Invalid record, just ignore it.
 				}
 
-				List<String> tagList = new ArrayList<String>();
-				String[] tags = record[4].split(" ");
-				for (String tag : tags) {
-					tagList.add(tag);
-				}
-
-				Data data = new Data(record[0], record[1], record[2], record[3], tagList);
+				Data data = new Data(record[0], record[1], record[2], record[3], record[4]);
 				trainData.add(data);
 			}
 
@@ -97,7 +91,7 @@ public abstract class Model {
 			for (Data row : predictData) {
 				String[] record = new String[2];
 				record[0] = row.getId();
-				for (String tag : row.getTags()) {
+				for (String tag : row.getTagList()) {
 					record[1] += tag + " ";
 				}
 				record[1] = record[1].trim();

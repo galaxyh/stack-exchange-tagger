@@ -15,21 +15,22 @@ public class Data {
 	private String title;
 	private String body;
 	private String code;
-	private List<String> tags;
+	private String tagString;
+	private List<String> tagList;
 
 	/**
 	 * @param id
 	 * @param title
 	 * @param body
 	 * @param code
-	 * @param tags
+	 * @param tagString
 	 */
-	public Data(String id, String title, String body, String code, List<String> tags) {
+	public Data(String id, String title, String body, String code, String tagString) {
 		this.id = id;
 		this.title = title;
 		this.body = body;
 		this.code = code;
-		this.tags = tags;
+		this.setTagString(tagString);
 	}
 
 	/**
@@ -43,7 +44,7 @@ public class Data {
 		this.title = title;
 		this.body = body;
 		this.code = code;
-		this.tags = new ArrayList<String>();
+		this.setTagString("");
 	}
 
 	/**
@@ -107,17 +108,45 @@ public class Data {
 	}
 
 	/**
-	 * @return the tags
+	 * @return the tagString
 	 */
-	public List<String> getTags() {
-		return tags;
+	public String getTagString() {
+		return tagString;
 	}
 
 	/**
-	 * @param tags
-	 *            the tags to set
+	 * @param tagString
+	 *            the tagString to set
 	 */
-	public void setTags(List<String> tags) {
-		this.tags = tags;
+	public void setTagString(String tagString) {
+		this.tagString = tagString;
+
+		this.tagList = new ArrayList<String>();
+		String[] tags = tagString.split(" ");
+		for (String tag : tags) {
+			this.tagList.add(tag);
+		}
+	}
+
+	/**
+	 * @return the tagList
+	 */
+	public List<String> getTagList() {
+		return tagList;
+	}
+
+	/**
+	 * @param tagList
+	 *            the tagList to set
+	 */
+	public void setTagList(List<String> tagList) {
+		this.tagList = tagList;
+
+		StringBuilder tagString = new StringBuilder();
+		for (String tag : tagList) {
+			tagString.append(tag);
+			tagString.append(" ");
+		}
+		this.tagString = tagString.toString().trim();
 	}
 }
