@@ -42,14 +42,14 @@ public class Preprocessor {
 		CSVReader reader = new CSVReader(new FileReader(input), ',', '"', '\0', 1);
 
 		String[] record;
-//		int line = 1;
+		int line = 1;
 		while ((record = reader.readNext()) != null) {
-//			if(record.length != 4){
-//				System.out.println(line);
-//				System.exit(-1);
-//				
-//			}
-//			line++;
+			if(record.length != 4){
+				System.out.println(line);
+				System.exit(-1);
+				
+			}
+			line++;
 			record = extractCode(record);
 			record = reduceCodeSyntax(record);
 			record = removeHtmlTags(record);
