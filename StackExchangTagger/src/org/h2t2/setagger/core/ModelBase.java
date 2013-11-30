@@ -17,8 +17,8 @@ import au.com.bytecode.opencsv.CSVWriter;
  * 
  */
 public abstract class ModelBase {
-	private List<Data> trainData;
-	private List<Data> predictData;
+	private List<StackExchangeData> trainData;
+	private List<StackExchangeData> predictData;
 
 	/**
 	 * Load training data.
@@ -26,7 +26,7 @@ public abstract class ModelBase {
 	 * @param fileName
 	 */
 	public void loadTrainData(String fileName) {
-		trainData = new ArrayList<Data>();
+		trainData = new ArrayList<StackExchangeData>();
 
 		try {
 			CSVReader reader = new CSVReader(new FileReader(fileName));
@@ -37,7 +37,7 @@ public abstract class ModelBase {
 					continue; // Invalid record, just ignore it.
 				}
 
-				Data data = new Data(record[0], record[1], record[2], record[3], record[4]);
+				StackExchangeData data = new StackExchangeData(record[0], record[1], record[2], record[3], record[4]);
 				trainData.add(data);
 			}
 
@@ -56,7 +56,7 @@ public abstract class ModelBase {
 	 * @param fileName
 	 */
 	public void loadPredictData(String fileName) {
-		predictData = new ArrayList<Data>();
+		predictData = new ArrayList<StackExchangeData>();
 
 		try {
 			CSVReader reader = new CSVReader(new FileReader(fileName));
@@ -67,7 +67,7 @@ public abstract class ModelBase {
 					continue; // Invalid record, just ignore it.
 				}
 
-				Data data = new Data(record[0], record[1], record[2], record[3]);
+				StackExchangeData data = new StackExchangeData(record[0], record[1], record[2], record[3]);
 				predictData.add(data);
 			}
 
@@ -88,7 +88,7 @@ public abstract class ModelBase {
 		try {
 			CSVWriter writer = new CSVWriter(new FileWriter(fileName), ',');
 
-			for (Data row : predictData) {
+			for (StackExchangeData row : predictData) {
 				String[] record = new String[2];
 				record[0] = row.getId();
 				for (String tag : row.getTagList()) {
@@ -109,7 +109,7 @@ public abstract class ModelBase {
 	/**
 	 * @return the trainData
 	 */
-	public List<Data> getTrainData() {
+	public List<StackExchangeData> getTrainData() {
 		return trainData;
 	}
 
@@ -117,14 +117,14 @@ public abstract class ModelBase {
 	 * @param trainData
 	 *            the trainData to set
 	 */
-	public void setTrainData(List<Data> trainData) {
+	public void setTrainData(List<StackExchangeData> trainData) {
 		this.trainData = trainData;
 	}
 
 	/**
 	 * @return the predictData
 	 */
-	public List<Data> getPredictData() {
+	public List<StackExchangeData> getPredictData() {
 		return predictData;
 	}
 
@@ -132,7 +132,7 @@ public abstract class ModelBase {
 	 * @param predictData
 	 *            the predictData to set
 	 */
-	public void setPredictData(List<Data> predictData) {
+	public void setPredictData(List<StackExchangeData> predictData) {
 		this.predictData = predictData;
 	}
 
@@ -146,8 +146,11 @@ public abstract class ModelBase {
 
 	/**
 	 * Use the model to predict tags.
+	 * 
+	 * @param args
+	 *            Arguments to be used when predicting the model.
 	 */
-	public abstract void predict();
+	public abstract void predict(String[] args);
 
 	/**
 	 * Save the trained model into the specified file for later use.

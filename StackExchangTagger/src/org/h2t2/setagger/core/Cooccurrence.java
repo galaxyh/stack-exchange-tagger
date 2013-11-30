@@ -38,8 +38,8 @@ public class Cooccurrence extends ModelBase {
 		modelData = new CooccurrenceModelData();
 
 		// Calculate Inverse Document Frequency (IDF)
-		List<Data> trainData = this.getTrainData();
-		for (Data data : trainData) {
+		List<StackExchangeData> trainData = this.getTrainData();
+		for (StackExchangeData data : trainData) {
 			tfIdf.handle(data.getTagString());
 		}
 
@@ -51,10 +51,10 @@ public class Cooccurrence extends ModelBase {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.h2t2.setagger.core.Model#predict()
+	 * @see org.h2t2.setagger.core.Model#predict(java.lang.String[])
 	 */
 	@Override
-	public void predict() {
+	public void predict(String[] args) {
 		// TODO Auto-generated method stub
 
 	}

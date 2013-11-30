@@ -7,10 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Store one record of StackExchange post.
+ * 
  * @author Yu-chun Huang
  * 
  */
-public class Data {
+public class StackExchangeData {
 	private String id;
 	private String title;
 	private String body;
@@ -25,7 +27,7 @@ public class Data {
 	 * @param code
 	 * @param tagString
 	 */
-	public Data(String id, String title, String body, String code, String tagString) {
+	public StackExchangeData(String id, String title, String body, String code, String tagString) {
 		this.id = id;
 		this.title = title;
 		this.body = body;
@@ -39,7 +41,7 @@ public class Data {
 	 * @param body
 	 * @param code
 	 */
-	public Data(String id, String title, String body, String code) {
+	public StackExchangeData(String id, String title, String body, String code) {
 		this.id = id;
 		this.title = title;
 		this.body = body;
