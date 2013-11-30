@@ -62,8 +62,10 @@ public abstract class ModelBase {
 			CSVReader reader = new CSVReader(new FileReader(fileName));
 
 			String[] record;
+			int invalidCount = 0;
 			while ((record = reader.readNext()) != null) {
-				if (record.length != 4) {
+				if (record.length < 4) {
+					invalidCount++;
 					continue; // Invalid record, just ignore it.
 				}
 
@@ -72,7 +74,9 @@ public abstract class ModelBase {
 			}
 
 			reader.close();
-
+			if (invalidCount > 0) {
+				System.out.println("Warning! Found " + invalidCount + " invalid records.");
+			}
 		} catch (IOException e) {
 			System.out.println("Fail to load training data!");
 			e.printStackTrace();
