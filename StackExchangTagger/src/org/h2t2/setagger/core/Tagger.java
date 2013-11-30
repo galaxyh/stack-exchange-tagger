@@ -130,11 +130,11 @@ public class Tagger {
 			System.out.println("Saving prediction result...");
 			model.savePrediction(args[4]);
 			System.out.println("Done.\n");
-		}else if("-tag".equals(args[0])){
-			try{
+		} else if ("-tag".equals(args[0])) {
+			try {
 				TagIndexProcessor tagIndexProcessor = new TagIndexProcessor();
 				tagIndexProcessor.process(args[1], args[2]);
-			}catch (IOException e){
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
