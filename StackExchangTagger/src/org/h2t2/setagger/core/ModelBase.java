@@ -91,11 +91,7 @@ public abstract class ModelBase {
 			for (StackExchangeData row : predictData) {
 				String[] record = new String[2];
 				record[0] = row.getId();
-				for (String tag : row.getTagList()) {
-					record[1] += tag + " ";
-				}
-				record[1] = record[1].trim();
-
+				record[1] = row.getTagString();
 				writer.writeNext(record);
 			}
 

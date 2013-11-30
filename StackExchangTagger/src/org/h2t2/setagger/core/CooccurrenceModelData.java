@@ -11,27 +11,27 @@ import java.util.Map;
  * 
  */
 public class CooccurrenceModelData implements Serializable {
-	private static final long serialVersionUID = -7738062312756792996L;
+	private static final long serialVersionUID = -3111843070109984433L;
 
 	// Tag IDF
-	private Map<String, Double> idfMap = new HashMap<String, Double>();
+	private Map<String, Double> tagIdfMap = new HashMap<String, Double>();
 
 	// Probability of a tag given a term. Map<term, Map<tag, probability>>.
 	private Map<String, Map<String, Double>> tagProbability = new HashMap<String, Map<String, Double>>();
 
 	/**
-	 * @return the idfMap
+	 * @return the tagIdfMap
 	 */
-	public Map<String, Double> getIdfMap() {
-		return idfMap;
+	public Map<String, Double> getTagIdfMap() {
+		return tagIdfMap;
 	}
 
 	/**
-	 * @param idfMap
-	 *            the idfMap to set
+	 * @param tagIdfMap
+	 *            the tagIdfMap to set
 	 */
-	public void setIdfMap(Map<String, Double> idfMap) {
-		this.idfMap = idfMap;
+	public void setTagIdfMap(Map<String, Double> tagIdfMap) {
+		this.tagIdfMap = tagIdfMap;
 	}
 
 	/**
