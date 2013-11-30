@@ -42,16 +42,16 @@ public class Preprocessor {
 		CSVReader reader = new CSVReader(new FileReader(input), ',', '"', '\0', 1);
 
 		String[] record;
+		int line = 1;
 		while ((record = reader.readNext()) != null) {
-			try {
-				record = extractCode(record);
-				record = reduceCodeSyntax(record);
-				record = removeHtmlTags(record);
-				record = getUsefulToken(record);
-				writer.writeNext(record);
-			} catch (ArrayIndexOutOfBoundsException e) {
-				continue;
-			}
+			
+			if(record.length != 4)continue;
+			record = extractCode(record);
+			record = reduceCodeSyntax(record);
+			record = removeHtmlTags(record);
+			record = getUsefulToken(record);
+			writer.writeNext(record);
+			
 		}
 
 		writer.close();
@@ -68,7 +68,7 @@ public class Preprocessor {
 	private String[] extractCode(String[] record) {
 		StringBuffer newContent = new StringBuffer();
 		StringBuffer codeContent = new StringBuffer();
-
+		//System.out.println(record.length);
 		Matcher matcher = codePattern.matcher(record[2]);
 		while (matcher.find()) {
 			String codeString = matcher.group(1);
@@ -105,7 +105,7 @@ public class Preprocessor {
 	 * @author Li-Yuan
 	 */
 	private String[] reduceCodeSyntax(String[] record) {
-		record[3] = record[3].replaceAll("[^a-zA-Z ]", " ");
+		record[3] = record[3].replaceAll("[^a-zA-Z ]", " ").replaceAll("\\s+", " ");
 		return record;
 	}
 
@@ -139,6 +139,7 @@ public class Preprocessor {
 		char[] chars = record[1].toCharArray();
 		Tokenizer tokenizer = psTokenizer.tokenizer(chars, 0, chars.length);
 		while ((token = tokenizer.nextToken()) != null) {
+//			token = token.replaceAll("[^a-zA-Z ]", " ");
 			if (isFirst) {
 				str.append(token);
 				isFirst = false;
