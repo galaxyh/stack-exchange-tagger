@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.h2t2.setagger.util.Preprocessor;
+import org.h2t2.setagger.util.TagIndexProcessor;
 
 public class Tagger {
 
@@ -129,6 +130,13 @@ public class Tagger {
 			System.out.println("Saving prediction result...");
 			model.savePrediction(args[4]);
 			System.out.println("Done.\n");
+		}else if("-tag".equals(args[0])){
+			try{
+				TagIndexProcessor tagIndexProcessor = new TagIndexProcessor();
+				tagIndexProcessor.process(args[1], args[2]);
+			}catch (IOException e){
+				e.printStackTrace();
+			}
 		}
 	}
 
