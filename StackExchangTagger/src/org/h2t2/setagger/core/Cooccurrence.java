@@ -26,6 +26,9 @@ import com.aliasi.tokenizer.PorterStemmerTokenizerFactory;
  * 
  */
 public class Cooccurrence extends ModelBase {
+	public Cooccurrence(){
+		
+	}
 	private TfIdfDistance tfIdf = new TfIdfDistance(new PorterStemmerTokenizerFactory(new EnglishStopTokenizerFactory(
 	        new LowerCaseTokenizerFactory(IndoEuropeanTokenizerFactory.INSTANCE))));
 
