@@ -142,7 +142,6 @@ public class Tagger {
 
 	private static ModelBase getModelObject(String modelName) {
 		if ("cooccurrence".equals(modelName)) {
-			return null;
 			//return new Cooccurrence();
 		} else {
 			return null;
