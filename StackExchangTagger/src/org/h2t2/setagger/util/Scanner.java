@@ -19,7 +19,7 @@ public class Scanner {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(output));
 			String line;
 			while((line = reader.readLine()) != null){
-				writer.write(line.replaceAll("\"\"", " ").replaceAll("," , " ").replaceAll("\" \"","\",\"")+"\n");
+				writer.write(line.replaceAll("\"\"", " ").replaceAll("," , " ").replaceAll("\"\\s+\"","\",\"")+"\n");
 				
 			}
 			
