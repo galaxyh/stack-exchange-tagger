@@ -17,12 +17,11 @@ public class TagIndexProcessor{
 		BufferedReader reader = new BufferedReader(new FileReader(input));
 		tagsSet = new TreeSet<String>();
 		String line;
-		String separater = "\",\"";
+		String separater = ",";
 		
 		while ((line = reader.readLine()) != null) {
 			int lastIndex = line.lastIndexOf(separater);
-			System.out.println(line);
-			String [] tags = line.substring(lastIndex+separater.length(), line.length()).split("\\s+");
+			String [] tags = line.substring(lastIndex+separater.length(), line.length()-1).split("\\s+");
 			for(String tag : tags){
 				if(!tag.equals(""))tagsSet.add(tag);
 			}
