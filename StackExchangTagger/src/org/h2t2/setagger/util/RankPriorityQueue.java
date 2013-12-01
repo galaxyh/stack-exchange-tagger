@@ -24,7 +24,7 @@ public class RankPriorityQueue {
 	public boolean add(String tag, double rank) {
 		boolean result = queue.add(new TagRank(tag, rank));
 
-		if (result && maxSize > 0 && queue.size() > maxSize) {
+		if (result && queue.size() > maxSize) {
 			queue.poll();
 		}
 
@@ -39,7 +39,7 @@ public class RankPriorityQueue {
 		return queue.size();
 	}
 
-	public TagRank[] getHighest(int numberOfTags) {
+	public String[] getHighest(int numberOfTags) {
 		if (numberOfTags > maxSize) {
 			numberOfTags = maxSize;
 		}
@@ -48,13 +48,34 @@ public class RankPriorityQueue {
 			numberOfTags = queue.size();
 		}
 
-		TagRank[] array = new TagRank[numberOfTags];
+		int discard = queue.size() - numberOfTags;
+		for (int i = 0; i < discard; i++) {
+			queue.poll();
+		}
+
+		String[] array = new String[numberOfTags];
+		for (int i = numberOfTags - 1; i >= 0; i--) {
+			array[i] = queue.poll().getTag();
+		}
+
+		return array;
+	}
+
+	public TagRank[] getHighestWithRank(int numberOfTags) {
+		if (numberOfTags > maxSize) {
+			numberOfTags = maxSize;
+		}
+
+		if (numberOfTags > queue.size()) {
+			numberOfTags = queue.size();
+		}
 
 		int discard = queue.size() - numberOfTags;
 		for (int i = 0; i < discard; i++) {
 			queue.poll();
 		}
 
+		TagRank[] array = new TagRank[numberOfTags];
 		for (int i = numberOfTags - 1; i >= 0; i--) {
 			array[i] = queue.poll();
 		}

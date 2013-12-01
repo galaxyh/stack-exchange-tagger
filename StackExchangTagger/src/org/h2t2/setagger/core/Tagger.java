@@ -75,18 +75,11 @@ public class Tagger {
 			}
 
 			// Do training
-			ModelBase model = getModelObject(args[1]);
-
-			System.out.println("Load training data...");
-			stopWatch.start();
-			model.loadTrainData(args[2]);
-			stopWatch.stop();
-			System.out.println("Done. (" + stopWatch.toString() + ")\n");
+			Model model = getModelObject(args[1]);
 
 			System.out.println("Training...");
-			stopWatch.reset();
 			stopWatch.start();
-			model.train(trainArgs);
+			model.train(args[2], trainArgs);
 			stopWatch.stop();
 			System.out.println("Done. (" + stopWatch.toString() + ")\n");
 
@@ -109,28 +102,18 @@ public class Tagger {
 			}
 
 			// Do prediction
-			ModelBase model = getModelObject(args[1]);
+			Model model = getModelObject(args[1]);
 
 			System.out.println("Load model...");
 			model.loadModel(args[2]);
 			System.out.println("Done.\n");
 
-			System.out.println("Load data to be predicted...");
-			stopWatch.reset();
-			stopWatch.start();
-			model.loadPredictData(args[3]);
-			System.out.println("Done. (" + stopWatch.toString() + ")\n");
-
 			System.out.println("Predicting...");
 			stopWatch.reset();
 			stopWatch.start();
-			model.predict(predictArgs);
+			model.predict(args[3], args[4], predictArgs);
 			stopWatch.stop();
 			System.out.println("Done. (" + stopWatch.toString() + ")\n");
-
-			System.out.println("Saving prediction result...");
-			model.savePrediction(args[4]);
-			System.out.println("Done.\n");
 		} else if ("-tag".equals(args[0])) {
 			try {
 				TagIndexProcessor tagIndexProcessor = new TagIndexProcessor();
@@ -138,12 +121,12 @@ public class Tagger {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}else if("-scan".equals(args[0])){
+		} else if ("-scan".equals(args[0])) {
 			new Scanner().scan(args[1], args[2]);
 		}
 	}
 
-	private static ModelBase getModelObject(String modelName) {
+	private static Model getModelObject(String modelName) {
 		if ("cooccurrence".equals(modelName)) {
 			return new Cooccurrence();
 		} else {
@@ -153,8 +136,6 @@ public class Tagger {
 
 	private static void printUsage() {
 		System.out.println("Dataset preprocessing:\n    Usage: -pre <input> <output>");
-		// System.out
-		// .println("Train and predict:\n    Usage: -tp <model name> <train data> <predict data> <predict output> [additional training arguments]");
 		System.out
 		        .println("Train:\n    Usage: -t <model name> <train data> <model file> [additional training arguments]");
 		System.out
