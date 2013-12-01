@@ -3,8 +3,10 @@
  */
 package org.h2t2.setagger.util;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.FileReader;
+import java.io.IOException;
+
+import au.com.bytecode.opencsv.CSVReader;
 
 /**
  * @author Yu-chun Huang
@@ -26,36 +28,6 @@ public class TagEvaluator {
 	public static double f1(String trueTags, String predictTags) {
 		long[] result = getPredictResult(trueTags, predictTags);
 		return FMeasure.f1(result[0], result[1], result[2]);
-	}
-
-	/**
-	 * Calculate Micro-F1 score of predicted tags of a set of articles. <BR/>
-	 * Note that, for this particular implementation, when ground truth and prediction are all empty, the prediction is
-	 * correct, so 1.0 will be returned.
-	 * 
-	 * @param tagsList
-	 *            A List of tag string arrays. <BR/>
-	 *            For the tag string array, index 0 is ground truth tags, and index 1 is predicted tags. Both tag string
-	 *            are space-separated.
-	 * @return Micro-F1 score of predicted tags of a set of articles.
-	 */
-	public static double microF1(List<String[]> tagsList) {
-		return FMeasure.microF1(getPredictResultList(tagsList));
-	}
-
-	/**
-	 * Calculate Macro-F1 score of predicted tags of a set of articles. <BR/>
-	 * Note that, for this particular implementation, when ground truth and prediction are all empty, the prediction is
-	 * correct, so 1.0 will be returned.
-	 * 
-	 * @param tagsList
-	 *            A List of tag string arrays. <BR/>
-	 *            For the tag string array, index 0 is ground truth tags, and index 1 is predicted tags. Both tag string
-	 *            are space-separated.
-	 * @return Macro-F1 score of predicted tags of a set of articles.
-	 */
-	public static double macroF1(List<String[]> tagsList) {
-		return FMeasure.macroF1(getPredictResultList(tagsList));
 	}
 
 	/**
@@ -110,28 +82,61 @@ public class TagEvaluator {
 		return result;
 	}
 
-	/**
-	 * Calculate true positive, false positive, and false negative counts of the given predicted tag string list.
-	 * 
-	 * @param tagsList
-	 *            A List of tag string arrays. <BR/>
-	 *            For the tag string array, index 0 is ground truth tags, and index 1 is predicted tags. Both tag string
-	 *            are space-separated.
-	 * @return A list of arrays containing the following information: <BR/>
-	 *         index 0: true positive count, <BR/>
-	 *         index 1: false positive count, and <BR/>
-	 *         index 2: false negative count.
-	 */
-	private static List<long[]> getPredictResultList(List<String[]> tagsList) {
-		if (tagsList.size() == 0) {
-			throw new IllegalArgumentException();
+	public static double evaluateMacroF1(String truthFileName, String predictFileName) {
+		double sumF1 = 0;
+		int recordCount = 0;
+		int invalidCount = 0;
+
+		try {
+			CSVReader truthReader = new CSVReader(new FileReader(truthFileName));
+			CSVReader predictReader = new CSVReader(new FileReader(predictFileName));
+
+			String[] truthRecord;
+			String[] predictRecord;
+
+			predictReader.readNext(); // Skip header.
+
+			while ((truthRecord = truthReader.readNext()) != null) {
+				recordCount++;
+
+				// Must contain 5 columns: ID, title, body without code, code, and tags
+				if (truthRecord.length != 5) {
+					invalidCount++;
+					continue; // Invalid record, just ignore it.
+				}
+
+				if ((predictRecord = predictReader.readNext()) == null) {
+					break;
+				}
+
+				while (!truthRecord[0].equals(predictRecord[0])) {
+					System.out.println("Can not find matching predict ID (" + truthRecord[0]
+					        + "), try next predict record.");
+					if ((predictRecord = predictReader.readNext()) == null) {
+						break;
+					}
+				}
+
+				sumF1 += TagEvaluator.f1(truthRecord[4], predictRecord[1]);
+			}
+
+			truthReader.close();
+			predictReader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
-		List<long[]> countsList = new ArrayList<long[]>();
-		for (String[] tags : tagsList) {
-			countsList.add(getPredictResult(tags[0], tags[1]));
+		if (invalidCount > 0) {
+			System.out.println("Warning! Found " + invalidCount + " invalid records.");
 		}
 
-		return countsList;
+		System.out.println("Total " + recordCount + " records are processed.");
+
+		if ((recordCount - invalidCount) <= 0) {
+			System.out.println("Warning! No record is processed.");
+			return 0;
+		} else {
+			return sumF1 / (recordCount - invalidCount);
+		}
 	}
 }
