@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.apache.commons.lang3.time.StopWatch;
 import org.h2t2.setagger.util.Preprocessor;
 import org.h2t2.setagger.util.Scanner;
+import org.h2t2.setagger.util.TagEvaluator;
 import org.h2t2.setagger.util.TagIndexProcessor;
 
 public class Tagger {
@@ -109,11 +110,17 @@ public class Tagger {
 			System.out.println("Done.\n");
 
 			System.out.println("Predicting...");
-			stopWatch.reset();
 			stopWatch.start();
 			model.predict(args[3], args[4], predictArgs);
 			stopWatch.stop();
 			System.out.println("Done. (" + stopWatch.toString() + ")\n");
+		} else if ("-eval".equals(args[0])) {
+			System.out.println("Evaluating using Macro-F1...");
+			stopWatch.start();
+			double evalResult = TagEvaluator.evaluateMacroF1(args[1], args[2]);
+			stopWatch.stop();
+			System.out.println("Done. (" + stopWatch.toString() + ")");
+			System.out.println("Macro-F1 score = " + evalResult + "\n");
 		} else if ("-tag".equals(args[0])) {
 			try {
 				TagIndexProcessor tagIndexProcessor = new TagIndexProcessor();
@@ -140,5 +147,6 @@ public class Tagger {
 		        .println("Train:\n    Usage: -t <model name> <train data> <model file> [additional training arguments]");
 		System.out
 		        .println("Predict:\n    Usage: -p <model name> <model file> <predict data> <predict output> [additional predicting arguments]");
+		System.out.println("Evaluate:\n    Usage: -eval <train data> <predict output>");
 	}
 }
