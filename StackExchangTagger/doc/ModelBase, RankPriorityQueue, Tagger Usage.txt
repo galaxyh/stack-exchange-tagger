@@ -1,17 +1,15 @@
-ModelBase 使用方法:
+﻿Model 使用方法:
 1. 可以參考 core.Cooccurrence 這個 class.
 2. 需 override train, predict, loadModel, saveModel 四個 method,
-3. 可直接呼叫 getTrainData() / getPredictData() 讀取訓練和預測資料(要已經 preprocess 過的)，回傳 List<StackExchangeData>,
-4. StackExchangeData 裡面已經拆好 id, title, body, code, tagsString, tagsList。其中 tagsString 是原封不動的 tag 字串，tagsList 是 tokenized 後的結果。
-5. saveModel() 是用來 serialize train 好的 model, 之後可以用 loadModel() 來 deserialize.
-6. 做 predict 的時候，請直接把預測的 tag 寫進由 getPredictData() 取得得那個 List 裡面。
-7. 呼叫 savePrediction() 就會幫你把 predict 的結果寫成最終預測輸出的格式(兩欄: id, tags)。
+3. saveModel() 是用來 serialize train 好的 model, 之後可以用 loadModel() 來 deserialize.
+7. predict() 需將結果寫入最終預測輸出的格式(兩欄: id, tags)。
 
 RankPriorityQueue 使用方法:
 1. 這個 class 是方便大家對 tag-rank 排序，方便拿到排序最高的前幾個 tag。
 2. Instantiation 的時候要傳入 Queue 的 size (為了要節省記憶體，畢竟一個 post 應該不會有 30 個 tag 吧)。
 3. 呼叫 RankPriorityQueue.add(tag, rank) 把每組 tag-rank 丟進去。
-4. 呼叫 RankPriorityQueue.getHighest(numberOfTags) 就會回傳指定的前幾名的 tags (回傳格式是 TagRank[], TagRank.getTag() 可取得 tag, TagRank.getRank() 可取得 rank)。
+4. 呼叫 RankPriorityQueue.getHighest(numberOfTags) 就會回傳指定的前幾名的 tags (回傳格式是 String[])。
+4. 呼叫 RankPriorityQueue.getHighestWithRank(numberOfTags) 就會回傳指定的前幾名的 tags (回傳格式是 TagRank[], TagRank.getTag() 可取得 tag, TagRank.getRank() 可取得 rank)。
 
 
 Tagger 參數使用範例 (以 Co-occurrence model 為例):
