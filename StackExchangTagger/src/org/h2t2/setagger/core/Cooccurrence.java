@@ -3,6 +3,7 @@
  */
 package org.h2t2.setagger.core;
 
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -18,7 +19,6 @@ import java.util.Set;
 import org.h2t2.setagger.util.RankPriorityQueue;
 
 import au.com.bytecode.opencsv.CSVReader;
-import au.com.bytecode.opencsv.CSVWriter;
 
 import com.aliasi.spell.TfIdfDistance;
 import com.aliasi.tokenizer.EnglishStopTokenizerFactory;
@@ -147,7 +147,11 @@ public class Cooccurrence implements Model {
 
 		try {
 			CSVReader reader = new CSVReader(new FileReader(predictFileName));
-			CSVWriter writer = new CSVWriter(new FileWriter(outputFileName), ',');
+			BufferedWriter writer = new BufferedWriter(new FileWriter(outputFileName));
+
+			// Write header
+			writer.write("Id,Tags");
+			writer.newLine();
 
 			String[] record;
 			int invalidCount = 0;
@@ -201,8 +205,8 @@ public class Cooccurrence implements Model {
 				for (String tag : tagArray) {
 					tagString += tag + " ";
 				}
-				String[] result = new String[] { record[0], tagString.trim() };
-				writer.writeNext(result);
+				writer.write(record[0] + ",\"" + tagString.trim() + "\"");
+				writer.newLine();
 			}
 
 			reader.close();
