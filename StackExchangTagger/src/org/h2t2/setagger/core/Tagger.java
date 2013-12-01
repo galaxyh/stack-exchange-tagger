@@ -17,12 +17,6 @@ public class Tagger {
 	 * </P>
 	 * 
 	 * <P>
-	 * Train and predict: <BR/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;Usage: -tp &lt;model name&gt; &lt;train data&gt; &lt;predict data&gt; &lt;predict
-	 * output&gt; [additional training arguments]
-	 * </P>
-	 * 
-	 * <P>
 	 * Train: <BR/>
 	 * &nbsp;&nbsp;&nbsp;&nbsp;Usage: -t &lt;model name&gt; &lt;train data&gt; &lt;model file&gt; [additional training
 	 * arguments]
@@ -31,7 +25,12 @@ public class Tagger {
 	 * <P>
 	 * Predict: <BR/>
 	 * &nbsp;&nbsp;&nbsp;&nbsp;Usage: -p &lt;model name&gt; &lt;model file&gt; &lt;predict data&gt; &lt;predict
-	 * output&gt;
+	 * output&gt; [additional predicting arguments]
+	 * </P>
+	 * 
+	 * <P>
+	 * Evaluate: <BR/>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;Usage: -eval &lt;truth data&gt; &lt;predict data&gt;
 	 * </P>
 	 * 
 	 * @param args
@@ -147,6 +146,6 @@ public class Tagger {
 		        .println("Train:\n    Usage: -t <model name> <train data> <model file> [additional training arguments]");
 		System.out
 		        .println("Predict:\n    Usage: -p <model name> <model file> <predict data> <predict output> [additional predicting arguments]");
-		System.out.println("Evaluate:\n    Usage: -eval <train data> <predict output>");
+		System.out.println("Evaluate:\n    Usage: -eval <truth data> <predict data>");
 	}
 }
