@@ -3,9 +3,14 @@
  */
 package org.h2t2.setagger.util;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.FileOutputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,8 +43,8 @@ public class Preprocessor {
 	 * @throws IOException
 	 */
 	public void process(String input, String output) throws IOException {
-		CSVWriter writer = new CSVWriter(new FileWriter(output), ',');
-		CSVReader reader = new CSVReader(new FileReader(input), ',', '"', '\0', 1);
+		CSVWriter writer = new CSVWriter(new OutputStreamWriter(new FileOutputStream(output), "UTF8"), ',');
+		CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream(new File(input)), "UTF8"), ',', '"', '\0', 1);
 
 		String[] record;
 		int line = 1;
