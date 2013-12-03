@@ -12,20 +12,43 @@ import java.util.regex.Pattern;
 
 public class Scanner {
 	
+	private int countOccurence(String source, String regex){
+		Pattern pattern = Pattern.compile(regex);
+        Matcher  matcher = pattern.matcher(source);
+        int count = 0;
+        while(matcher.find()){
+        	count++;
+        }
+        return count;
+
+	}
+	
 	
 	public void scan(String input, String output) {
-		try{
-			BufferedReader reader = new BufferedReader(new FileReader(input));
-			BufferedWriter writer = new BufferedWriter(new FileWriter(output));
-			String line;
-			while((line = reader.readLine()) != null){
-				writer.write(line.replaceAll("\"\"", " ").replaceAll("," , " ").replaceAll("\"\\s+\"","\",\"")+"\n");
+		
+		try {
+			String line = null;
+			BufferedReader bf = new BufferedReader(new FileReader(input));
+			BufferedWriter wout = new BufferedWriter(new FileWriter(output));
+			line = bf.readLine();// read in "Id","Title","Body","Tags"
+			
+			String record = "";
+			while((line = bf.readLine()) != null){
+				if( countOccurence(line, "^\"[0-9]+\",\"") > 0){
+					if(!record.equals(""))wout.write(record.trim()+"\n");
+					record = new String(line);
+					
+				}else {
+					record += (" " + line);
+				}
 				
 			}
-			
+			wout.write(record.trim()+"\n");
+			wout.flush();
+
+
 		}catch(Exception e){
 			e.printStackTrace();
-			
 		}
 		
 		
