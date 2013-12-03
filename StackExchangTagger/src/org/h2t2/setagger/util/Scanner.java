@@ -2,9 +2,12 @@ package org.h2t2.setagger.util;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.InputStreamReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,7 +31,7 @@ public class Scanner {
 		
 		try {
 			String line = null;
-			BufferedReader bf = new BufferedReader(new FileReader(input));
+			BufferedReader bf = new BufferedReader(new InputStreamReader(new FileInputStream(new File(input)), "UTF8"));
 			BufferedWriter wout = new BufferedWriter(new FileWriter(output));
 			line = bf.readLine();// read in "Id","Title","Body","Tags"
 			
