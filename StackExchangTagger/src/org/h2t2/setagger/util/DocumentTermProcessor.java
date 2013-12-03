@@ -12,13 +12,16 @@ import au.com.bytecode.opencsv.CSVReader;
 public class DocumentTermProcessor {
 	public void checkOpenCSV(String input) {
 		try {
-			CSVReader reader = new CSVReader(new FileReader(input), ',', '"', '\0');
+			BufferedReader lineReader = new BufferedReader(new FileReader(input));
+			//CSVReader reader = new CSVReader(new FileReader(input), ',', '"', '\0');
 			
 			
-			String [] record = null;		
-			while ((record = reader.readNext()) != null) {
+			String [] record = null;
+			String line = null;
+			while ((line = lineReader.readLine()) != null) {
+				record = new CSVReader(new FileReader(line), ',', '"', '\0').readNext();
 				if(record.length != 4){
-					System.out.println(record[0]);
+					System.out.println(line);
 					System.exit(-1);
 					
 				}
