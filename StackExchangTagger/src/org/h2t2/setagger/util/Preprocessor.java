@@ -4,6 +4,7 @@
 package org.h2t2.setagger.util;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
@@ -52,7 +53,7 @@ public class Preprocessor {
 		String[] record;
 		String line;
 		while ((line = bf.readLine()) != null) {
-			CSVReader temp = new CSVReader(new StringReader(line), ',', '"');
+			CSVReader temp = new CSVReader(new InputStreamReader(new ByteArrayInputStream(line.getBytes("UTF-8")), "UTF8"), ',', '"');
 			record = temp.readNext();
 			if(record.length != 4){
 				System.out.println(line);
