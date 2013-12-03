@@ -53,11 +53,11 @@ public class Preprocessor {
 		String[] record;
 		String line;
 		while ((line = bf.readLine()) != null) {
-			CSVReader temp = new CSVReader(new InputStreamReader(new ByteArrayInputStream(line.getBytes("UTF-8")), "UTF8"), ',', '"');
-			record = temp.readNext();
+			//CSVReader temp = new CSVReader(new InputStreamReader(new ByteArrayInputStream(line.getBytes("UTF-8")), "UTF8"), ',', '"');
+			record = line.split("(?<!\")\",\"(?!\")|\"\",\"(?!\")|(?<!\")\",\"\"");
+			//record = temp.readNext();
 			if(record.length != 4){
 				System.out.println(line);
-				temp.close();
 				continue;
 			}
 			record = extractCode(record);
@@ -65,7 +65,6 @@ public class Preprocessor {
 			record = removeHtmlTags(record);
 			record = getUsefulToken(record);
 			writer.writeNext(record);
-			temp.close();
 			
 		}
 
