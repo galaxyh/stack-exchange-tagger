@@ -16,18 +16,15 @@ import au.com.bytecode.opencsv.CSVReader;
 public class DocumentTermProcessor {
 	public void checkOpenCSV(String input) {
 		try {
-			BufferedReader lineReader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(input)), "UTF8"));
-			//CSVReader reader = new CSVReader(new FileReader(input), ',', '"', '\0');
+			//BufferedReader lineReader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(input)), "UTF8"));
+			CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream(new File(input)), "UTF8"), ',', '"', '\0');
 			
 			
 			String [] record = null;
 			String line = null;
-			while ((line = lineReader.readLine()) != null) {
-//				line = line.replaceAll("(?!,)\"\"", " ");
-				record = line.split("(?<!\")\",\"(?!\")|\"\",\"(?!\")|(?<!\")\",\"\"");
-//				record = line.split("\",\"");				
-//				record = new CSVReader(new StringReader(line), ',', '"').readNext();
-//				record = line.split("[^\"]\",\"[^\"]");
+			while ((record = reader.readNext()) != null) {
+//				
+				//record = line.split("(?<!\")\",\"(?!\")|\"\",\"(?!\")|(?<!\")\",\"\"");
 				if(record.length != 4){
 					System.out.println(record.length);
 //					System.out.println(record[0]);
