@@ -52,9 +52,11 @@ public class Preprocessor {
 		String[] record;
 		String line;
 		while ((line = bf.readLine()) != null) {
-			record = new CSVReader(new StringReader(line), ',', '"').readNext();
+			CSVReader temp = new CSVReader(new StringReader(line), ',', '"');
+			record = temp.readNext();
 			if(record.length != 4){
 				System.out.println(line);
+				temp.close();
 				continue;
 			}
 			record = extractCode(record);
@@ -62,6 +64,7 @@ public class Preprocessor {
 			record = removeHtmlTags(record);
 			record = getUsefulToken(record);
 			writer.writeNext(record);
+			temp.close();
 			
 		}
 
