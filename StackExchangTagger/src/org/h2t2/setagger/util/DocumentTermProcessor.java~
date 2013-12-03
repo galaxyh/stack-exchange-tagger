@@ -16,7 +16,7 @@ import au.com.bytecode.opencsv.CSVReader;
 public class DocumentTermProcessor {
 	public void checkOpenCSV(String input) {
 		try {
-			BufferedReader lineReader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(input)), "UTF8"));
+			BufferedReader lineReader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(input), "UTF8")));
 			//CSVReader reader = new CSVReader(new FileReader(input), ',', '"', '\0');
 			
 			
