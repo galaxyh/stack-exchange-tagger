@@ -3,6 +3,7 @@
  */
 package org.h2t2.setagger.util;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
@@ -10,6 +11,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.StringReader;
 import java.io.FileOutputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,7 +22,7 @@ import au.com.bytecode.opencsv.CSVWriter;
 import com.aliasi.tokenizer.*;
 
 /**
- * StackExchange dataset preprocessor
+ * StackExchange data set preprocessor
  * 
  */
 public class Preprocessor {
@@ -35,8 +37,8 @@ public class Preprocessor {
 	 * Pre-process StackExchange dataset.
 	 * 
 	 * @param input
-	 *            A CSV file, each line contains 4 fields (3 fields if the input is the data to be predicted): ID,
-	 *            title, body, code, tags.
+	 *            A CSV file after Scan processing , each line contains 4 fields (3 fields if the input is the data to be predicted)
+	 *            : ID, title, body, code, tags. The first line has already been discarded.
 	 * @param output
 	 *            A CSV file, each line contains 5 fields (4 fields if the input is the data to be predicted): ID,
 	 *            title, body without code and unnecessary words, code, tags.
@@ -44,17 +46,17 @@ public class Preprocessor {
 	 */
 	public void process(String input, String output) throws IOException {
 		CSVWriter writer = new CSVWriter(new OutputStreamWriter(new FileOutputStream(output), "UTF8"), ',');
-		CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream(new File(input)), "UTF8"), ',', '"', '\0', 1);
+		//CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream(new File(input)), "UTF8"), ',', '"', '\0', 1);
+		BufferedReader bf = new BufferedReader(new InputStreamReader(new FileInputStream(new File(input)), "UTF8"));
 
 		String[] record;
-		int line = 1;
-		while ((record = reader.readNext()) != null) {
+		String line;
+		while ((line = bf.readLine()) != null) {
+			record = new CSVReader(new StringReader(line), ',', '"').readNext();
 			if(record.length != 4){
 				System.out.println(line);
-				System.exit(-1);
-				
+				continue;
 			}
-			line++;
 			record = extractCode(record);
 			record = reduceCodeSyntax(record);
 			record = removeHtmlTags(record);
@@ -64,7 +66,7 @@ public class Preprocessor {
 		}
 
 		writer.close();
-		reader.close();
+		bf.close();
 	}
 
 	/**

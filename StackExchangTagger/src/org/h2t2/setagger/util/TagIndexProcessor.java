@@ -2,9 +2,12 @@ package org.h2t2.setagger.util;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.TreeSet;
 
 
@@ -14,7 +17,7 @@ public class TagIndexProcessor{
 	
 	public void process(String input, String output) throws IOException{
 		//CSVReader reader = new CSVReader(new FileReader(input), ',', '"', '\0');
-		BufferedReader reader = new BufferedReader(new FileReader(input));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(input)), "UTF8"));
 		tagsSet = new TreeSet<String>();
 		String line;
 		String separater = ",\"";
