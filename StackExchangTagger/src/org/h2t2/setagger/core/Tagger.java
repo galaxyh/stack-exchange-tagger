@@ -3,6 +3,7 @@ package org.h2t2.setagger.core;
 import java.io.IOException;
 
 import org.apache.commons.lang3.time.StopWatch;
+import org.h2t2.setagger.util.DocumentTermProcessor;
 import org.h2t2.setagger.util.Preprocessor;
 import org.h2t2.setagger.util.Scanner;
 import org.h2t2.setagger.util.TagEvaluator;
@@ -129,6 +130,9 @@ public class Tagger {
 			}
 		} else if ("-scan".equals(args[0])) {
 			new Scanner().scan(args[1], args[2]);
+		} else if("-vector".equals(args[0])) {
+			new DocumentTermProcessor().checkOpenCSV(args[1]);
+			
 		}
 	}
 
