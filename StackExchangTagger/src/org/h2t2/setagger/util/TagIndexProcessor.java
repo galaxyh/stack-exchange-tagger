@@ -17,7 +17,7 @@ public class TagIndexProcessor{
 		BufferedReader reader = new BufferedReader(new FileReader(input));
 		tagsSet = new TreeSet<String>();
 		String line;
-		String separater = ",";
+		String separater = ",\"";
 		
 		while ((line = reader.readLine()) != null) {
 			int lastIndex = line.lastIndexOf(separater);
