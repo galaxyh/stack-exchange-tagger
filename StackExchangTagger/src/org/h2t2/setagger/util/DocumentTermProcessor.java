@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.TreeSet;
 
 import au.com.bytecode.opencsv.CSVReader;
@@ -19,7 +20,7 @@ public class DocumentTermProcessor {
 			String [] record = null;
 			String line = null;
 			while ((line = lineReader.readLine()) != null) {
-				record = new CSVReader(new FileReader(line), ',', '"', '\0').readNext();
+				record = new CSVReader(new StringReader(line), ',', '"', '\0').readNext();
 				if(record.length != 4){
 					System.out.println(line);
 					System.exit(-1);
