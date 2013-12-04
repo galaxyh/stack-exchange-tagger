@@ -1,5 +1,7 @@
 package org.h2t2.setagger.util;
 
+import java.io.IOException;
+import java.io.Reader;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -14,8 +16,9 @@ import java.util.regex.Pattern;
 
 
 public class Scanner {
+	private BufferedReader reader;
 	
-	private int countOccurence(String source, String regex){
+	private static int countOccurence(String source, String regex){
 		Pattern pattern = Pattern.compile(regex);
         Matcher  matcher = pattern.matcher(source);
         int count = 0;
@@ -26,8 +29,39 @@ public class Scanner {
 
 	}
 	
+	private String trimDoubleQuote(String input){
+		int start = 0;
+		while(start < input.length() &&  input.charAt(start) == '"')start++;
+		
+		int end = input.length() -1;
+		while(end >= 0 && input.charAt(end) == '"')end--;
+		
+		if(start < end)return input.substring(start, end);
+		return "";
+		
+	}
 	
-	public void scan(String input, String output) {
+	
+	public String [] readNext() throws IOException{
+		String line = reader.readLine();
+		if(line == null)return null;
+		String [] record  = line.split("(?<!\")\",\"(?!\")|\"\",\"(?!\")|(?<!\")\",\"\"");
+		for(int i = 0;i < record.length;i++)record[i] = trimDoubleQuote(record[i]);
+		return record;
+	}
+	
+	public void close() throws IOException{
+		if(reader != null)reader.close();
+	} 
+	
+	// the input reader after scan processing
+	public Scanner(Reader r){
+		reader = new BufferedReader(r);
+				
+	}
+	
+	
+	public static void scan(String input, String output) {
 		
 		try {
 			String line = null;
@@ -44,7 +78,6 @@ public class Scanner {
 				}else {
 					record += (" " + line);
 				}
-				
 			}
 			wout.write(record.trim()+"\n");
 			wout.flush();

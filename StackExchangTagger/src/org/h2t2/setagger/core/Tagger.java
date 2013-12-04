@@ -129,7 +129,7 @@ public class Tagger {
 				e.printStackTrace();
 			}
 		} else if ("-scan".equals(args[0])) {
-			new Scanner().scan(args[1], args[2]);
+			Scanner.scan(args[1], args[2]);
 		} else if("-vector".equals(args[0])) {
 			new DocumentTermProcessor().checkOpenCSV(args[1]);
 			

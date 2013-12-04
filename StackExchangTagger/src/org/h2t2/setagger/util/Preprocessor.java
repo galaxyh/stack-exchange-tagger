@@ -48,29 +48,20 @@ public class Preprocessor {
 	public void process(String input, String output) throws IOException {
 		CSVWriter writer = new CSVWriter(new OutputStreamWriter(new FileOutputStream(output), "UTF8"), ',');
 		//CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream(new File(input)), "UTF8"), ',', '"', '\0', 1);
-		BufferedReader bf = new BufferedReader(new InputStreamReader(new FileInputStream(new File(input)), "UTF8"));
+		Scanner scanner = new Scanner(new InputStreamReader(new FileInputStream(new File(input)), "UTF8"));
 
 		String[] record;
-		String line;
-		while ((line = bf.readLine()) != null) {
-			//CSVReader temp = new CSVReader(new InputStreamReader(new ByteArrayInputStream(line.getBytes("UTF-8")), "UTF8"), ',', '"');
-			record = line.split("(?<!\")\",\"(?!\")|\"\",\"(?!\")|(?<!\")\",\"\"");
-			//record = temp.readNext();
-			if(record.length != 4){
-				System.out.println(line);
-				continue;
-			}
+		while ((record = scanner.readNext()) != null) {
 			record = extractCode(record);
 			record = reduceCodeSyntax(record);
 			record = removeHtmlTags(record);
 			record = getUsefulToken(record);
 			writer.writeNext(record);
-			//temp.close();
 			
 		}
 
 		writer.close();
-		bf.close();
+		scanner.close();
 	}
 
 	/**
