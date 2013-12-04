@@ -14,7 +14,7 @@ import java.io.FileOutputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import au.com.bytecode.opencsv.CSVReader;
+
 import au.com.bytecode.opencsv.CSVWriter;
 
 import com.aliasi.tokenizer.*;

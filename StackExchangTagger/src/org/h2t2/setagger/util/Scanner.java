@@ -59,31 +59,30 @@ public class Scanner {
 	}
 	
 	
-	public static void scan(String input, String output) {
+	public static void scan(String input, String output) throws IOException{
+				
+		String line = null;
+		BufferedReader bf = new BufferedReader(new InputStreamReader(new FileInputStream(new File(input)), "UTF8"));
+		BufferedWriter wout = new BufferedWriter(new FileWriter(output));
+		line = bf.readLine();// read in "Id","Title","Body","Tags"
 		
-		try {
-			String line = null;
-			BufferedReader bf = new BufferedReader(new InputStreamReader(new FileInputStream(new File(input)), "UTF8"));
-			BufferedWriter wout = new BufferedWriter(new FileWriter(output));
-			line = bf.readLine();// read in "Id","Title","Body","Tags"
-			
-			String record = "";
-			while((line = bf.readLine()) != null){
-				if( countOccurence(line, "^\"[0-9]+\",\"") > 0){
-					if(!record.equals(""))wout.write(record.trim()+"\n");
-					record = new String(line);
-					
-				}else {
-					record += (" " + line);
-				}
+		String record = "";
+		while((line = bf.readLine()) != null){
+			if( countOccurence(line, "^\"[0-9]+\",\"") > 0){
+				if(!record.equals(""))wout.write(record.trim()+"\n");
+				record = new String(line);
+				
+			}else {
+				record += (" " + line);
 			}
-			wout.write(record.trim()+"\n");
-			wout.flush();
-
-
-		}catch(Exception e){
-			e.printStackTrace();
 		}
+		wout.write(record.trim()+"\n");
+		wout.flush();
+		bf.close();
+		wout.close();
+
+
+		
 		
 		
 	}
