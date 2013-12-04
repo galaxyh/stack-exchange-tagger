@@ -131,7 +131,7 @@ public class Tagger {
 		} else if ("-scan".equals(args[0])) {
 			Scanner.scan(args[1], args[2]);
 		} else if("-vector".equals(args[0])) {
-			new DocumentTermProcessor().checkOpenCSV(args[1]);
+			new DocumentTermProcessor().checkScanner(args[1]);
 			
 		}
 	}
