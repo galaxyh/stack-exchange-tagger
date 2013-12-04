@@ -3,16 +3,13 @@
  */
 package org.h2t2.setagger.util;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
+
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.StringReader;
 import java.io.FileOutputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,9 +50,9 @@ public class Preprocessor {
 		String[] record;
 		while ((record = scanner.readNext()) != null) {
 			record = extractCode(record);
-			record = reduceCodeSyntax(record);
 			record = removeHtmlTags(record);
 			record = getUsefulToken(record);
+			record = reduceSyntax(record);
 			writer.writeNext(record);
 			
 		}
@@ -110,8 +107,10 @@ public class Preprocessor {
 	 *         syntax , tags.
 	 * @author Li-Yuan
 	 */
-	private String[] reduceCodeSyntax(String[] record) {
-		record[3] = record[3].replaceAll("[^a-zA-Z ]", " ").replaceAll("\\s+", " ");
+	private String[] reduceSyntax(String[] record) {
+		record[1].replaceAll("[^a-zA-Z0-9. ]", " ").replaceAll("\\s+", " ");
+		record[2].replaceAll("[^a-zA-Z0-9. ]", " ").replaceAll("\\s+", " ");
+		record[3].replaceAll("[^a-zA-Z ]", " ").replaceAll("\\s+", " ");
 		return record;
 	}
 
