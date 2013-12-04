@@ -34,7 +34,7 @@ public class Scanner {
 		int end = input.length() -1;
 		while(end >= 0 && input.charAt(end) == '"')end--;
 		
-		if(start < end)return input.substring(start, end);
+		if(start < end+1)return input.substring(start, end+1);
 		return "";
 		
 	}

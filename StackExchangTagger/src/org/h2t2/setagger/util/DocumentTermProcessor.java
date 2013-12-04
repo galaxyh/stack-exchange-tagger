@@ -14,22 +14,22 @@ import java.util.TreeSet;
 import au.com.bytecode.opencsv.CSVReader;
 
 public class DocumentTermProcessor {
-	public void checkOpenCSV(String input) {
+	public void checkScanner(String input) {
 		try {
-			//BufferedReader lineReader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(input)), "UTF8"));
-			CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream(new File(input)), "UTF8"), ',', '"', '\0');
+			//
+			Scanner reader = new Scanner(new InputStreamReader(new FileInputStream(new File(input)), "UTF8"));
 			
 			
 			String [] record = null;
-			String line = null;
+			
 			while ((record = reader.readNext()) != null) {
 //				
-				//record = line.split("(?<!\")\",\"(?!\")|\"\",\"(?!\")|(?<!\")\",\"\"");
-				if(record.length != 4){
+
+				if(record.length != 5){
 					System.out.println(record.length);
 //					System.out.println(record[0]);
 //					System.out.println(record[1]);
-					System.out.println(line);
+					System.out.println(record[0]);
 					continue;
 					
 				}
