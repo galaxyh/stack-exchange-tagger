@@ -108,9 +108,9 @@ public class Preprocessor {
 	 * @author Li-Yuan
 	 */
 	private String[] reduceSyntax(String[] record) {
-		record[1].replaceAll("[^a-zA-Z0-9. ]", " ").replaceAll("\\s+", " ");
-		record[2].replaceAll("[^a-zA-Z0-9. ]", " ").replaceAll("\\s+", " ");
-		record[3].replaceAll("[^a-zA-Z ]", " ").replaceAll("\\s+", " ");
+		record[1] = record[1].replaceAll("[^a-zA-Z0-9. ]", " ").replaceAll("\\s+", " ");
+		record[2] = record[2].replaceAll("[^a-zA-Z0-9. ]", " ").replaceAll("\\s+", " ");
+		record[3] = record[3].replaceAll("[^a-zA-Z ]", " ").replaceAll("\\s+", " ");
 		return record;
 	}
 
