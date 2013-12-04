@@ -17,7 +17,7 @@ public class DocumentTermProcessor {
 	public void checkScanner(String input) {
 		try {
 			//
-			Scanner reader = new Scanner(new InputStreamReader(new FileInputStream(new File(input)), "UTF8"));
+			CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream(new File(input)), "UTF8"));
 			
 			
 			String [] record = null;
