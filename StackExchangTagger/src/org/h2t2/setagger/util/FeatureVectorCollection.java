@@ -1,6 +1,5 @@
 package org.h2t2.setagger.util;
 
-import java.util.Map;
 import java.util.HashMap;
 import java.util.Vector;
 import java.util.Iterator;
