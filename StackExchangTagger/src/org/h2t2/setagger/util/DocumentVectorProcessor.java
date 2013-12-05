@@ -16,8 +16,6 @@ import au.com.bytecode.opencsv.CSVReader;
 
 public class DocumentVectorProcessor {
 	private  ArrayList <HashMap <String, Term>> termMapping;
-//	private HashMap <String, Term> bodyToTerm;
-//	private HashMap <String, Term> codeToTerm;
 	private HashMap <String, Integer> tagToIndex;
 	private int globalIndex = 0;
 	
@@ -53,7 +51,7 @@ public class DocumentVectorProcessor {
 			for(int i = 0;i < termMapping.size();i++){
 				terms = record[i+1].split("\\s+");
 				HashMap <String, Double> frequencyMap = calculateFrequency(terms);
-				for(String term : terms){
+				for(String term : frequencyMap.keySet()){
 					Term t = termMapping.get(i).get(term);
 					Double tf = frequencyMap.get(term);
 					if(t != null && tf != null){
