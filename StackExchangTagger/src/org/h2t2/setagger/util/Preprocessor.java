@@ -49,6 +49,9 @@ public class Preprocessor {
 
 		String[] record;
 		while ((record = scanner.readNext()) != null) {
+			if(record.length != 4){
+				continue;
+			}
 			record = extractCode(record);
 			record = removeHtmlTags(record);
 			record = getUsefulToken(record);
