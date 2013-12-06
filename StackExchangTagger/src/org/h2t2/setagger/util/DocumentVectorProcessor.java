@@ -18,6 +18,7 @@ public class DocumentVectorProcessor {
 	private  ArrayList <HashMap <String, Term>> termMapping;
 	private HashMap <String, Integer> tagToIndex;
 	private int globalIndex = 0;
+	private double idfUpperBound;
 	
 	private class Term{
 		public int index;
@@ -36,6 +37,7 @@ public class DocumentVectorProcessor {
 		termMapping.add(readIdfFile(codeIdfFile));
 		
 		tagToIndex = readTagIndexFile(tagIndexFile);
+		idfUpperBound = 10.0;
 		
 	}
 	
@@ -54,7 +56,7 @@ public class DocumentVectorProcessor {
 				for(String term : frequencyMap.keySet()){
 					Term t = termMapping.get(i).get(term);
 					Double tf = frequencyMap.get(term);
-					if(t != null && tf != null){
+					if(t != null && t.idf < idfUpperBound && tf != null ){
 						data.append(t.index+":"+(t.idf*tf)+" ");
 					}
 				}
