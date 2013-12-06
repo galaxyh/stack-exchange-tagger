@@ -94,7 +94,7 @@ public class DocumentVectorProcessor {
 		String line = null;
 		while((line = reader.readLine()) != null ){
 			String [] tag_index = line.trim().split("\\s+");
-			tagToIndex.put(tag_index[0], Integer.parseInt(tag_index[1]));
+			tagToIndex.put(tag_index[1], Integer.parseInt(tag_index[0]));
 		}
 		reader.close();
 		return tagToIndex;
