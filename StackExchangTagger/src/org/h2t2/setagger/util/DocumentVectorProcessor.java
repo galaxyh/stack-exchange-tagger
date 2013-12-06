@@ -18,7 +18,7 @@ public class DocumentVectorProcessor {
 	private  ArrayList <HashMap <String, Term>> termMapping;
 	private HashMap <String, Integer> tagToIndex;
 	private int globalIndex = 0;
-	private double idfUpperBound;
+	private double idfUpperBound = 10.0;
 	
 	private class Term{
 		public int index;
@@ -37,7 +37,6 @@ public class DocumentVectorProcessor {
 		termMapping.add(readIdfFile(codeIdfFile));
 		
 		tagToIndex = readTagIndexFile(tagIndexFile);
-		idfUpperBound = 10.0;
 		
 	}
 	
@@ -47,6 +46,7 @@ public class DocumentVectorProcessor {
 		String [] record = null;
 		String [] terms;
 		String [] tags;
+		System.out.println();
 		while((record = reader.readNext()) != null){
 			if(record.length != 5)continue;
 			StringBuilder data = new StringBuilder();
@@ -66,10 +66,13 @@ public class DocumentVectorProcessor {
 			
 			
 			tags = record[4].split("\\s+");
-			String dataString = data.toString().trim();
-			for(String tag : tags){
-				if(tagToIndex.get(tag) != null)writer.write(tagToIndex.get(tag) + " " + dataString + "\n");
-			}	
+			String labels = "";
+			for(int i = 0;i < tags.length-1;i++){
+				if(tagToIndex.get(tags[i]) != null)labels += (tagToIndex.get(tags[i])+",");  				
+			}
+			if(tagToIndex.get(tags[tags.length-1]) != null) labels += tagToIndex.get(tags[tags.length-1]);
+			writer.write(labels + " " + data.toString().trim() + "\n");
+			
 		}
 		reader.close();
 		writer.close();
