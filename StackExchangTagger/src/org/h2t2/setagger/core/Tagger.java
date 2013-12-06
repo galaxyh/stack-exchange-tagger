@@ -138,7 +138,7 @@ public class Tagger {
 			try {
 				DocumentVectorProcessor dvp = new DocumentVectorProcessor(args[1], args[2], args[3], args[4]);
 				dvp.makeVector(args[5], args[6]);
-				
+				System.out.println(dvp.getNumberOfTerms());
 			}catch(Exception e){
 				e.printStackTrace();
 			}

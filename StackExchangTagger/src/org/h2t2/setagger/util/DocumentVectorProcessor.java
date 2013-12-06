@@ -56,7 +56,7 @@ public class DocumentVectorProcessor {
 				for(String term : frequencyMap.keySet()){
 					Term t = termMapping.get(i).get(term);
 					Double tf = frequencyMap.get(term);
-					if(t != null && t.idf < idfUpperBound && tf != null ){
+					if(t != null  && tf != null ){
 						data.append(t.index+":"+(t.idf*tf)+" ");
 					}
 				}
@@ -101,17 +101,24 @@ public class DocumentVectorProcessor {
 	
 	}
 	
+	public int getNumberOfTerms(){
+		return globalIndex;
+	}
+	
 	
 	private HashMap <String, Term> readIdfFile(String input) throws IOException{
 		HashMap <String, Term> termToProperty = new HashMap <String, Term>(); 
 		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(input)), "UTF8"));
 		reader.readLine();// read header
-		reader.readLine();// read header
 		String line = null;
 		while((line = reader.readLine()) != null ){
-			globalIndex++;
-			String [] term_freq_idf = line.trim().split("\\s+");
-			termToProperty.put(term_freq_idf[0], new Term(globalIndex, Double.parseDouble(term_freq_idf[2])) );
+			
+			String [] term_idf = line.trim().split("\\s+");
+			if(Double.parseDouble(term_idf[1]) < idfUpperBound){
+				globalIndex++;
+				termToProperty.put(term_idf[0], new Term(globalIndex, Double.parseDouble(term_idf[1])) );
+			}
+			
 			
 		}
 		
