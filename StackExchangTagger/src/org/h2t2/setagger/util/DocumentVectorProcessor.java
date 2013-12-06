@@ -37,7 +37,7 @@ public class DocumentVectorProcessor {
 		termMapping.add(readIdfFile(codeIdfFile));
 		
 		tagToIndex = readTagIndexFile(tagIndexFile);
-		idfUpperBound = 16.0;
+		idfUpperBound = 10.0;
 		
 	}
 	
@@ -56,6 +56,8 @@ public class DocumentVectorProcessor {
 				for(String term : frequencyMap.keySet()){
 					Term t = termMapping.get(i).get(term);
 					Double tf = frequencyMap.get(term);
+					if(t == null)System.out.println("t null");
+					if(tf == null)System.out.println("tf null");
 					if(t != null  && tf != null ){
 						data.append(t.index+":"+(t.idf*tf)+" ");
 					}
@@ -65,7 +67,6 @@ public class DocumentVectorProcessor {
 			
 			tags = record[4].split("\\s+");
 			String dataString = data.toString().trim();
-			System.out.println(dataString);
 			for(String tag : tags){
 				if(tagToIndex.get(tag) != null)writer.write(tagToIndex.get(tag) + " " + dataString + "\n");
 			}	
