@@ -46,7 +46,6 @@ public class DocumentVectorProcessor {
 		String [] record = null;
 		String [] terms;
 		String [] tags;
-		System.out.println();
 		while((record = reader.readNext()) != null){
 			if(record.length != 5)continue;
 			StringBuilder data = new StringBuilder();
@@ -56,8 +55,6 @@ public class DocumentVectorProcessor {
 				for(String term : frequencyMap.keySet()){
 					Term t = termMapping.get(i).get(term);
 					Double tf = frequencyMap.get(term);
-					if(t == null)System.out.println("t null");
-					if(tf == null)System.out.println("tf null");
 					if(t != null  && tf != null ){
 						data.append(t.index+":"+(t.idf*tf)+" ");
 					}
