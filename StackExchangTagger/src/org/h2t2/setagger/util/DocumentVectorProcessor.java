@@ -37,7 +37,7 @@ public class DocumentVectorProcessor {
 		termMapping.add(readIdfFile(codeIdfFile));
 		
 		tagToIndex = readTagIndexFile(tagIndexFile);
-		idfUpperBound = 10.0;
+		idfUpperBound = 16.0;
 		
 	}
 	
@@ -65,6 +65,7 @@ public class DocumentVectorProcessor {
 			
 			tags = record[4].split("\\s+");
 			String dataString = data.toString().trim();
+			System.out.println(dataString);
 			for(String tag : tags){
 				if(tagToIndex.get(tag) != null)writer.write(tagToIndex.get(tag) + " " + dataString + "\n");
 			}	
