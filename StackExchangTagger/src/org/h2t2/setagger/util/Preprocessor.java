@@ -6,13 +6,13 @@ package org.h2t2.setagger.util;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.FileOutputStream;
-import java.io.ObjectOutputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
+
+import com.aliasi.tokenizer.*;
 
 /**
  * StackExchange dataset preprocessor
@@ -23,6 +23,10 @@ public class Preprocessor {
      * Pattern matching regular expression for extracting code.
      */
     private static final Pattern codePattern = Pattern.compile("(?is)<code>(.*?)</code>");
+    private static PorterStemmerTokenizerFactory psTokenizer = new PorterStemmerTokenizerFactory(
+                                                               new EnglishStopTokenizerFactory(
+                                                               new LowerCaseTokenizerFactory(
+                                                               IndoEuropeanTokenizerFactory.INSTANCE )));
 
     /**
      * Pre-process StackExchange dataset.
@@ -36,8 +40,8 @@ public class Preprocessor {
      * @throws IOException
      */
     public void process(String input, String output) throws IOException {
+        CSVWriter writer = new CSVWriter(new FileWriter(output), ',');
         CSVReader reader = new CSVReader(new FileReader(input), ',', '"', '\0', 1);
-        KnnClassifier knn = new KnnClassifier();
 
         String[] record;
         while ((record = reader.readNext()) != null) {
@@ -47,15 +51,11 @@ public class Preprocessor {
             }
             record = extractCode(record);
             record = removeHtmlTags(record);
-            knn.train(record);
+            record = getUsefulToken(record);
+            writer.writeNext(record);
         }
 
-        FileOutputStream fileOut = new FileOutputStream(output);
-        ObjectOutputStream out = new ObjectOutputStream(fileOut);
-        out.writeObject(knn);
-        out.close();
-        fileOut.close();
-
+        writer.close();
         reader.close();
     }
 
@@ -107,6 +107,50 @@ public class Preprocessor {
      */
     private String[] removeHtmlTags(String[] record) {
         record[2] = HtmlTagHandler.removeHtmlTags(record[2]);
+        return record;
+    }
+    /**
+     * This function removes stop words and applys stemming to the title and body fields.
+     * 
+     * @param record
+     *         Contain 5 fields (4 fields if the input is the data to be predicted): ID, title, body, code, tags.
+     * @return 5 fields (4 fields if the input is the data to be predicted) same as parameter but remove stop words in
+     *         title and body and also do the stemming.
+     * @author Isaac
+     */
+    private String[] getUsefulToken(String[] record) {
+        String token;
+        StringBuilder str = new StringBuilder();
+        boolean isFirst = true;
+
+        char[] chars = record[1].toCharArray();
+        Tokenizer tokenizer = psTokenizer.tokenizer(chars, 0, chars.length);
+        while ((token = tokenizer.nextToken()) != null) {
+            if(isFirst){
+                str.append(token);
+                isFirst = false;
+            }
+            else{
+                str.append(" ").append(token);
+            }
+        }
+        record[1] = str.toString();
+
+        str.delete(0, str.length());
+        isFirst = true;
+        chars = record[2].toCharArray();
+        tokenizer = psTokenizer.tokenizer(chars, 0, chars.length);
+        while ((token = tokenizer.nextToken()) != null) {
+            if(isFirst){
+                str.append(token);
+                isFirst = false;
+            }
+            else{
+                str.append(" ").append(token);
+            }
+        }
+        record[2] = str.toString();
+
         return record;
     }
 }
