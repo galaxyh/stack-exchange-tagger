@@ -26,6 +26,7 @@ public class DivideTrainingSet {
             }
             writer.writeNext(record);
         }
+        writer.close();
 
         writer = new CSVWriter(new FileWriter(args[2]), ',');
         for(; cnt < RECORDS_SIZE && (record = reader.readNext()) != null; cnt++) {
@@ -35,5 +36,6 @@ public class DivideTrainingSet {
             }
             writer.writeNext(record);
         }
+        writer.close();
     }
 }
