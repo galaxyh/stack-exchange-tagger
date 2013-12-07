@@ -6,6 +6,8 @@ package org.h2t2.setagger.util;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,21 +35,26 @@ public class Preprocessor {
      *            title, body without code and unnecessary words, code, tags.
      * @throws IOException
      */
-    public void process(String input) throws IOException {
+    public void process(String input, String output) throws IOException {
         CSVReader reader = new CSVReader(new FileReader(input), ',', '"', '\0', 1);
+        KnnClassifier knn = new KnnClassifier();
 
         String[] record;
         while ((record = reader.readNext()) != null) {
-            if(record.length < 4){
+            if(record.length != 4){
                 System.err.println("csv read error");
                 System.exit(1);
             }
             record = extractCode(record);
             record = removeHtmlTags(record);
-            tfIdfHandler.addDoc(record);
+            knn.train(record);
         }
 
-        tfIdfHandler.print();
+        FileOutputStream fileOut = new FileOutputStream(output);
+        ObjectOutputStream out = new ObjectOutputStream(fileOut);
+        out.writeObject(knn);
+        out.close();
+        fileOut.close();
 
         reader.close();
     }

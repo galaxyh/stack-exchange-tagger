@@ -51,7 +51,8 @@ public class KnnClassifier implements Serializable {
         TreeMap<Double, String[]> nearestNeighbor = new TreeMap<Double, String[]>(); // should use multimap
 
         int i;
-        for(i = 0;i < K;i++) {
+        int initSize = (K < doc.size()) ? K : doc.size() ;
+        for(i = 0;i < initSize;i++) {
             nearestNeighbor.put(tfIdf.proximity(doc.elementAt(i), input), tag.elementAt(i));
         }
         for(;i < doc.size();i++) {
