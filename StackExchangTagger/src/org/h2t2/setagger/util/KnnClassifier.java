@@ -25,7 +25,7 @@ public class KnnClassifier implements Serializable {
 
         HashMap<String, Integer> map = new HashMap<String, Integer>();
         Integer value;
-        while(tokenizer.hasMoreToken()) {
+        while(tokenizer.hasMoreTokens()) {
             String token = tokenizer.nextToken();
             if((value = map.get(token)) != null)
                 map.put(token, value+1);

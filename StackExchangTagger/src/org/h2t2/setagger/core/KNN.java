@@ -1,5 +1,7 @@
 package org.h2t2.setagger.core;
 
+import org.h2t2.setagger.util.KnnClassifier;
+
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -20,6 +22,7 @@ public class KNN implements Model {
 
     @Override
     public void train(String trainFileName, String[] args) {
+        try {
         CSVReader reader = new CSVReader(new FileReader(trainFileName), ',', '"', '\0', 0);
         knn = new KnnClassifier();
 
@@ -34,51 +37,62 @@ public class KNN implements Model {
         }
 
         reader.close();
+        }
+        catch(IOException i) {
+            System.out.println("Fail to load predict data or write predict result!");
+            i.printStackTrace();
+        }
     }
 
     @Override
     public void predict(String predictFileName, String outputFileName, String[] args) {
-        CSVWriter writer = new CSVWriter(new FileWriter(output), ',');
-        CSVReader reader = new CSVReader(new FileReader(trainFileName), ',', '"', '\0', 0);
+        try {
+            CSVWriter writer = new CSVWriter(new FileWriter(outputFileName), ',');
+            CSVReader reader = new CSVReader(new FileReader(predictFileName), ',', '"', '\0', 0);
 
-        String[] idTags = {"ID", "Tags"};
-        writer.writeNext(idTags);
-
-        String[] record;
-        while ((record = reader.readNext()) != null) {
-            if(record.length != 4){
-                System.err.println("csv read error");
-                System.exit(1);
-            }
-
-            TreeMap<Double, String[]> nearestNeighbor = knn.classify(record);
-            TreeMap<String, Double> tagRank = new TreeMap<String, Double>();
-            TreeMap<Double, String> maxTags = new TreeMap<Double, String>();
-            for(Map.Entry<Double, String[]> entry : nearestNeighbor) {
-                Double proximity = entry.getKey();
-                Double value;
-                for(String str : entry.getValue()) {
-                    if((value = tagRank.get(str)) != null)
-                        tagRank.put(str, value + proximity);
-                    else
-                        tagRank.put(str, proximity);
-                }
-            }
-            for(Map.Entry<String, Double> entry : tagRank) {
-                maxTags.put(entry.getValue(), entry.getKey());
-            }
-
-            idTags = new String[2];
-            idTags[0] = record[0];
-            idTags[1] = maxTags.pollLastEntry().getValue();
-            idTags[1] += " " + maxTags.pollLastEntry().getValue();
-            idTags[1] += " " + maxTags.pollLastEntry().getValue();
-
+            String[] idTags = {"ID", "Tags"};
             writer.writeNext(idTags);
-        }
 
-        writer.close();
-        reader.close();
+            String[] record;
+            while ((record = reader.readNext()) != null) {
+                if(record.length != 4){
+                    System.err.println("csv read error");
+                    System.exit(1);
+                }
+
+                TreeMap<Double, String[]> nearestNeighbor = knn.classify(record);
+                TreeMap<String, Double> tagRank = new TreeMap<String, Double>();
+                TreeMap<Double, String> maxTags = new TreeMap<Double, String>();
+                for(Map.Entry<Double, String[]> entry : nearestNeighbor.entrySet()) {
+                    Double proximity = entry.getKey();
+                    Double value;
+                    for(String str : entry.getValue()) {
+                        if((value = tagRank.get(str)) != null)
+                            tagRank.put(str, value + proximity);
+                        else
+                            tagRank.put(str, proximity);
+                    }
+                }
+                for(Map.Entry<String, Double> entry : tagRank.entrySet()) {
+                    maxTags.put(entry.getValue(), entry.getKey());
+                }
+
+                idTags = new String[2];
+                idTags[0] = record[0];
+                idTags[1] = maxTags.pollLastEntry().getValue();
+                idTags[1] += " " + maxTags.pollLastEntry().getValue();
+                idTags[1] += " " + maxTags.pollLastEntry().getValue();
+
+                writer.writeNext(idTags);
+            }
+
+            writer.close();
+            reader.close();
+        }
+        catch(IOException i) {
+            System.out.println("Fail to load predict data or write predict result!");
+            i.printStackTrace();
+        }
     }
 
     @Override
