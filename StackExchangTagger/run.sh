@@ -1,1 +1,1 @@
-java -cp ./lib/opencsv-2.3.jar:./lib/lingpipe-4.1.0.jar:./lib/commons-lang3-3.1.jar:. org/h2t2/setagger/core/Tagger -vector ../../../b00902067/title ../../../b00902067/body ../../../b00902067/code ./tagindex ./train5.csv document_vector
+java -cp ./lib/opencsv-2.3.jar:./lib/lingpipe-4.1.0.jar:./lib/commons-lang3-3.1.jar:. org/h2t2/setagger/core/Tagger -cb ../../../b00902067/title ../../../b00902067/body ../../../b00902067/code ./train5.csv

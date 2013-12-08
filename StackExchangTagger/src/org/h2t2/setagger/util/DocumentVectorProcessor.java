@@ -18,7 +18,7 @@ public class DocumentVectorProcessor {
 	private  ArrayList <HashMap <String, Term>> termMapping;
 	private HashMap <String, Integer> tagToIndex;
 	private int globalIndex = 0;
-	private double idfUpperBound = 10.0;
+	public static double idfUpperBound = 10.0;
 	
 	private class Term{
 		public int index;
