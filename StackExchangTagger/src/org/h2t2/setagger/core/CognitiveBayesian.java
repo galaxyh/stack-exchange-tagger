@@ -15,22 +15,66 @@ import au.com.bytecode.opencsv.CSVReader;
 
 public class CognitiveBayesian implements Model{
 	private  ArrayList <HashMap <String, Association>> termMapping;
-//	private HashMap <String,   Association> termToAssociation;
+	private HashMap <String, Integer> tagToDocumentFrequency;
+	private int numberOfDocuments = 0;
+	private HashSet<String> allTagsSet;
 	
 	
 	private class Association{
 		public int tfInDoc;
 		public HashMap <String, Integer> tagToCooccurrence;
+		public double attentionWeight;
+		public double entropy;
+		public double scaledEntropy;
 		public Association(){
 			tfInDoc = 0;
-			tagToCooccurrence = new HashMap <String, Integer>(); 
+			tagToCooccurrence = new HashMap <String, Integer>();
+			attentionWeight = 0.0;
+			entropy = 0.0;
+			scaledEntropy = 0.0;
 
+		}
+		
+		public double getProbabilityOfTagOverTerm(String tag){
+			return tagToCooccurrence.get(tag)/tfInDoc;
+		}
+		
+		public double getEntropy(){
+			if(this.entropy == 0.0){
+				double entropy = 0.0;
+				for(String tag : tagToCooccurrence.keySet()){
+					double probabilityOfTagOverTerm = getProbabilityOfTagOverTerm(tag);
+					entropy += -probabilityOfTagOverTerm/Math.log(probabilityOfTagOverTerm);
+				}
+				this.entropy = entropy;
+			}
+			return this.entropy;
+			
+		}
+		
+		public void setScaledEntropy(double se){
+			scaledEntropy = se;			
+		}
+		
+		public double getScaledEntropy(){
+			return scaledEntropy;
+		}
+		
+		public void setAttentionWeight(double aw){
+			attentionWeight = aw;			
+		}
+		
+		public double getAttentionWeight(){
+			return attentionWeight;
 		}
 		
 		
 	}
 	
-
+	private double getBaseLevel(String tag){
+		double probabilityOfTag = tagToDocumentFrequency.get(tag)/(double)numberOfDocuments;
+		return Math.log(probabilityOfTag/(1-probabilityOfTag));
+	}
 	@Override
 	// args[1] : titleIdf, args[2] : bodyIdf , args[3] : codeIdf
 	public void train(String trainFileName, String[] args){
@@ -40,6 +84,9 @@ public class CognitiveBayesian implements Model{
 				termMapping.add(getAssociationMap(args[i]));
 			}
 			
+			tagToDocumentFrequency = new HashMap <String, Integer>();
+			allTagsSet = new HashSet<String>();
+			
 			// Now all disqualified terms are eliminated
 			CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream(new File(trainFileName)), "UTF8"));
 			String [] record;
@@ -48,7 +95,20 @@ public class CognitiveBayesian implements Model{
 			Integer TermAndTagCooccurrence;
 			while((record = reader.readNext()) != null){
 				if(record.length != 5)continue;
+				numberOfDocuments++;
 				tags = record[4].split("\\s+");
+				
+				
+				for(String tag: tags){
+					Integer frequency = null;
+					if((frequency = tagToDocumentFrequency.get(tag)) == null){
+						tagToDocumentFrequency.put(tag, 1);
+					}else {
+						tagToDocumentFrequency.put(tag, frequency+1);
+					}
+					allTagsSet.add(tag);
+				}
+				
 				for(int i = 1;i <= 3;i++){
 					for(String uniqueTerm : getUniqueTermSet(record[i])){
 						if( (termToAssociation = termMapping.get(i-1).get(uniqueTerm)) != null){// the term is qualified because its idf < idfBound
@@ -69,7 +129,32 @@ public class CognitiveBayesian implements Model{
 				
 			}
 			reader.close();
+			// Now start to calculate Entropy, save it temporarily in Attention Weight
 			
+			for(int i = 0;i < termMapping.size();i++){
+				double entropyMax = 0.0;
+				double entropyTemp = 0.0;
+				for(String term : termMapping.get(i).keySet()){
+					if((entropyTemp = termMapping.get(i).get(term).getEntropy()) > entropyMax){
+						entropyMax = entropyTemp;
+					}
+				}
+				
+				double totalScaledEntropy = 0.0;
+				for(String term : termMapping.get(i).keySet()){
+					termMapping.get(i).get(term).setScaledEntropy
+					(1.0-termMapping.get(i).get(term).getEntropy()/entropyMax);
+					totalScaledEntropy += termMapping.get(i).get(term).getScaledEntropy();
+				}
+				
+				for(String term : termMapping.get(i).keySet()){
+					termMapping.get(i).get(term).setAttentionWeight
+					(termMapping.get(i).get(term).getScaledEntropy()/totalScaledEntropy);
+				}
+				
+				
+				
+			}
 			
 		}catch (Exception e){
 			e.printStackTrace();
