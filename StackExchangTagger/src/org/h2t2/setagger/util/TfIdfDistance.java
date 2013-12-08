@@ -13,9 +13,9 @@ public class TfIdfDistance implements Serializable {
     private HashMap<String, Integer> tokenDf = new HashMap<String, Integer>();
 
     public double idf(String s) {
-        int df = tokenDf.get(s);
+        Integer df = tokenDf.get(s);
 
-        if(df == 0)
+        if(df == null)
             return 0;
         return Math.log(((double)docCount) / ((double)df));
 

@@ -23,20 +23,20 @@ public class KNN implements Model {
     @Override
     public void train(String trainFileName, String[] args) {
         try {
-        CSVReader reader = new CSVReader(new FileReader(trainFileName), ',', '"', '\0', 0);
-        knn = new KnnClassifier();
+            CSVReader reader = new CSVReader(new FileReader(trainFileName), ',', '"', '\0', 0);
+            knn = new KnnClassifier();
 
-        String[] record;
-        while ((record = reader.readNext()) != null) {
-            if(record.length != 5){
-                System.err.println("csv read error");
-                System.exit(1);
+            String[] record;
+            while ((record = reader.readNext()) != null) {
+                if(record.length != 5){
+                    System.err.println("csv read error");
+                    System.exit(1);
+                }
+
+                knn.train(record);
             }
 
-            knn.train(record);
-        }
-
-        reader.close();
+            reader.close();
         }
         catch(IOException i) {
             System.out.println("Fail to load predict data or write predict result!");
@@ -55,7 +55,7 @@ public class KNN implements Model {
 
             String[] record;
             while ((record = reader.readNext()) != null) {
-                if(record.length != 4){
+                if(record.length != 5){ // 5 for test, 4 for real
                     System.err.println("csv read error");
                     System.exit(1);
                 }
