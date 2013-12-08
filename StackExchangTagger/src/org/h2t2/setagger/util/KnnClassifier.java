@@ -6,15 +6,12 @@ import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.Vector;
 
-import com.aliasi.tokenizer.*;
+import java.util.StringTokenizer;
 
 public class KnnClassifier implements Serializable {
 
     static final long serialVersionUID = -6160089638360209536L;
 
-    private static LowerCaseTokenizerFactory lctf = new LowerCaseTokenizerFactory( IndoEuropeanTokenizerFactory.INSTANCE );
-    private static EnglishStopTokenizerFactory estf = new EnglishStopTokenizerFactory(lctf);
-    private static PorterStemmerTokenizerFactory pstf = new PorterStemmerTokenizerFactory(estf);
     private int K = 10;
     private TfIdfDistance tfIdf = new TfIdfDistance();
     private Vector<HashMap<String, Integer>> doc = new Vector<HashMap<String, Integer>>();
@@ -24,12 +21,12 @@ public class KnnClassifier implements Serializable {
     public KnnClassifier(int K) {this.K = K;}
 
     private HashMap<String, Integer> stringToMap(String s) {
-        char[] chars = s.toCharArray();
-        Tokenizer tokenizer = pstf.tokenizer(chars, 0, chars.length);
+        StringTokenizer tokenizer = new StringTokenizer(s);
 
         HashMap<String, Integer> map = new HashMap<String, Integer>();
         Integer value;
-        for(String token : tokenizer) {
+        while(tokenizer.hasMoreToken()) {
+            String token = tokenizer.nextToken();
             if((value = map.get(token)) != null)
                 map.put(token, value+1);
             else
