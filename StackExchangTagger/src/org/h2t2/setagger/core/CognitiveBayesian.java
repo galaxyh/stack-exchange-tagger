@@ -21,6 +21,11 @@ public class CognitiveBayesian implements Model{
 	private class Association{
 		public int tfInDoc;
 		public HashMap <String, Integer> tagToCooccurrence;
+		public Association(){
+			tfInDoc = 0;
+			tagToCooccurrence = new HashMap <String, Integer>(); 
+
+		}
 		
 		
 	}
