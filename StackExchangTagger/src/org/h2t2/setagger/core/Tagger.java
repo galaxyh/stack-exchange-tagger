@@ -151,6 +151,8 @@ public class Tagger {
 	private static Model getModelObject(String modelName) {
 		if ("cooccurrence".equals(modelName)) {
 			return new Cooccurrence();
+        } else if ("knn".equals(modelName)) {
+            return new KNN();
 		} else {
 			return null;
 		}
