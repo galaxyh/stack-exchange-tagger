@@ -52,6 +52,7 @@ public class KNN implements Model {
 
             String[] idTags = {"ID", "Tags"};
             writer.writeNext(idTags);
+            writer.flush();
 
             String[] record;
             while ((record = reader.readNext()) != null) {
@@ -84,6 +85,8 @@ public class KNN implements Model {
                 idTags[1] += " " + maxTags.pollLastEntry().getValue();
 
                 writer.writeNext(idTags);
+                writer.flush();
+                System.out.println("record " + record[0] + " done.");
             }
 
             writer.close();
