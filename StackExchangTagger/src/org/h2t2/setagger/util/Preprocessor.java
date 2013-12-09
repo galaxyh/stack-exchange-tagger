@@ -49,7 +49,7 @@ public class Preprocessor {
 
 		String[] record;
 		while ((record = scanner.readNext()) != null) {
-			if(record.length != 4){
+			if(record.length < 3){
 				continue;
 			}
 			record = extractCode(record);
