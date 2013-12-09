@@ -1,14 +1,18 @@
 package org.h2t2.setagger.core;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
 import org.h2t2.setagger.util.DocumentVectorProcessor;
+import org.h2t2.setagger.util.RankPriorityQueue;
+import org.h2t2.setagger.util.TagRank;
 
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -18,7 +22,6 @@ public class CognitiveBayesian implements Model{
 	private HashMap <String, Integer> tagToDocumentFrequency;
 	private int numberOfDocuments = 0;
 	private HashSet<String> allTagsSet;
-	
 	
 	private class Association{
 		public int tfInDoc = 0;
@@ -182,12 +185,61 @@ public class CognitiveBayesian implements Model{
 		
 	}
 	
+	
+	
 
 	@Override
 	public void predict(String predictFileName, String outputFileName,
 			String[] args) {
-		// TODO Auto-generated method stub
+		try {
+			CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream(new File(predictFileName)), "UTF8"));
+			String [] record;
+			BufferedWriter writer = new BufferedWriter(new FileWriter(outputFileName));
+			writer.write("\"Id\",\"Tags\"\n");
+			while((record = reader.readNext())!= null){
+				if(record.length != 4){
+					System.err.println("error test record not 4 columns ! ");
+					System.exit(-1);
+				}
+				RankPriorityQueue priQueue = new RankPriorityQueue(10);
+				HashSet <String> titleTermSet = getUniqueTermSet(record[1]);
+				HashSet <String> bodyTermSet = getUniqueTermSet(record[2]);
+				HashSet <String> codeTermSet = getUniqueTermSet(record[3]);
+				
+				double bodyWeight = 1.0;
+				double codeWeight = 3.0;
+				
+				for(String tag : allTagsSet){
+					double rank = getBaseLevel(tag);
+					for(String term: titleTermSet){
+						rank += getStrengthAssociation(0, term, tag)*termMapping.get(0).get(term).getAttentionWeight();
+					}
+					for(String term : bodyTermSet){
+						rank += bodyWeight*getStrengthAssociation(1, term, tag)*termMapping.get(1).get(term).getAttentionWeight();
+					}
+					for(String term : codeTermSet){
+						rank += codeWeight*getStrengthAssociation(2, term, tag)*termMapping.get(2).get(term).getAttentionWeight();
+					}
+					priQueue.add(tag, rank);
+					
+				}
+				String [] top5Tags = priQueue.getHighest(5);
+				writer.write(record[0]+","+"\""+top5Tags[0]+" "+top5Tags[1]+" "+top5Tags[2]+"\"\n");
+				
+			}
+			reader.close();
+			
+			
+		}catch(Exception e){
+			e.printStackTrace();
+			
+		}
 		
+		
+	}
+	
+	private double getStrengthAssociation(int index, String term , String tag){// index 0: title, index 1: body, index 2 : code 
+		return Math.log((double)termMapping.get(index).get(term).getProbabilityOfTagOverTerm(tag)/((double)tagToDocumentFrequency.get(tag)/numberOfDocuments));		
 	}
 
 	@Override
