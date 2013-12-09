@@ -34,6 +34,9 @@ public class CognitiveBayesian implements Model{
 		}
 		
 		public double getProbabilityOfTagOverTerm(String tag){
+			if(tagToCooccurrence.get(tag) == null){
+				return 0.0;
+			}
 			return tagToCooccurrence.get(tag)/tfInDoc;
 		}
 		
@@ -70,7 +73,9 @@ public class CognitiveBayesian implements Model{
 	}
 	
 	private double getBaseLevel(String tag){
-		double probabilityOfTag = tagToDocumentFrequency.get(tag)/(double)numberOfDocuments;
+		double probabilityOfTag = 0.0;
+		if(tagToDocumentFrequency.get(tag) != null)probabilityOfTag = tagToDocumentFrequency.get(tag)/(double)numberOfDocuments;
+		if(probabilityOfTag == 0.0)return 0.0;
 		return Math.log(probabilityOfTag/(1-probabilityOfTag));
 	}
 	@Override
@@ -238,7 +243,10 @@ public class CognitiveBayesian implements Model{
 		
 	}
 	
-	private double getStrengthAssociation(int index, String term , String tag){// index 0: title, index 1: body, index 2 : code 
+	private double getStrengthAssociation(int index, String term , String tag){// index 0: title, index 1: body, index 2 : code
+		if(termMapping.get(index).get(term).getProbabilityOfTagOverTerm(tag) == 0.0){
+			return 0.0;
+		}
 		return Math.log((double)termMapping.get(index).get(term).getProbabilityOfTagOverTerm(tag)/((double)tagToDocumentFrequency.get(tag)/numberOfDocuments));		
 	}
 
