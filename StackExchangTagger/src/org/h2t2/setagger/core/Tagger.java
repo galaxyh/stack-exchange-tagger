@@ -148,6 +148,7 @@ public class Tagger {
 		} else if("-cb".equals(args[0])) {
 			CognitiveBayesian cb = new CognitiveBayesian();
 			cb.train(args[4], args);
+			cb.predict(args[5], args[6] ,args);
 		}
 	}
 

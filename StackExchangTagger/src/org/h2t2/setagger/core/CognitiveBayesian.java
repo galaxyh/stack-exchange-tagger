@@ -12,7 +12,6 @@ import java.util.HashSet;
 
 import org.h2t2.setagger.util.DocumentVectorProcessor;
 import org.h2t2.setagger.util.RankPriorityQueue;
-import org.h2t2.setagger.util.TagRank;
 
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -228,6 +227,7 @@ public class CognitiveBayesian implements Model{
 				
 			}
 			reader.close();
+			writer.close();
 			
 			
 		}catch(Exception e){
