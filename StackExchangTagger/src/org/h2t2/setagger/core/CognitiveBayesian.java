@@ -14,25 +14,21 @@ import au.com.bytecode.opencsv.CSVReader;
 
 
 public class CognitiveBayesian implements Model{
-	private  ArrayList <HashMap <String, Association>> termMapping;
+	private ArrayList <HashMap <String, Association>> termMapping;
 	private HashMap <String, Integer> tagToDocumentFrequency;
 	private int numberOfDocuments = 0;
 	private HashSet<String> allTagsSet;
 	
 	
 	private class Association{
-		public int tfInDoc;
+		public int tfInDoc = 0;
 		public HashMap <String, Integer> tagToCooccurrence;
-		public double attentionWeight;
-		public double entropy;
-		public double scaledEntropy;
+		public double attentionWeight = 0.0;
+		public double entropy = 0.0;
+		public double scaledEntropy = 0.0;
 		public Association(){
-			tfInDoc = 0;
 			tagToCooccurrence = new HashMap <String, Integer>();
-			attentionWeight = 0.0;
-			entropy = 0.0;
-			scaledEntropy = 0.0;
-
+		
 		}
 		
 		public double getProbabilityOfTagOverTerm(String tag){
@@ -44,9 +40,9 @@ public class CognitiveBayesian implements Model{
 				double entropy = 0.0;
 				for(String tag : tagToCooccurrence.keySet()){
 					double probabilityOfTagOverTerm = getProbabilityOfTagOverTerm(tag);
-					entropy += -probabilityOfTagOverTerm/Math.log(probabilityOfTagOverTerm);
+					entropy += probabilityOfTagOverTerm/Math.log(probabilityOfTagOverTerm);
 				}
-				this.entropy = entropy;
+				this.entropy = -entropy;
 			}
 			return this.entropy;
 			
@@ -129,7 +125,7 @@ public class CognitiveBayesian implements Model{
 				
 			}
 			reader.close();
-			// Now start to calculate Entropy, save it temporarily in Attention Weight
+			// Now start to calculate Entropy, Scaled Entropy and Attention Weight
 			
 			for(int i = 0;i < termMapping.size();i++){
 				double entropyMax = 0.0;
@@ -140,19 +136,18 @@ public class CognitiveBayesian implements Model{
 					}
 				}
 				
+				// calculate scaled entropy				
 				double totalScaledEntropy = 0.0;
 				for(String term : termMapping.get(i).keySet()){
 					termMapping.get(i).get(term).setScaledEntropy
 					(1.0-termMapping.get(i).get(term).getEntropy()/entropyMax);
 					totalScaledEntropy += termMapping.get(i).get(term).getScaledEntropy();
 				}
-				
+				// calculate attention weight
 				for(String term : termMapping.get(i).keySet()){
 					termMapping.get(i).get(term).setAttentionWeight
 					(termMapping.get(i).get(term).getScaledEntropy()/totalScaledEntropy);
 				}
-				
-				
 				
 			}
 			
