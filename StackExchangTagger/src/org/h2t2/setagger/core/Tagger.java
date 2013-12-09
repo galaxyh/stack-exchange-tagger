@@ -143,9 +143,38 @@ public class Tagger {
 			}catch(Exception e){
 				e.printStackTrace();
 			}
-			
-			
-		}
+		} else if("-tp".equals(args[0])) {
+			if (args.length < 5) {
+				printUsage();
+				return;
+			}
+
+			// Get additional arguments
+			String[] additionalArgs = null;
+			if (args.length > 5) {
+				additionalArgs  = new String[args.length - 5];
+				for (int i = 5; i < args.length; i++) {
+					additionalArgs[i - 5] = args[i];
+				}
+			}
+
+			// Do training
+			Model model = getModelObject(args[1]);
+
+			System.out.println("Training...");
+			stopWatch.start();
+			model.train(args[2], additionalArgs);
+			stopWatch.stop();
+			System.out.println("Done. (" + stopWatch.toString() + ")\n");
+
+            stopWatch.reset();
+			System.out.println("Predicting...");
+			stopWatch.start();
+			model.predict(args[3], args[4], additionalArgs);
+			stopWatch.stop();
+			System.out.println("Done. (" + stopWatch.toString() + ")\n");
+        }
+
 	}
 
 	private static Model getModelObject(String modelName) {
