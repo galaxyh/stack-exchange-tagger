@@ -212,13 +212,13 @@ public class CognitiveBayesian implements Model{
 				for(String tag : allTagsSet){
 					double rank = getBaseLevel(tag);
 					for(String term: titleTermSet){
-						rank += getStrengthAssociation(0, term, tag)*termMapping.get(0).get(term).getAttentionWeight();
+						if(termMapping.get(0).get(term) != null)rank += getStrengthAssociation(0, term, tag)*termMapping.get(0).get(term).getAttentionWeight();
 					}
 					for(String term : bodyTermSet){
-						rank += bodyWeight*getStrengthAssociation(1, term, tag)*termMapping.get(1).get(term).getAttentionWeight();
+						if(termMapping.get(1).get(term) != null)rank += bodyWeight*getStrengthAssociation(1, term, tag)*termMapping.get(1).get(term).getAttentionWeight();
 					}
 					for(String term : codeTermSet){
-						rank += codeWeight*getStrengthAssociation(2, term, tag)*termMapping.get(2).get(term).getAttentionWeight();
+						if(termMapping.get(2).get(term) != null)rank += codeWeight*getStrengthAssociation(2, term, tag)*termMapping.get(2).get(term).getAttentionWeight();
 					}
 					priQueue.add(tag, rank);
 					
