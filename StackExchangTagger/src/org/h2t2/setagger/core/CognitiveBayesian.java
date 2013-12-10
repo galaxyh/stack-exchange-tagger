@@ -7,11 +7,13 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 
 import org.h2t2.setagger.util.DocumentVectorProcessor;
 import org.h2t2.setagger.util.RankPriorityQueue;
+import org.h2t2.setagger.util.TagRank;
 
 import au.com.bytecode.opencsv.CSVReader;
 
@@ -37,7 +39,7 @@ public class CognitiveBayesian implements Model{
 			if(tagToCooccurrence.get(tag) == null){
 				return 0.0;
 			}
-			return tagToCooccurrence.get(tag)/tfInDoc;
+			return (double)tagToCooccurrence.get(tag)/tfInDoc;
 		}
 		
 		public double getEntropy(){
@@ -205,7 +207,8 @@ public class CognitiveBayesian implements Model{
 					System.err.println("error test record not 4 columns ! ");
 					System.exit(-1);
 				}
-				RankPriorityQueue priQueue = new RankPriorityQueue(10);
+				//RankPriorityQueue priQueue = new RankPriorityQueue(10);
+				TagRank [] queue = new TagRank[allTagsSet.size()];
 				HashSet <String> titleTermSet = getUniqueTermSet(record[1]);
 				HashSet <String> bodyTermSet = getUniqueTermSet(record[2]);
 				HashSet <String> codeTermSet = getUniqueTermSet(record[3]);
@@ -213,6 +216,7 @@ public class CognitiveBayesian implements Model{
 				double bodyWeight = 1.0;
 				double codeWeight = 3.0;
 				
+				int index = 0;
 				for(String tag : allTagsSet){
 					double rank = getBaseLevel(tag);
 					for(String term: titleTermSet){
@@ -224,11 +228,15 @@ public class CognitiveBayesian implements Model{
 					for(String term : codeTermSet){
 						if(termMapping.get(2).get(term) != null)rank += codeWeight*getStrengthAssociation(2, term, tag)*termMapping.get(2).get(term).getAttentionWeight();
 					}
-					priQueue.add(tag, rank);
+					//System.out.println(record[0] + " " + tag + " " + rank);
+					//priQueue.add(tag, rank);
+					queue[index++] = new TagRank(tag, rank);
 					
 				}
-				String [] top5Tags = priQueue.getHighest(5);
-				writer.write(record[0]+","+"\""+top5Tags[0]+" "+top5Tags[1]+" "+top5Tags[2]+"\"\n");
+				//String [] top5Tags = priQueue.getHighest(5);
+				Arrays.sort(queue);
+				
+				writer.write(record[0]+","+"\""+queue[queue.length-1]+" "+queue[queue.length-2]+" "+queue[queue.length-3]+"\"\n");
 				
 			}
 			reader.close();
