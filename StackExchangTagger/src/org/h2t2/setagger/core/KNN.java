@@ -78,11 +78,16 @@ public class KNN implements Model {
                     maxTags.put(entry.getValue(), entry.getKey());
                 }
 
+                Map.Entry<Double, String> tmpEntry;
                 idTags = new String[2];
                 idTags[0] = record[0];
                 idTags[1] = maxTags.pollLastEntry().getValue();
-                idTags[1] += " " + maxTags.pollLastEntry().getValue();
-                idTags[1] += " " + maxTags.pollLastEntry().getValue();
+                if((tmpEntry = maxTags.pollLastEntry()) != null) {
+                    idTags[1] += " " + tmpEntry.getValue();
+                }
+                if((tmpEntry = maxTags.pollLastEntry()) != null) {
+                    idTags[1] += " " + tmpEntry.getValue();
+                }
 
                 writer.writeNext(idTags);
                 writer.flush();
