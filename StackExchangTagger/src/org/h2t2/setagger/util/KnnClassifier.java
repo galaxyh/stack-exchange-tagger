@@ -43,6 +43,8 @@ public class KnnClassifier implements Serializable {
     public void train(String[] record) {
         stopWatch.reset(); // analyic purpose
         stopWatch.start(); // analyic purpose
+        long startTime = System.nanoTime();
+        long startTimeM = System.currentTimeMillis();
 
         HashMap<String, Double> map = stringToMap(record[1] + " " + record[2]);
         doc.add(new FeatureVector(map));
@@ -51,6 +53,10 @@ public class KnnClassifier implements Serializable {
 
         stopWatch.stop(); // analyic purpose
         System.out.println("train time " + record[0] + ": " + stopWatch); // analyic purpose
+        long endTime = System.nanoTime();
+        System.out.println("train time " + record[0] + " (nano): " + (endTime - startTime)); // analyic purpose
+        long endTimeM = System.currentTimeMillis();
+        System.out.println("train time " + record[0] + " (milli): " + (endTimeM - startTimeM)); // analyic purpose
     }
 
     public void endTrain() {
