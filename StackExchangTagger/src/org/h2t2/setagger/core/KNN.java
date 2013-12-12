@@ -35,6 +35,7 @@ public class KNN implements Model {
 
                 knn.train(record);
             }
+            knn.endTrain();
 
             reader.close();
         }

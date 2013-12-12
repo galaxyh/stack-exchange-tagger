@@ -1,26 +1,31 @@
-package org.h2t2.setagger.core;
-
-import org.h2t2.setagger.util.TfIdfDistance;
+package org.h2t2.setagger.util;
 
 import java.io.Serializable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Iterator;
 
 import java.lang.Math.*;
 
 public class FeatureVector implements Serializable {
 
+    static final long serialVersionUID = -7393893773241082578L;
+
     public HashMap<String, Double> vector;
-    public String[] tag;
     public double length = 0;
 
+    public FeatureVector(HashMap<String, Double> v) {
+        vector = v;
+    }
+
     public void refine(TfIdfDistance tfIdf) {
-        for(Map.Entry<String, Double> entry : vector.entrySet()) {
+        for(Iterator<Map.Entry<String, Double>> it = vector.entrySet().iterator();it.hasNext();) {
+            Map.Entry<String, Double> entry = it.next();
             String key = entry.getKey();
             double tmp = tfIdf.idf(key);
             if(tmp == 0) {
-                vector.remove(key);
+                it.remove();
                 continue;
             }
             tmp = Math.sqrt(entry.getValue() * tmp);

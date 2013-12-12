@@ -14,37 +14,45 @@ public class KnnClassifier implements Serializable {
 
     private int K = 10;
     private TfIdfDistance tfIdf = new TfIdfDistance();
-    private Vector<HashMap<String, Integer>> doc = new Vector<HashMap<String, Integer>>();
     private Vector<String[]> tag = new Vector<String[]>();
+    private Vector<FeatureVector> doc = new Vector<FeatureVector>();
 
     public KnnClassifier() {}
     public KnnClassifier(int K) {this.K = K;}
 
-    private HashMap<String, Integer> stringToMap(String s) {
+    private HashMap<String, Double> stringToMap(String s) {
         StringTokenizer tokenizer = new StringTokenizer(s);
 
-        HashMap<String, Integer> map = new HashMap<String, Integer>();
-        Integer value;
+        HashMap<String, Double> map = new HashMap<String, Double>();
+        Double value;
         while(tokenizer.hasMoreTokens()) {
             String token = tokenizer.nextToken();
             if((value = map.get(token)) != null)
                 map.put(token, value+1);
             else
-                map.put(token, 1);
+                map.put(token, 1.0);
         }
 
         return map;
     }
 
     public void train(String[] record) {
-        HashMap<String, Integer> map = stringToMap(record[1] + " " + record[2]);
-        doc.add(map);
+        HashMap<String, Double> map = stringToMap(record[1] + " " + record[2]);
+        doc.add(new FeatureVector(map));
+        //doc.add(map);
         tag.add(record[4].split("\\s+"));
         tfIdf.addDoc(map);
     }
 
+    public void endTrain() {
+        for(FeatureVector fv : doc) {
+            fv.refine(tfIdf);
+        }
+    }
+
     public TreeMap<Double, String[]> classify(String[] record) {
-        HashMap<String, Integer> input = stringToMap(record[1] + " " + record[2]);
+        FeatureVector input = new FeatureVector(stringToMap(record[1] + " " + record[2]));
+        input.refine(tfIdf);
         TreeMap<Double, String[]> nearestNeighbor = new TreeMap<Double, String[]>(); // should use multimap
 
         int i;

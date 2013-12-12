@@ -21,7 +21,7 @@ public class TfIdfDistance implements Serializable {
 
     }
 
-    public void addDoc(HashMap<String, Integer> map) {
+    public void addDoc(HashMap<String, Double> map) {
         Integer value;
         for(String token : map.keySet()) {
            if((value = tokenDf.get(token)) != null) {
@@ -35,13 +35,30 @@ public class TfIdfDistance implements Serializable {
         docCount++;
     }
 
-    public double proximity(HashMap<String, Integer> doc1, HashMap<String, Integer> doc2) {
+    public double proximity(FeatureVector doc1, FeatureVector doc2) {
+        double dotProduct = 0;
+
+        for(Map.Entry<String, Double> entry : doc1.vector.entrySet()) {
+            Double tfIdf2;
+            if(( tfIdf2 = doc2.vector.get(entry.getKey()) ) != null) {
+                dotProduct += tfIdf2 * entry.getValue();
+            }
+        }
+
+        if(doc1.length == 0)
+            return (doc2.length == 0)? 1 : 0;
+        if(doc2.length == 0)
+            return 0;
+        return dotProduct / (doc1.length * doc2.length);
+    }
+
+    public double proximity(HashMap<String, Double> doc1, HashMap<String, Double> doc2) {
         double len1 = 0, len2 = 0, dotProduct = 0;
 
-        for(Map.Entry<String, Integer> entry : doc1.entrySet()) {
+        for(Map.Entry<String, Double> entry : doc1.entrySet()) {
             String term = entry.getKey();
             double idf = idf(term);
-            Integer tf1  = entry.getValue();
+            double tf1  = entry.getValue();
             /* logical view */
             // double tfIdf1 = Math.sqrt(tf1*idf);
             // len1 += tfIdf1*tfIdf1;
@@ -53,15 +70,15 @@ public class TfIdfDistance implements Serializable {
 
             double tfIdf1 = tf1 * idf;
             len1 += tfIdf1;
-            Integer tf2 = doc2.get(term);
+            Double tf2 = doc2.get(term);
             if(tf2 == null)
                 continue;
             double tfIdf2 = tf2 * idf;
             dotProduct += Math.sqrt(tfIdf1*tfIdf2);
         }
-        for(Map.Entry<String, Integer> entry : doc2.entrySet()) {
+        for(Map.Entry<String, Double> entry : doc2.entrySet()) {
             String term = entry.getKey();
-            Integer tf2 = entry.getValue();
+            double tf2 = entry.getValue();
             /* logical view */
             // double tfIdf2 = Math.sqrt(tf2*idf(term));
             // len2 += tfIdf2*tfIdf2;
