@@ -92,7 +92,9 @@ public class KNN implements Model {
 
                 writer.writeNext(idTags);
                 writer.flush();
+
                 System.out.println("record " + record[0] + " done.");
+                System.out.println();
             }
 
             writer.close();
