@@ -41,16 +41,28 @@ public class KnnClassifier implements Serializable {
     }
 
     public void train(String[] record) {
+        stopWatch.reset(); // analyic purpose
+        stopWatch.start(); // analyic purpose
+
         HashMap<String, Double> map = stringToMap(record[1] + " " + record[2]);
         doc.add(new FeatureVector(map));
-        //doc.add(map);
         tag.add(record[4].split("\\s+"));
         tfIdf.addDoc(map);
+
+        stopWatch.stop(); // analyic purpose
+        System.out.println("train time " + record[0] + ": " + stopWatch); // analyic purpose
     }
 
     public void endTrain() {
+        int i = 0; // analyic purpose
         for(FeatureVector fv : doc) {
+            stopWatch.reset(); // analyic purpose
+            stopWatch.start(); // analyic purpose
+
             fv.refine(tfIdf);
+            
+            stopWatch.stop(); // analyic purpose
+            System.out.println("refine time " + ++i + ": " + stopWatch); // analyic purpose
         }
     }
 
