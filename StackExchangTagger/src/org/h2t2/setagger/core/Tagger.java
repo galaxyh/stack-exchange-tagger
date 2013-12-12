@@ -85,8 +85,11 @@ public class Tagger {
 			System.out.println("Done. (" + stopWatch.toString() + ")\n");
 
 			System.out.println("Saving model...");
+			stopWatch.reset();
+			stopWatch.start();
 			model.saveModel(args[3]);
-			System.out.println("Done.\n");
+			stopWatch.stop();
+			System.out.println("Done. (" + stopWatch.toString() + ")\n");
 		} else if ("-p".equals(args[0])) { // Do prediction
 			if (args.length < 5) {
 				printUsage();
@@ -106,10 +109,13 @@ public class Tagger {
 			Model model = getModelObject(args[1]);
 
 			System.out.println("Load model...");
+			stopWatch.start();
 			model.loadModel(args[2]);
-			System.out.println("Done.\n");
+			stopWatch.stop();
+			System.out.println("Done. (" + stopWatch.toString() + ")\n");
 
 			System.out.println("Predicting...");
+            stopWatch.reset();
 			stopWatch.start();
 			model.predict(args[3], args[4], predictArgs);
 			stopWatch.stop();
