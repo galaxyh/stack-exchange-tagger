@@ -88,8 +88,8 @@ public class TagEvaluator {
 		int invalidCount = 0;
 
 		try {
-			CSVReader truthReader = new CSVReader(new FileReader(truthFileName));
-			CSVReader predictReader = new CSVReader(new FileReader(predictFileName));
+			CSVReader truthReader = new CSVReader(new FileReader(truthFileName), ',', '"', '\0', 0);
+			CSVReader predictReader = new CSVReader(new FileReader(predictFileName), ',', '"', '\0', 0);
 
 			String[] truthRecord;
 			String[] predictRecord;
