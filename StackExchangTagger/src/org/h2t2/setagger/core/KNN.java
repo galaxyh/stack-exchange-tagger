@@ -36,10 +36,13 @@ public class KNN implements Model {
             String[] record;
             int cnt = 0;
             while ((s = reader.readLine()) != null) {
-                record = s.split("[\",]+");
+                record = s.split(",");
                 if(record.length != 5) {
-                    System.err.println("csv read error");
+                    System.err.println("BufferedReader error");
                     System.exit(1);
+                }
+                for(String str : record) {
+                    System.out.println(str);
                 }
 
                 stopWatch.reset(); // analytic
@@ -72,9 +75,9 @@ public class KNN implements Model {
             String s;
             String[] record;
             while ((s = reader.readLine()) != null) {
-                record = s.split("[\",]+");
+                record = s.split(",");
                 if(record.length != 5){ // 5 for test, 4 for real
-                    System.err.println("csv read error");
+                    System.err.println("BufferedReader error");
                     System.exit(1);
                 }
 

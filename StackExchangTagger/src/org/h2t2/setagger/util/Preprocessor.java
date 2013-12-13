@@ -41,7 +41,7 @@ public class Preprocessor {
      * @throws IOException
      */
     public void process(String input, String output) throws IOException {
-        CSVWriter writer = new CSVWriter(new FileWriter(output), ',');
+        CSVWriter writer = new CSVWriter(new FileWriter(output), ',', '\0');
         CSVReader reader = new CSVReader(new FileReader(input), ',', '"', '\0', 1);
 
         String[] record;
