@@ -41,9 +41,6 @@ public class KNN implements Model {
                     System.err.println("BufferedReader error");
                     System.exit(1);
                 }
-                for(String str : record) {
-                    System.out.println(str);
-                }
 
                 stopWatch.reset(); // analytic
                 stopWatch.start(); // analytic
