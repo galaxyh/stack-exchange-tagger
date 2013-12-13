@@ -28,7 +28,7 @@ public class CognitiveBayesian implements Model {
 		public int tfInDoc = 0;
 		public HashMap <String, Integer> tagToCooccurrence;
 		public double attentionWeight = 0.0;
-		public double entropy = 0.0;
+		public Double entropy = null
 		public double scaledEntropy = 0.0;
 		public Association() {
 			tagToCooccurrence = new HashMap <String, Integer>();
@@ -42,13 +42,12 @@ public class CognitiveBayesian implements Model {
 		}
 
 		public double getEntropy() {
-			if (this.entropy == 0.0) {
-				double entropy = 0.0;
+			if (this.entropy == null) {
+				this.entropy = 0.0;
 				for (String tag : tagToCooccurrence.keySet()) {
 					double probabilityOfTagOverTerm = getProbabilityOfTagOverTerm(tag);
-					entropy += probabilityOfTagOverTerm / Math.log(probabilityOfTagOverTerm);
+					this.entropy -= probabilityOfTagOverTerm * Math.log(probabilityOfTagOverTerm);
 				}
-				this.entropy = -entropy;
 			}
 			return this.entropy;
 		}
@@ -71,12 +70,13 @@ public class CognitiveBayesian implements Model {
 	}
 
 	private double getBaseLevel (String tag) {
-		double probabilityOfTag = 0.0;
-		if (tagToDocumentFrequency.get(tag) != null)
-			probabilityOfTag = tagToDocumentFrequency.get(tag) / (double)numberOfDocuments;
-		if (probabilityOfTag == 0.0)
+		Integer tagFrequency = this.tagToDocumentFrequency.get(tag);
+		if (tagFrequency != null && tagFrequency != 0) {
+			double probabilityOfTag = tagFrequency / (double) numberOfDocuments;
+			return Math.log(probabilityOfTag / (1 - probabilityOfTag));
+		} else {
 			return 0.0;
-		return Math.log(probabilityOfTag / (1-probabilityOfTag));
+		}
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public class CognitiveBayesian implements Model {
 	public void train (String trainFileName, String[] args) {
 		try {
 			termMapping = new ArrayList <HashMap <String, Association>>(3);
-			for (int i = 1;i <= 3;i++) {
+			for (int i = 1; i <= 3; i ++) {
 				termMapping.add(getAssociationMap(args[i]));
 			}
 
@@ -135,17 +135,19 @@ public class CognitiveBayesian implements Model {
 			for (int i = 0; i < termMapping.size(); i ++) {
 				double entropyMax = 0.0;
 				double entropyTemp = 0.0;
+
 				for (String term : termMapping.get(i).keySet()) {
 					if ((entropyTemp = termMapping.get(i).get(term).getEntropy()) > entropyMax) {
 						entropyMax = entropyTemp;
 					}
 				}
 
-				// calculate scaled entropy				
+				// calculate scaled entropy
 				double totalScaledEntropy = 0.0;
 				for (String term : termMapping.get(i).keySet()) {
-					termMapping.get(i).get(term).setScaledEntropy(1.0 - termMapping.get(i).get(term).getEntropy() / entropyMax);
-					totalScaledEntropy += termMapping.get(i).get(term).getScaledEntropy();
+					Association association = termMapping.get(i).get(term);
+					association.setScaledEntropy(1.0 - association.getEntropy() / entropyMax);
+					totalScaledEntropy += association.getScaledEntropy();
 				}
 
 				// calculate attention weight
@@ -187,36 +189,33 @@ public class CognitiveBayesian implements Model {
 			CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream(new File(predictFileName)), "UTF8"));
 			String [] record;
 			BufferedWriter writer = new BufferedWriter(new FileWriter(outputFileName));
-			writer.write("\"Id\",\"Tags\"\n");
-			while ((record = reader.readNext())!= null) {
+			writer.write("\"Id\", \"Tags\"\n");
+			while ((record = reader.readNext()) != null) {
 				if (record.length != 4) {
-					System.err.println("error test record not 4 columns !");
+					System.err.println("error test record should contain 4 columns!");
 					System.exit(-1);
 				}
 				//RankPriorityQueue priQueue = new RankPriorityQueue(10);
 				TagRank [] queue = new TagRank[allTagsSet.size()];
-				HashSet <String> titleTermSet = getUniqueTermSet(record[1]);
-				HashSet <String> bodyTermSet = getUniqueTermSet(record[2]);
-				HashSet <String> codeTermSet = getUniqueTermSet(record[3]);
-
-				double bodyWeight = 1.0;
-				double codeWeight = 3.0;
+				HashSet <String> [] termSets = {getUniqueTermSet(record[1]), getUniqueTermSet(record[2]), getUniqueTermSet(record[3])};
+				Double [] weights = {1.0, 1.0, 3.0};
 
 				int index = 0;
+
 				for (String tag : allTagsSet) {
+
 					double rank = getBaseLevel(tag);
-					for (String term: titleTermSet) {
-						if (termMapping.get(0).get(term) != null)
-							rank += getStrengthAssociation(0, term, tag) * termMapping.get(0).get(term).getAttentionWeight();
+
+					// i iterates through title, body, code
+					for (int i = 0; i < 3; i ++) {
+						for (String term : termSets[i]) {
+							Association association = termMapping.get(i).get(term);
+							if (association != null) {
+								rank += weights[i] * getStrengthAssociation(i, term, tag) * association.getAttentionWeight();
+							}
+						}
 					}
-					for (String term : bodyTermSet) {
-						if(termMapping.get(1).get(term) != null)
-							rank += bodyWeight * getStrengthAssociation(1, term, tag) * termMapping.get(1).get(term).getAttentionWeight();
-					}
-					for (String term : codeTermSet) {
-						if(termMapping.get(2).get(term) != null)
-							rank += codeWeight * getStrengthAssociation(2, term, tag) * termMapping.get(2).get(term).getAttentionWeight();
-					}
+
 					//System.out.println(record[0] + " " + tag + " " + rank);
 					//priQueue.add(tag, rank);
 					queue[index++] = new TagRank(tag, rank);
