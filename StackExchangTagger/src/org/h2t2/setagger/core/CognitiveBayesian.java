@@ -133,9 +133,9 @@ public class CognitiveBayesian implements Model {
 
 			// Now start to calculate Entropy, Scaled Entropy and Attention Weight
 			for (int i = 0; i < termMapping.size(); i ++) {
+
 				double entropyMax = 0.0;
 				double entropyTemp = 0.0;
-
 				for (String term : termMapping.get(i).keySet()) {
 					if ((entropyTemp = termMapping.get(i).get(term).getEntropy()) > entropyMax) {
 						entropyMax = entropyTemp;
@@ -150,9 +150,12 @@ public class CognitiveBayesian implements Model {
 					totalScaledEntropy += association.getScaledEntropy();
 				}
 
+				double attentionWeightBound = 1.0;
+
 				// calculate attention weight
 				for (String term : termMapping.get(i).keySet()) {
-					termMapping.get(i).get(term).setAttentionWeight(termMapping.get(i).get(term).getScaledEntropy() / totalScaledEntropy);
+					Association association = termMapping.get(i).get(term);
+					association.setAttentionWeight(attentionWeightBound * association.getScaledEntropy() / totalScaledEntropy);
 				}
 			}
 		} catch (Exception e) {
@@ -208,7 +211,7 @@ public class CognitiveBayesian implements Model {
 
 					// i iterates through title, body, code
 					for (int i = 0; i < 3; i ++) {
-						for (String term : (HashSet <String>)termSets[i]) {
+						for (String term : (HashSet <String>) termSets[i]) {
 							Association association = termMapping.get(i).get(term);
 							if (association != null) {
 								rank += weights[i] * getStrengthAssociation(i, term, tag) * association.getAttentionWeight();
@@ -241,7 +244,7 @@ public class CognitiveBayesian implements Model {
 		}
 	}
 
-	private double getStrengthAssociation (int index, String term , String tag) {
+	private double getStrengthAssociation (int index, String term, String tag) {
 		// index 0: title, index 1: body, index 2 : code
 		double probabilityOfTagOverTerm = termMapping.get(index).get(term).getProbabilityOfTagOverTerm(tag);
 		if (probabilityOfTagOverTerm != 0.0)
