@@ -204,8 +204,8 @@ public class CognitiveBayesian implements Model {
 					System.err.println("error test record should contain 4 columns!");
 					System.exit(-1);
 				}
-				//RankPriorityQueue priQueue = new RankPriorityQueue(10);
-				TagRank [] queue = new TagRank[allTagsSet.size()];
+				RankPriorityQueue priQueue = new RankPriorityQueue(10);
+				//TagRank [] queue = new TagRank[allTagsSet.size()];
 				Object [] termSets = {getUniqueTermSet(reader.get(1)), getUniqueTermSet(reader.get(2)), getUniqueTermSet(reader.get(3))};
 				Double [] weights = {1.0, 1.0, 3.0};
 
@@ -225,24 +225,26 @@ public class CognitiveBayesian implements Model {
 						}
 					}
 
-					//System.out.println(record[0] + " " + tag + " " + rank);
-					//priQueue.add(tag, rank);
-					queue[index++] = new TagRank(tag, rank);
+					System.out.println(reader.get(0) + " " + tag + " " + rank);
+					priQueue.add(tag, rank);
+//					queue[index++] = new TagRank(tag, rank);
 				}
 
 				//String [] top5Tags = priQueue.getHighest(5);
-				Arrays.sort(queue);
+//				Arrays.sort(queue);
 
 				int topNumber = 3;
 				// get top 3 tags
+				String [] topTags = priQueue.getHighest(topNumber);
 				writer.write(reader.get(0));
-				String tags = "\"";
+				String tags = "";
 				for (int i = 0; i < topNumber; i ++) {
-					tags = tags + queue[queue.length - i - 1].getTag();
+//					tags = tags + queue[queue.length - i - 1].getTag();
+					tags += topTags[i];					
 					if (i != topNumber - 1)
 						tags = tags + (" ");
 				}
-				tags = tags + "\"";
+				
 				writer.write(tags);
 				writer.endRecord();
 			}
