@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
+java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -15,7 +16,8 @@ import org.h2t2.setagger.util.DocumentVectorProcessor;
 import org.h2t2.setagger.util.RankPriorityQueue;
 import org.h2t2.setagger.util.TagRank;
 
-import au.com.bytecode.opencsv.CSVReader;
+import com.csvreader.CsvReader;
+import com.csvreader.CsvWriter;
 
 
 public class CognitiveBayesian implements Model {
@@ -23,6 +25,7 @@ public class CognitiveBayesian implements Model {
 	private HashMap <String, Integer> tagToDocumentFrequency;
 	private int numberOfDocuments = 0;
 	private HashSet<String> allTagsSet;
+	private final Charset UTF8 = Charset.forName("UTF-8");
 
 	private class Association {
 		public int tfInDoc = 0;
@@ -92,16 +95,15 @@ public class CognitiveBayesian implements Model {
 			allTagsSet = new HashSet<String>();
 
 			// Now all disqualified terms are eliminated
-			CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream(new File(trainFileName)), "UTF8"));
-			String [] record;
+			CsvReader reader = new CsvReader(new FileInputStream(new File(trainFileName)), UTF8);
 			Association termToAssociation;
 			String [] tags;
 			Integer termAndTagCooccurrence;
-			while ((record = reader.readNext()) != null) {
-				if (record.length != 5)
+			while (reader.readRecord()) {
+				if (reader.getColumnCount() != 5)
 					continue;
 				numberOfDocuments ++;
-				tags = record[4].split("\\s+");
+				tags = reader.get(4).split("\\s+");
 
 				for (String tag : tags) {
 					Integer frequency = null;
@@ -114,7 +116,7 @@ public class CognitiveBayesian implements Model {
 				}
 
 				for (int i = 1; i <= 3; i ++) {
-					for (String uniqueTerm : getUniqueTermSet(record[i])) {
+					for (String uniqueTerm : getUniqueTermSet(reader.get(i))) {
 						if ((termToAssociation = termMapping.get(i - 1).get(uniqueTerm)) != null) {
 							// the term is qualified because its idf < idfBound
 							termToAssociation.tfInDoc ++;
@@ -189,18 +191,22 @@ public class CognitiveBayesian implements Model {
 	@Override
 	public void predict (String predictFileName, String outputFileName, String[] args) {
 		try {
-			CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream(new File(predictFileName)), "UTF8"));
-			String [] record;
-			BufferedWriter writer = new BufferedWriter(new FileWriter(outputFileName));
-			writer.write("\"Id\", \"Tags\"\n");
-			while ((record = reader.readNext()) != null) {
-				if (record.length != 4) {
+			CsvReader reader = new CsvReader(new FileInputStream(new File(predictFileName)), UTF8);
+			CsvWriter writer = new CsvWriter(outputFileName, ',', UTF8);
+			
+			// header
+			writer.write("\"Id\"");
+			writer.write("\"Tags\"");
+			writer.endRecord();
+
+			while (reader.readRecord()) {
+				if (reader.getColumnCount() != 4) {
 					System.err.println("error test record should contain 4 columns!");
 					System.exit(-1);
 				}
 				//RankPriorityQueue priQueue = new RankPriorityQueue(10);
 				TagRank [] queue = new TagRank[allTagsSet.size()];
-				Object [] termSets = {getUniqueTermSet(record[1]), getUniqueTermSet(record[2]), getUniqueTermSet(record[3])};
+				Object [] termSets = {getUniqueTermSet(reader.get(1)), getUniqueTermSet(reader.get(2)), getUniqueTermSet(reader.get(3))};
 				Double [] weights = {1.0, 1.0, 3.0};
 
 				int index = 0;
@@ -229,13 +235,16 @@ public class CognitiveBayesian implements Model {
 
 				int topNumber = 3;
 				// get top 3 tags
-				writer.write(record[0] + ", \"");
+				writer.write(reader.get(0));
+				String tags = "\"";
 				for (int i = 0; i < topNumber; i ++) {
-					writer.write(queue[queue.length - i - 1].getTag());
+					tags = tags + queue[queue.length - i - 1].getTag();
 					if (i != topNumber - 1)
-						writer.write(" ");
+						tags = tags + (" ");
 				}
-				writer.write("\"\n");
+				tags = tags + "\"";
+				writer.write(tags);
+				writer.endRecord();
 			}
 			reader.close();
 			writer.close();
