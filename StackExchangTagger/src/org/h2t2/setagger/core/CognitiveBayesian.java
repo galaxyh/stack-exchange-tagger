@@ -223,7 +223,16 @@ public class CognitiveBayesian implements Model {
 
 				//String [] top5Tags = priQueue.getHighest(5);
 				Arrays.sort(queue);
-				writer.write(record[0] + "," + "\"" + queue[queue.length - 1] + " " + queue[queue.length - 2]+" " + queue[queue.length - 3] + "\"\n");
+
+				int topNumber = 3;
+				// get top 3 tags
+				writer.write(record[0] + ", \"");
+				for (int i = 0; i < topNumber; i ++) {
+					writer.write(queue[queue.length - i - 1]);
+					if (i != topNumber - 1)
+						writer.write(" ");
+				}
+				writer.write("\"\n");
 			}
 			reader.close();
 			writer.close();
@@ -234,9 +243,10 @@ public class CognitiveBayesian implements Model {
 
 	private double getStrengthAssociation (int index, String term , String tag) {
 		// index 0: title, index 1: body, index 2 : code
-		if (termMapping.get(index).get(term).getProbabilityOfTagOverTerm(tag) == 0.0)
-			return 0.0;
-		return Math.log((double)termMapping.get(index).get(term).getProbabilityOfTagOverTerm(tag) / ((double)tagToDocumentFrequency.get(tag) / numberOfDocuments));		
+		double probabilityOfTagOverTerm = termMapping.get(index).get(term).getProbabilityOfTagOverTerm(tag);
+		if (probabilityOfTagOverTerm != 0.0)
+			return Math.log(probabilityOfTagOverTerm / ((double) tagToDocumentFrequency.get(tag) / numberOfDocuments));		
+		return 0.0;
 	}
 
 	@Override
