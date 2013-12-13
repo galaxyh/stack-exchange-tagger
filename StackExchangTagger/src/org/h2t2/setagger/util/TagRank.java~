@@ -10,7 +10,6 @@ package org.h2t2.setagger.util;
 public class TagRank implements Comparable<TagRank> {
 	private String tag;
 	private double rank;
-	public static double eps = Math.pow(10, -6);
 
 	/**
 	 * @param tag
@@ -80,8 +79,6 @@ public class TagRank implements Comparable<TagRank> {
 
 	@Override
 	public int compareTo(TagRank other) {
-		if (Math.abs(this.rank-other.getRank()) < eps){
-			return 0;
 		}
 		if (this.rank > other.getRank()) {
 			return 1;
