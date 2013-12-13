@@ -85,8 +85,12 @@ public class Tagger {
 			System.out.println("Done. (" + stopWatch.toString() + ")\n");
 
 			System.out.println("Saving model...");
+			stopWatch.reset();
+			stopWatch.start();
 			model.saveModel(args[3]);
-			System.out.println("Done.\n");
+			stopWatch.stop();
+			System.out.println("Done. (" + stopWatch.toString() + ")\n");
+
 		} else if ("-p".equals(args[0])) { // Do prediction
 			if (args.length < 5) {
 				printUsage();
@@ -106,10 +110,13 @@ public class Tagger {
 			Model model = getModelObject(args[1]);
 
 			System.out.println("Load model...");
+			stopWatch.start();
 			model.loadModel(args[2]);
-			System.out.println("Done.\n");
+			stopWatch.stop();
+			System.out.println("Done. (" + stopWatch.toString() + ")\n");
 
 			System.out.println("Predicting...");
+            stopWatch.reset();
 			stopWatch.start();
 			model.predict(args[3], args[4], predictArgs);
 			stopWatch.stop();
@@ -143,18 +150,44 @@ public class Tagger {
 			}catch(Exception e){
 				e.printStackTrace();
 			}
-			
-			
-		} else if("-cb".equals(args[0])) {
-			CognitiveBayesian cb = new CognitiveBayesian();
-			cb.train(args[4], args);
-			cb.predict(args[5], args[6] ,args);
-		}
+		} else if("-tp".equals(args[0])) {
+			if (args.length < 5) {
+				printUsage();
+				return;
+			}
+
+			// Get additional arguments
+			String[] additionalArgs = null;
+			if (args.length > 5) {
+				additionalArgs  = new String[args.length - 5];
+				for (int i = 5; i < args.length; i++) {
+					additionalArgs[i - 5] = args[i];
+				}
+			}
+
+			// Do training
+			Model model = getModelObject(args[1]);
+
+			System.out.println("Training...");
+			stopWatch.start();
+			model.train(args[2], additionalArgs);
+			stopWatch.stop();
+			System.out.println("Done. (" + stopWatch.toString() + ")\n");
+
+            stopWatch.reset();
+			System.out.println("Predicting...");
+			stopWatch.start();
+			model.predict(args[3], args[4], additionalArgs);
+			stopWatch.stop();
+			System.out.println("Done. (" + stopWatch.toString() + ")\n");
+        }
 	}
 
 	private static Model getModelObject(String modelName) {
 		if ("cooccurrence".equals(modelName)) {
 			return new Cooccurrence();
+        } else if ("knn".equals(modelName)) {
+            return new KNN();
 		} else {
 			return null;
 		}

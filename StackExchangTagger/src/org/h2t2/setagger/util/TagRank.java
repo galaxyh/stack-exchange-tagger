@@ -80,9 +80,6 @@ public class TagRank implements Comparable<TagRank> {
 
 	@Override
 	public int compareTo(TagRank other) {
-	//	if (Math.abs(this.rank-other.getRank()) < eps){
-	//		return 0;
-	//	}
 		if (this.rank > other.getRank()) {
 			return 1;
 		} else {
