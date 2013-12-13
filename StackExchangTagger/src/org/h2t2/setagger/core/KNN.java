@@ -15,8 +15,10 @@ import java.util.Map;
 
 import org.apache.commons.lang3.time.StopWatch;
 
-import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
+
+import java.io.BufferedReader;
+
 
 public class KNN implements Model {
 
@@ -26,13 +28,16 @@ public class KNN implements Model {
     @Override
     public void train(String trainFileName, String[] args) {
         try {
-            CSVReader reader = new CSVReader(new FileReader(trainFileName), ',', '"', '\0', 0);
+            //CSVReader reader = new CSVReader(new FileReader(trainFileName), ',', '"', '\0', 0);
+            BufferedReader reader = new BufferedReader(new FileReader(trainFileName));
             knn = new KnnClassifier();
 
+            String s;
             String[] record;
             int cnt = 0;
-            while ((record = reader.readNext()) != null) {
-                if(record.length != 5){
+            while ((s = reader.readLine()) != null) {
+                record = s.split("[\",]+");
+                if(record.length != 5) {
                     System.err.println("csv read error");
                     System.exit(1);
                 }
@@ -44,8 +49,6 @@ public class KNN implements Model {
                 System.out.println("train time " + ++cnt + " : " + stopWatch); // analytic
             }
             knn.endTrain();
-            knn.tfIdf.featureExtract(80);
-            knn.tfIdf.print();
 
             reader.close();
         }
@@ -59,14 +62,17 @@ public class KNN implements Model {
     public void predict(String predictFileName, String outputFileName, String[] args) {
         try {
             CSVWriter writer = new CSVWriter(new FileWriter(outputFileName), ',');
-            CSVReader reader = new CSVReader(new FileReader(predictFileName), ',', '"', '\0', 0);
+            //CSVReader reader = new CSVReader(new FileReader(predictFileName), ',', '"', '\0', 0);
+            BufferedReader reader = new BufferedReader(new FileReader(predictFileName));
 
             String[] idTags = {"ID", "Tags"};
             writer.writeNext(idTags);
             writer.flush();
 
+            String s;
             String[] record;
-            while ((record = reader.readNext()) != null) {
+            while ((s = reader.readLine()) != null) {
+                record = s.split("[\",]+");
                 if(record.length != 5){ // 5 for test, 4 for real
                     System.err.println("csv read error");
                     System.exit(1);

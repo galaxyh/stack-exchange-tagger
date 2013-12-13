@@ -44,6 +44,7 @@ public class KnnClassifier implements Serializable {
     }
 
     public void endTrain() {
+        tfIdf.featureExtract(80);
         for(FeatureVector fv : doc) {
             fv.refine(tfIdf);
         }
