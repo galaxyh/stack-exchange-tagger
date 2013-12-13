@@ -1,51 +1,60 @@
 package org.h2t2.setagger.util;
 
 import java.lang.Math.*;
+
 import java.io.Serializable;
+
 import java.util.HashMap;
-import java.util.TreeMap;
 import java.util.Map;
+
+import java.util.Iterator;
 
 public class TfIdfDistance implements Serializable {
 
     static final long serialVersionUID = -5892732237635742347L;
 
     private int docCount = 0;
-    private HashMap<String, Integer> tokenDf = new HashMap<String, Integer>();
-    private TreeMap<String, Integer> tmpMap = new TreeMap<String, Integer>();
+    private HashMap<String, Double> tokenIdf = new HashMap<String, Double>();
 
     public void print() {
-        System.out.println("doc: " + docCount + ", term: " + tokenDf.size());
-        for(Map.Entry<String, Integer> entry : tokenDf.entrySet()) {
+        System.out.println("doc: " + docCount + ", term: " + tokenIdf.size());
+        for(Map.Entry<String, Double> entry : tokenIdf.entrySet()) {
             System.out.println(entry.getKey() + " : " + entry.getValue());
         }
     }
 
     public double idf(String s) {
-        Integer df = tokenDf.get(s);
+        Double idf = tokenIdf.get(s);
 
-        if(df == null)
+        if(idf == null)
             return 0;
-        return Math.log(((double)docCount) / ((double)df));
+        return idf;
+    }
 
+    public void featureExtract(int lowest) {
+        for(Iterator<Map.Entry<String, Double>> it = tokenIdf.entrySet().iterator(); it.hasNext();) {
+            Map.Entry<String, Double> entry = it.next();
+            if(entry.getValue() <= lowest) {
+                it.remove();
+            }
+            else {
+                entry.setValue(Math.log(docCount / entry.getValue()));
+            }
+        }
     }
 
     public void addDoc(HashMap<String, Double> map) {
-        Integer value;
+        Double value;
         for(String token : map.keySet()) {
-           if((value = tokenDf.get(token)) != null) {
-               tokenDf.put(token, value+1);
+           if((value = tokenIdf.get(token)) != null) {
+               tokenIdf.put(token, value+1);
            }
            else {
-               tokenDf.put(token, 1);
+               tokenIdf.put(token, 1.0);
            }
         }
 
         docCount++;
-    }
-
-    public void featureExtract() {
-
     }
 
     public double proximity(FeatureVector doc1, FeatureVector doc2) {

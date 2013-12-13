@@ -44,6 +44,7 @@ public class KNN implements Model {
                 System.out.println("train time " + ++cnt + " : " + stopWatch); // analytic
             }
             knn.endTrain();
+            knn.tfIdf.featureExtract(80);
             knn.tfIdf.print();
 
             reader.close();
