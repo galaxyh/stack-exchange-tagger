@@ -3,6 +3,7 @@ package org.h2t2.setagger.util;
 import java.lang.Math.*;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.Map;
 
 public class TfIdfDistance implements Serializable {
@@ -11,6 +12,14 @@ public class TfIdfDistance implements Serializable {
 
     private int docCount = 0;
     private HashMap<String, Integer> tokenDf = new HashMap<String, Integer>();
+    private TreeMap<String, Integer> tmpMap = new TreeMap<String, Integer>();
+
+    public void print() {
+        System.out.println("doc: " + docCount + ", term: " + tokenDf.size());
+        for(Map.Entry<String, Integer> entry : tokenDf.entrySet()) {
+            System.out.println(entry.getKey() + " : " + entry.getValue());
+        }
+    }
 
     public double idf(String s) {
         Integer df = tokenDf.get(s);
@@ -33,6 +42,10 @@ public class TfIdfDistance implements Serializable {
         }
 
         docCount++;
+    }
+
+    public void featureExtract() {
+
     }
 
     public double proximity(FeatureVector doc1, FeatureVector doc2) {

@@ -23,10 +23,11 @@ public class Preprocessor {
      * Pattern matching regular expression for extracting code.
      */
     private static final Pattern codePattern = Pattern.compile("(?is)<code>(.*?)</code>");
+    private static final Pattern tokenPattern = Pattern.compile("(([0-9]+\\.)+[0-9])|([a-zA-Z0-9]+)");
     private static PorterStemmerTokenizerFactory psTokenizer = new PorterStemmerTokenizerFactory(
                                                                new EnglishStopTokenizerFactory(
                                                                new LowerCaseTokenizerFactory(
-                                                               IndoEuropeanTokenizerFactory.INSTANCE )));
+                                                               new RegExTokenizerFactory( tokenPattern ) )));
 
     /**
      * Pre-process StackExchange dataset.
@@ -52,6 +53,7 @@ public class Preprocessor {
             record = extractCode(record);
             record = removeHtmlTags(record);
             record = getUsefulToken(record);
+            record[3] = "";
             writer.writeNext(record);
         }
 

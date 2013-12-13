@@ -13,7 +13,7 @@ public class KnnClassifier implements Serializable {
     static final long serialVersionUID = -6160089638360209536L;
 
     private int K = 10;
-    private TfIdfDistance tfIdf = new TfIdfDistance();
+    public TfIdfDistance tfIdf = new TfIdfDistance(); // private -> public
     private Vector<String[]> tag = new Vector<String[]>();
     private Vector<FeatureVector> doc = new Vector<FeatureVector>();
 
