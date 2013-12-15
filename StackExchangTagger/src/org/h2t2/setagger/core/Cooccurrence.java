@@ -18,13 +18,12 @@ import java.util.Set;
 
 import org.h2t2.setagger.util.RankPriorityQueue;
 
-import au.com.bytecode.opencsv.CSVReader;
-
 import com.aliasi.spell.TfIdfDistance;
 import com.aliasi.tokenizer.EnglishStopTokenizerFactory;
 import com.aliasi.tokenizer.IndoEuropeanTokenizerFactory;
 import com.aliasi.tokenizer.LowerCaseTokenizerFactory;
 import com.aliasi.tokenizer.PorterStemmerTokenizerFactory;
+import com.csvreader.CsvReader;
 
 /**
  * An implementation of co-occurrence model
@@ -54,27 +53,26 @@ public class Cooccurrence implements Model {
 		Map<String, Integer> termDocCount = new HashMap<String, Integer>();
 
 		try {
-			CSVReader reader = new CSVReader(new FileReader(trainFileName));
+			CsvReader reader = new CsvReader(new FileReader(trainFileName));
 
 			int invalidCount = 0;
-			String[] record;
-			while ((record = reader.readNext()) != null) {
+			while (reader.readRecord()) {
 				// Must contain 5 columns: ID, title, body without code, code, and tags
-				if (record.length != 5) {
+				if (reader.getColumnCount() != 5) {
 					invalidCount++;
 					continue; // Invalid record, just ignore it.
 				}
 
-				if (Integer.parseInt(record[0]) % 100 == 0) {
-					System.out.println("Now processing ID: " + record[0]);
+				if (Integer.parseInt(reader.get(0)) % 100 == 0) {
+					System.out.println("Now processing ID: " + reader.get(0));
 				}
 
 				// Put tags into tfIdf for later Inverse Document Frequency (IDF) calculation.
-				tfIdf.handle(record[4]);
+				tfIdf.handle(reader.get(4));
 
 				// Calculate P(tag|term). Stored as Map<term, Map<tag, probability>>.
 				Set<String> termSet = new HashSet<String>();
-				String content = (record[1] + " " + record[2]).trim();
+				String content = (reader.get(1) + " " + reader.get(2)).trim();
 				String[] terms = content.split("\\s+");
 
 				// Find all unique terms
@@ -97,7 +95,7 @@ public class Cooccurrence implements Model {
 						innerMap = new HashMap<String, Double>();
 					}
 
-					String[] tags = record[4].split("\\s+");
+					String[] tags = reader.get(4).split("\\s+");
 					for (String tag : tags) {
 						Double value = innerMap.get(tag);
 						if (value != null) {
@@ -148,33 +146,32 @@ public class Cooccurrence implements Model {
 			System.out.println("Warning! Model has not been trained or loaded yet. Abort prediction.");
 			return;
 		}
-		
+
 		if (args != null) {
 			maxQueueSize = Integer.parseInt(args[0]);
 		}
 
 		try {
-			CSVReader reader = new CSVReader(new FileReader(predictFileName));
+			CsvReader reader = new CsvReader(new FileReader(predictFileName));
 			BufferedWriter writer = new BufferedWriter(new FileWriter(outputFileName));
 
 			// Write header
 			writer.write("Id,Tags");
 			writer.newLine();
 
-			String[] record;
 			int invalidCount = 0;
-			while ((record = reader.readNext()) != null) {
-				if (record.length < 4) {
+			while (reader.readRecord()) {
+				if (reader.getColumnCount() < 4) {
 					invalidCount++;
 					continue; // Invalid record, just ignore it.
 				}
 
-				if (Integer.parseInt(record[0]) % 100 == 0) {
-					System.out.println("Now processing ID: " + record[0]);
+				if (Integer.parseInt(reader.get(0)) % 100 == 0) {
+					System.out.println("Now processing ID: " + reader.get(0));
 				}
 
 				Map<String, Double> termFrequency = new HashMap<String, Double>();
-				String content = (record[1] + " " + record[2]).trim();
+				String content = (reader.get(1) + " " + reader.get(2)).trim();
 				String[] terms = content.split("\\s+");
 
 				// Compute term counts.
@@ -217,7 +214,7 @@ public class Cooccurrence implements Model {
 				for (String tag : tagArray) {
 					tagString += tag + " ";
 				}
-				writer.write(record[0] + ",\"" + tagString.trim() + "\"");
+				writer.write(reader.get(0) + ",\"" + tagString.trim() + "\"");
 				writer.newLine();
 			}
 
