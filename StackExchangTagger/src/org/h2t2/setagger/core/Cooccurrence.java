@@ -33,7 +33,7 @@ import com.aliasi.tokenizer.PorterStemmerTokenizerFactory;
  * 
  */
 public class Cooccurrence implements Model {
-	private static final int MAX_QUEUE_SIZE = 5;
+	private int maxQueueSize = 3;
 
 	private TfIdfDistance tfIdf = new TfIdfDistance(new PorterStemmerTokenizerFactory(new EnglishStopTokenizerFactory(
 	        new LowerCaseTokenizerFactory(IndoEuropeanTokenizerFactory.INSTANCE))));
@@ -63,6 +63,10 @@ public class Cooccurrence implements Model {
 				if (record.length != 5) {
 					invalidCount++;
 					continue; // Invalid record, just ignore it.
+				}
+
+				if (Integer.parseInt(record[0]) % 100 == 0) {
+					System.out.println("Now processing ID: " + record[0]);
 				}
 
 				// Put tags into tfIdf for later Inverse Document Frequency (IDF) calculation.
@@ -144,6 +148,10 @@ public class Cooccurrence implements Model {
 			System.out.println("Warning! Model has not been trained or loaded yet. Abort prediction.");
 			return;
 		}
+		
+		if (args != null) {
+			maxQueueSize = Integer.parseInt(args[0]);
+		}
 
 		try {
 			CSVReader reader = new CSVReader(new FileReader(predictFileName));
@@ -159,6 +167,10 @@ public class Cooccurrence implements Model {
 				if (record.length < 4) {
 					invalidCount++;
 					continue; // Invalid record, just ignore it.
+				}
+
+				if (Integer.parseInt(record[0]) % 100 == 0) {
+					System.out.println("Now processing ID: " + record[0]);
 				}
 
 				Map<String, Double> termFrequency = new HashMap<String, Double>();
@@ -181,7 +193,7 @@ public class Cooccurrence implements Model {
 				}
 
 				// Calculate rank score for each tag.
-				RankPriorityQueue queue = new RankPriorityQueue(MAX_QUEUE_SIZE);
+				RankPriorityQueue queue = new RankPriorityQueue(maxQueueSize);
 
 				Set<String> tagSet = modelData.getTagIdfMap().keySet();
 				for (String tag : tagSet) {
@@ -200,7 +212,7 @@ public class Cooccurrence implements Model {
 				}
 
 				// Put tags.
-				String[] tagArray = queue.getHighest(MAX_QUEUE_SIZE);
+				String[] tagArray = queue.getHighest(maxQueueSize);
 				String tagString = "";
 				for (String tag : tagArray) {
 					tagString += tag + " ";
