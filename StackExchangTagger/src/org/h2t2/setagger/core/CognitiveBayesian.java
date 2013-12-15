@@ -19,7 +19,6 @@ import org.h2t2.setagger.util.TagRank;
 import com.csvreader.CsvReader;
 import com.csvreader.CsvWriter;
 
-
 public class CognitiveBayesian implements Model {
 	private ArrayList <HashMap <String, Association>> termMapping;
 	private HashMap <String, Integer> tagToDocumentFrequency;
@@ -135,29 +134,30 @@ public class CognitiveBayesian implements Model {
 
 			// Now start to calculate Entropy, Scaled Entropy and Attention Weight
 			for (int i = 0; i < termMapping.size(); i ++) {
+				HashMap<String, Association> singleTermMap = termMapping.get(i);
 
 				double entropyMax = 0.0;
 				double entropyTemp = 0.0;
-				for (String term : termMapping.get(i).keySet()) {
-					if ((entropyTemp = termMapping.get(i).get(term).getEntropy()) > entropyMax) {
+				for (String term : singleTermMap.keySet()) {
+					Association a = singleTermMap.get(term);
+					if ((entropyTemp = a.getEntropy()) > entropyMax) {
 						entropyMax = entropyTemp;
 					}
 				}
 
 				// calculate scaled entropy
 				double totalScaledEntropy = 0.0;
-				for (String term : termMapping.get(i).keySet()) {
-					Association association = termMapping.get(i).get(term);
-					association.setScaledEntropy(1.0 - association.getEntropy() / entropyMax);
-					totalScaledEntropy += association.getScaledEntropy();
+				for (String term : singleTermMap.keySet()) {
+					Association a = singleTermMap.get(term);
+					a.setScaledEntropy(1.0 - a.getEntropy() / entropyMax);
+					totalScaledEntropy += a.getScaledEntropy();
 				}
 
-				double attentionWeightBound = 1.0;
-
 				// calculate attention weight
-				for (String term : termMapping.get(i).keySet()) {
-					Association association = termMapping.get(i).get(term);
-					association.setAttentionWeight(attentionWeightBound * association.getScaledEntropy() / totalScaledEntropy);
+				double attentionWeightBound = 1.0;
+				for (String term : singleTermMap.keySet()) {
+					Association a = singleTermMap.get(term);
+					a.setAttentionWeight(attentionWeightBound * a.getScaledEntropy() / totalScaledEntropy);
 				}
 			}
 		} catch (Exception e) {
