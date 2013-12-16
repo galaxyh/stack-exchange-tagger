@@ -180,6 +180,10 @@ public class Tagger {
 			model.predict(args[3], args[4], additionalArgs);
 			stopWatch.stop();
 			System.out.println("Done. (" + stopWatch.toString() + ")\n");
+        }else if("-cb".equals(args[0])) {
+            CognitiveBayesian cb = new CognitiveBayesian();
+            cb.train(args[4], args);
+            cb.predict(args[5], args[6] ,args);
         }
 	}
 
