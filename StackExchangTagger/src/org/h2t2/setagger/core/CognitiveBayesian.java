@@ -5,18 +5,22 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import org.h2t2.setagger.util.DocumentVectorProcessor;
 import org.h2t2.setagger.util.RankPriorityQueue;
 import org.h2t2.setagger.util.TagRank;
 
 import com.csvreader.CsvReader;
+import com.csvreader.CsvWriter;
 
 
 public class CognitiveBayesian implements Model {
@@ -25,6 +29,9 @@ public class CognitiveBayesian implements Model {
 	private int numberOfDocuments = 0;
 	private HashSet<String> allTagsSet;
 	private final Charset UTF8 = Charset.forName("UTF-8");
+	
+	private Executor pool;
+	private CsvReader reader;
 
 	private class Association {
 		public int tfInDoc = 0;
@@ -92,6 +99,7 @@ public class CognitiveBayesian implements Model {
 
 			tagToDocumentFrequency = new HashMap <String, Integer>();
 			allTagsSet = new HashSet<String>();
+			
 
 			// Now all disqualified terms are eliminated
 			CsvReader reader = new CsvReader(new FileInputStream(new File(trainFileName)), UTF8);
@@ -187,75 +195,156 @@ public class CognitiveBayesian implements Model {
 		reader.close();
 		return termToAssociation;
 	}
+	
+	public Association getAssociation(int i, String term){
+		return termMapping.get(i).get(term);
+	}
+	
+	 
+	
+	private class Worker implements Runnable{
+		BufferedWriter writer;
+		CognitiveBayesian cb;
+		public Worker(CognitiveBayesian cb, String outputFileName) throws IOException{
+			writer = new BufferedWriter(new FileWriter(outputFileName, true));
+			this.cb = cb;
+		}
+		private HashSet <String> getUniqueTermSet (String content) {
+			HashSet <String> set = new HashSet <String>();
+			for (String term : content.split("\\s+")) {
+				set.add(term);
+			}
+			return set;
+		}
+		@SuppressWarnings("unchecked")
+		@Override
+		public void run() {
+			try {
+				String [] record = null;
+				int topNumber = 3;
+				RankPriorityQueue priQueue = null;
+				Double [] weights = {3.0, 1.0, 3.0};
+				while((record = cb.getRecord()) != null){
+					if(record.length != 4){
+						System.out.println(record[0]);
+						continue;
+					}
+					priQueue = new RankPriorityQueue(topNumber);
+					Object [] termSets = {getUniqueTermSet(record[1]), getUniqueTermSet(record[2]), getUniqueTermSet(record[3])};
+					for (String tag : allTagsSet) {
+						double rank = 0.0;
+						// i iterates through title, body, code
+						for (int i = 0; i < 3; i ++) {
+							for (String term : (HashSet <String>) termSets[i]) {
+								Association association = cb.getAssociation(i, term);
+								if (association != null) {
+									rank += weights[i] * cb.getStrengthAssociation(i, term, tag) * association.getAttentionWeight();
+								}
+							}
+						}
+						priQueue.add(tag, rank);
+					}
 
+					// get top 3 tags
+					String [] topTags = priQueue.getHighest(topNumber);
+					String tags = record[0] + ",\"";
+					//6034196,"javascript c# python php java"
+					for (int i = 0; i < topNumber; i ++) {
+						if (i != topNumber - 1)tags = tags + topTags[i] + " ";
+						else tags = tags + topTags[i] + "\"\n";					
+					}
+					writer.write(tags);
+				}
+								
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+					
+		}
+		
+			
+	public synchronized String [] getRecord() throws IOException{
+		
+		if(!reader.readRecord()){
+			return null;
+		}
+		return reader.getValues();
+			
+	}
+	
 	@Override
 	public void predict (String predictFileName, String outputFileName, String[] args) {
 		try {
-			CsvReader reader = new CsvReader(new FileInputStream(new File(predictFileName)), UTF8);
-			CsvWriter writer = new CsvWriter(outputFileName, ',', UTF8);
-			
+			reader = new CsvReader(new FileInputStream(new File(predictFileName)), UTF8);
+			BufferedWriter writer = new BufferedWriter(new FileWriter(outputFileName, true));
+			int threadNumber = 10;
 			// header
-			writer.write("\"Id\"");
-			writer.write("\"Tags\"");
-			writer.endRecord();
-
-			while (reader.readRecord()) {
-				if (reader.getColumnCount() != 4) {
-					System.err.println("error test record should contain 4 columns!");
-					System.exit(-1);
-				}
-				RankPriorityQueue priQueue = new RankPriorityQueue(10);
-				//TagRank [] queue = new TagRank[allTagsSet.size()];
-				Object [] termSets = {getUniqueTermSet(reader.get(1)), getUniqueTermSet(reader.get(2)), getUniqueTermSet(reader.get(3))};
-				Double [] weights = {1.0, 1.0, 3.0};
-
-				int index = 0;
-
-				for (String tag : allTagsSet) {
-
-					double rank = getBaseLevel(tag);
-
-					// i iterates through title, body, code
-					for (int i = 0; i < 3; i ++) {
-						for (String term : (HashSet <String>) termSets[i]) {
-							Association association = termMapping.get(i).get(term);
-							if (association != null) {
-								rank += weights[i] * getStrengthAssociation(i, term, tag) * association.getAttentionWeight();
-							}
-						}
-					}
-
-					System.out.println(reader.get(0) + " " + tag + " " + rank);
-					priQueue.add(tag, rank);
-//					queue[index++] = new TagRank(tag, rank);
-				}
-
-				//String [] top5Tags = priQueue.getHighest(5);
-//				Arrays.sort(queue);
-
-				int topNumber = 3;
-				// get top 3 tags
-				String [] topTags = priQueue.getHighest(topNumber);
-				writer.write(reader.get(0));
-				String tags = "";
-				for (int i = 0; i < topNumber; i ++) {
-//					tags = tags + queue[queue.length - i - 1].getTag();
-					tags += topTags[i];					
-					if (i != topNumber - 1)
-						tags = tags + (" ");
-				}
-				
-				writer.write(tags);
-				writer.endRecord();
-			}
-			reader.close();
+			writer.write("\"Id\",\"Tags\"\n");
 			writer.close();
+			
+			pool = Executors.newFixedThreadPool(threadNumber);
+			for(int i = 0;i < threadNumber;i++){
+				pool.execute(new Worker(this, outputFileName));
+			}
+			
+			
+			
+//			while (reader.readRecord()) {
+//				if (reader.getColumnCount() != 4) {
+//					System.out.println(reader.get(0));
+//					continue;
+//				}
+//				RankPriorityQueue priQueue = new RankPriorityQueue(3);
+//				//TagRank [] queue = new TagRank[allTagsSet.size()];
+//				Object [] termSets = {getUniqueTermSet(reader.get(1)), getUniqueTermSet(reader.get(2)), getUniqueTermSet(reader.get(3))};
+//				Double [] weights = {1.0, 1.0, 3.0};
+//
+//				int index = 0;
+//
+//				for (String tag : allTagsSet) {
+//
+//					double rank = getBaseLevel(tag);
+//
+//					// i iterates through title, body, code
+//					for (int i = 0; i < 3; i ++) {
+//						for (String term : (HashSet <String>) termSets[i]) {
+//							Association association = termMapping.get(i).get(term);
+//							if (association != null) {
+//								rank += weights[i] * getStrengthAssociation(i, term, tag) * association.getAttentionWeight();
+//							}
+//						}
+//					}
+//					priQueue.add(tag, rank);
+//
+//				}
+//
+//
+//
+//				int topNumber = 3;
+//				// get top 3 tags
+//				String [] topTags = priQueue.getHighest(topNumber);
+//				writer.write(reader.get(0));
+//				String tags = "";
+//				for (int i = 0; i < topNumber; i ++) {
+//
+//					tags += topTags[i];					
+//					if (i != topNumber - 1)
+//						tags = tags + (" ");
+//				}
+//				
+//				writer.write(tags);
+//				writer.endRecord();
+//			}
+//			reader.close();
+//			writer.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private double getStrengthAssociation (int index, String term, String tag) {
+	public double getStrengthAssociation (int index, String term, String tag) {
 		// index 0: title, index 1: body, index 2 : code
 		double probabilityOfTagOverTerm = termMapping.get(index).get(term).getProbabilityOfTagOverTerm(tag);
 		if (probabilityOfTagOverTerm != 0.0)

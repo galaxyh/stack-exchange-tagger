@@ -32,13 +32,13 @@ public class ThreadPool {
 		this.pool = Executors.newFixedThreadPool(nThreads);
 	}
 
-	public run (Runnable command, Runnable callback) {
-		RunnableWrapper wrapper = new RunnableWrapper(command, callback);
-		this.pool.execute(wrapper);
-	}
-
-	public run (Runnable command) {
-		this.pool.execute(command);
-	}
+//	public run (Runnable command, Runnable callback) {
+//		RunnableWrapper wrapper = new RunnableWrapper(command, callback);
+//		this.pool.execute(wrapper);
+//	}
+//
+//	public run (Runnable command) {
+//		this.pool.execute(command);
+//	}
 
 }
