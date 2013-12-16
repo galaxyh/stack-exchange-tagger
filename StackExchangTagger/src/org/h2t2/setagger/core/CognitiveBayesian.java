@@ -31,7 +31,8 @@ public class CognitiveBayesian implements Model {
 	private final Charset UTF8 = Charset.forName("UTF-8");
 	
 	private Executor pool;
-	private CsvReader reader;
+	private CsvReader testReader;
+	private BufferedWriter testWriter;
 
 	private class Association {
 		public int tfInDoc = 0;
@@ -201,11 +202,10 @@ public class CognitiveBayesian implements Model {
 	
 	 
 	// THREAD 
-	private class Worker implements Runnable{
-		BufferedWriter writer;
+	private class Worker implements Runnable{		
 		CognitiveBayesian cb;
-		public Worker(CognitiveBayesian cb, String outputFileName) throws IOException{
-			writer = new BufferedWriter(new FileWriter(outputFileName, true));
+		public Worker(CognitiveBayesian cb){
+			
 			this.cb = cb;
 		}
 		private HashSet <String> getUniqueTermSet (String content) {
@@ -252,7 +252,7 @@ public class CognitiveBayesian implements Model {
 						if (i != topNumber - 1)tags = tags + topTags[i] + " ";
 						else tags = tags + topTags[i] + "\"\n";					
 					}
-					writer.write(tags);
+					cb.writeRecord(tags);
 				}
 								
 				} catch (IOException e) {
@@ -266,27 +266,32 @@ public class CognitiveBayesian implements Model {
 	// THREAD
 	public synchronized String [] getRecord() throws IOException{
 		
-		if(!reader.readRecord()){
+		if(!testReader.readRecord()){
 			return null;
 		}
-		return reader.getValues();
+		return testReader.getValues();
 			
+	}
+	
+	// THREAD
+	public synchronized void writeRecord(String record) throws IOException{
+		// \n should not not be included for efficiency concern
+		testWriter.write(record);
 	}
 	
 	@Override
 	public void predict (String predictFileName, String outputFileName, String[] args) {
 		try {
 			// main THREAD must have only one reader  
-			reader = new CsvReader(new FileInputStream(new File(predictFileName)), UTF8);
-			BufferedWriter writer = new BufferedWriter(new FileWriter(outputFileName, true));
+			testReader = new CsvReader(new FileInputStream(new File(predictFileName)), UTF8);
+			testWriter = new BufferedWriter(new FileWriter(outputFileName, true));
 			int threadNumber = 10;
 			// header
-			writer.write("\"Id\",\"Tags\"\n");
-			writer.close();
+			testWriter.write("\"Id\",\"Tags\"\n");
 			
 			pool = Executors.newFixedThreadPool(threadNumber);
 			for(int i = 0;i < threadNumber;i++){
-				pool.execute(new Worker(this, outputFileName));
+				pool.execute(new Worker(this));
 			}
 			
 			
