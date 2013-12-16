@@ -36,9 +36,7 @@ public class CognitiveBayesian implements Model {
 	private class Association {
 		public int tfInDoc = 0;
 		public HashMap <String, Integer> tagToCooccurrence;
-		public double attentionWeight = 0.0;
-		public Double entropy = null;
-		public double scaledEntropy = 0.0;
+		public Double attentionWeight;
 		public Association() {
 			tagToCooccurrence = new HashMap <String, Integer>();
 		}
@@ -49,24 +47,25 @@ public class CognitiveBayesian implements Model {
 			}
 			return (double) tagToCooccurrence.get(tag) / tfInDoc;
 		}
-
+		
+		// attentionWeight will represent entropy at an early stage
 		public double getEntropy() {
-			if (this.entropy == null) {
-				this.entropy = 0.0;
+			if (this.attentionWeight == null) {
+				this.attentionWeight = 0.0;
 				for (String tag : tagToCooccurrence.keySet()) {
 					double probabilityOfTagOverTerm = getProbabilityOfTagOverTerm(tag);
-					this.entropy -= probabilityOfTagOverTerm * Math.log(probabilityOfTagOverTerm);
+					this.attentionWeight -= probabilityOfTagOverTerm * Math.log(probabilityOfTagOverTerm);
 				}
 			}
-			return this.entropy;
+			return this.attentionWeight;
 		}
-
+		// attentionWeight will represent scaledEntropy at an early stage
 		public void setScaledEntropy (double se) {
-			scaledEntropy = se;
+			this.attentionWeight = se;
 		}
 		
 		public double getScaledEntropy () {
-			return scaledEntropy;
+			return this.attentionWeight;
 		}
 
 		public void setAttentionWeight (double aw) {
@@ -223,7 +222,7 @@ public class CognitiveBayesian implements Model {
 				String [] record = null;
 				int topNumber = 3;
 				RankPriorityQueue priQueue = null;
-				Double [] weights = {3.0, 1.0, 3.0};
+				Double [] weights = {1.0, 1.0, 1.0};
 				while((record = cb.getRecord()) != null){
 					if(record.length != 4){
 						System.out.println(record[0]);
