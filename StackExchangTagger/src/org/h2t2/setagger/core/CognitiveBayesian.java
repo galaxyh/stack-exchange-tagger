@@ -87,6 +87,14 @@ public class CognitiveBayesian implements Model {
 			return 0.0;
 		}
 	}
+	
+	public double getTagIdf(String tag){
+		Integer frequency;
+		if((frequency = tagToDocumentFrequency.get(tag)) != null){
+			return (double)frequency/numberOfDocuments;
+		}
+		return 0.0;
+	}
 
 	@Override
 	// args[1] : titleIdf, args[2] : bodyIdf , args[3] : codeIdf
@@ -232,16 +240,18 @@ public class CognitiveBayesian implements Model {
 					Object [] termSets = {getUniqueTermSet(record[1]), getUniqueTermSet(record[2]), getUniqueTermSet(record[3])};
 					for (String tag : allTagsSet) {
 						double rank = 0.0;
+						double tagTf = 0.0;
 						// i iterates through title, body, code
 						for (int i = 0; i < 3; i ++) {
 							for (String term : (HashSet <String>) termSets[i]) {
+								if(term.equals(tag))tagTf++;
 								Association association = cb.getAssociation(i, term);
 								if (association != null) {
 									rank += weights[i] * cb.getStrengthAssociation(i, term, tag) * association.getAttentionWeight();
 								}
 							}
 						}
-						priQueue.add(tag, rank);
+						priQueue.add(tag, rank+Math.log(tagTf+1)*cb.getTagIdf(tag));
 					}
 
 					// get top 3 tags
