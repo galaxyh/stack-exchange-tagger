@@ -201,7 +201,7 @@ public class CognitiveBayesian implements Model {
 	}
 	
 	 
-	
+	// THREAD 
 	private class Worker implements Runnable{
 		BufferedWriter writer;
 		CognitiveBayesian cb;
@@ -264,7 +264,7 @@ public class CognitiveBayesian implements Model {
 					
 		}
 		
-			
+	// THREAD
 	public synchronized String [] getRecord() throws IOException{
 		
 		if(!reader.readRecord()){
@@ -277,6 +277,7 @@ public class CognitiveBayesian implements Model {
 	@Override
 	public void predict (String predictFileName, String outputFileName, String[] args) {
 		try {
+			// main THREAD must have only one reader  
 			reader = new CsvReader(new FileInputStream(new File(predictFileName)), UTF8);
 			BufferedWriter writer = new BufferedWriter(new FileWriter(outputFileName, true));
 			int threadNumber = 10;
