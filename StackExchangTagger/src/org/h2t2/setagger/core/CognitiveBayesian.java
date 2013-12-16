@@ -17,7 +17,7 @@ import org.h2t2.setagger.util.RankPriorityQueue;
 import org.h2t2.setagger.util.TagRank;
 
 import com.csvreader.CsvReader;
-import com.csvreader.CsvWriter;
+
 
 public class CognitiveBayesian implements Model {
 	private ArrayList <HashMap <String, Association>> termMapping;
