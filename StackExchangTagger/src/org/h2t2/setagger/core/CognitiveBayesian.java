@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -254,7 +255,7 @@ public class CognitiveBayesian implements Model {
 						priQueue.add(tag, rank+Math.log(tagTf+1)*cb.getTagIdf(tag));
 					}
 
-					// get top 3 tags
+					// get top 5 tags
 					String [] topTags = priQueue.getHighest(topNumber);
 					String tags = record[0] + ",\"";
 					//6034196,"javascript c# python php java"
@@ -310,58 +311,72 @@ public class CognitiveBayesian implements Model {
 			
 			
 			
-//			while (reader.readRecord()) {
-//				if (reader.getColumnCount() != 4) {
-//					System.out.println(reader.get(0));
-//					continue;
-//				}
-//				RankPriorityQueue priQueue = new RankPriorityQueue(3);
-//				//TagRank [] queue = new TagRank[allTagsSet.size()];
-//				Object [] termSets = {getUniqueTermSet(reader.get(1)), getUniqueTermSet(reader.get(2)), getUniqueTermSet(reader.get(3))};
-//				Double [] weights = {1.0, 1.0, 3.0};
-//
-//				int index = 0;
-//
-//				for (String tag : allTagsSet) {
-//
-//					double rank = getBaseLevel(tag);
-//
-//					// i iterates through title, body, code
-//					for (int i = 0; i < 3; i ++) {
-//						for (String term : (HashSet <String>) termSets[i]) {
-//							Association association = termMapping.get(i).get(term);
-//							if (association != null) {
-//								rank += weights[i] * getStrengthAssociation(i, term, tag) * association.getAttentionWeight();
-//							}
-//						}
-//					}
-//					priQueue.add(tag, rank);
-//
-//				}
-//
-//
-//
-//				int topNumber = 3;
-//				// get top 3 tags
-//				String [] topTags = priQueue.getHighest(topNumber);
-//				writer.write(reader.get(0));
-//				String tags = "";
-//				for (int i = 0; i < topNumber; i ++) {
-//
-//					tags += topTags[i];					
-//					if (i != topNumber - 1)
-//						tags = tags + (" ");
-//				}
-//				
-//				writer.write(tags);
-//				writer.endRecord();
-//			}
-//			reader.close();
-//			writer.close();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+	public void patch (String predictFileName, String outputFileName, String[] args) {
+		try {
+			// main THREAD must have only one reader  
+			testReader = new CsvReader(new FileInputStream(new File(predictFileName)), UTF8);
+			testWriter = new BufferedWriter(new FileWriter(outputFileName, true));
+			
+			BufferedReader bf = new BufferedReader(new FileReader(outputFileName));
+			HashSet <Integer> processedRecord = new HashSet <Integer>();
+			String line = null;
+			while((line = bf.readLine()) != null){
+				processedRecord.add(Integer.parseInt(line.split(",")[0]));
+			}
+			int topNumber = 5;
+			
+			while (testReader.readRecord()) {
+				if (testReader.getColumnCount() != 4) {
+					System.out.println(testReader.get(0));
+					continue;
+				}else if( processedRecord.contains(Integer.parseInt(testReader.get(0))) ){
+					continue;
+				}
+				RankPriorityQueue priQueue = new RankPriorityQueue(topNumber);
+				Object [] termSets = {getUniqueTermSet(testReader.get(1)), getUniqueTermSet(testReader.get(2)), getUniqueTermSet(testReader.get(3))};
+				Double [] weights = {1.0, 1.0, 1.0};
+
+				int index = 0;
+
+				for (String tag : allTagsSet) {
+					double rank = 0.0;
+					double tagTf = 0.0;
+					// i iterates through title, body, code
+					for (int i = 0; i < 3; i ++) {
+						for (String term : (HashSet <String>) termSets[i]) {
+							if(term.equals(tag))tagTf++;
+							Association association = getAssociation(i, term);
+							if (association != null) {
+								rank += weights[i] * getStrengthAssociation(i, term, tag) * association.getAttentionWeight();
+							}
+						}
+					}
+					priQueue.add(tag, rank+Math.log(tagTf+1)*getTagIdf(tag));
+				}
+
+				
+				String [] topTags = priQueue.getHighest(topNumber);
+				String tags = testReader.get(0) + ",\"";
+				//6034196,"javascript c# python php java"
+				for (int i = 0; i < topNumber; i ++) {
+					if (i != topNumber - 1)tags = tags + topTags[i] + " ";
+					else tags = tags + topTags[i] + "\"\n";					
+				}
+				testWriter.write(tags);			
+			}
+			testWriter.flush();
+			testReader.close();
+			testWriter.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 
 	public double getStrengthAssociation (int index, String term, String tag) {
 		// index 0: title, index 1: body, index 2 : code

@@ -184,6 +184,11 @@ public class Tagger {
             CognitiveBayesian cb = new CognitiveBayesian();
             cb.train(args[4], args);
             cb.predict(args[5], args[6] ,args);
+        }else if("-cbpatch".equals(args[0])){
+        	CognitiveBayesian cb = new CognitiveBayesian();
+            cb.train(args[4], args);
+            cb.patch(args[5], args[6] ,args);
+        	
         }
 	}
 
