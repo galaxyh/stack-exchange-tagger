@@ -30,6 +30,7 @@ public class FileSplitter {
 				}
 
 				writer.write(line);
+				writer.write("\n");
 			}
 			reader.close();
 			System.out.println("All Done.");
