@@ -228,7 +228,7 @@ public class CognitiveBayesian implements Model {
 		public void run() {
 			try {
 				String [] record = null;
-				int topNumber = 3;
+				int topNumber = 5;
 				RankPriorityQueue priQueue = null;
 				Double [] weights = {1.0, 1.0, 1.0};
 				while((record = cb.getRecord()) != null){
