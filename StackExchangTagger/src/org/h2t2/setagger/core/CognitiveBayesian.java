@@ -264,6 +264,7 @@ public class CognitiveBayesian implements Model {
 					}
 					cb.writeRecord(tags);
 				}
+				cb.finalFlush();
 								
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -272,7 +273,10 @@ public class CognitiveBayesian implements Model {
 			}
 					
 		}
+	public synchronized void finalFlush() throws IOException{
+		testWriter.flush();
 		
+	}
 	// THREAD
 	public synchronized String [] getRecord() throws IOException{
 		
@@ -295,7 +299,7 @@ public class CognitiveBayesian implements Model {
 			// main THREAD must have only one reader  
 			testReader = new CsvReader(new FileInputStream(new File(predictFileName)), UTF8);
 			testWriter = new BufferedWriter(new FileWriter(outputFileName, true));
-			int threadNumber = 10;
+			int threadNumber = 75;
 			// header
 			testWriter.write("\"Id\",\"Tags\"\n");
 			
