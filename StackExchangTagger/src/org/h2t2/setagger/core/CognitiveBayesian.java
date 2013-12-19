@@ -325,6 +325,7 @@ public class CognitiveBayesian implements Model {
 			BufferedReader bf = new BufferedReader(new FileReader(outputFileName));
 			HashSet <Integer> processedRecord = new HashSet <Integer>();
 			String line = null;
+			line = bf.readLine();
 			while((line = bf.readLine()) != null){
 				processedRecord.add(Integer.parseInt(line.split(",")[0]));
 			}
