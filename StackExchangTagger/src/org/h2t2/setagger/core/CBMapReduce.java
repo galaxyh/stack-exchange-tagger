@@ -25,6 +25,11 @@ public class CBMapReduce {
             return set;
         }
 
+        // TODO read model from DistributedCache
+        private CBTrainModel readModel () {
+            return null;
+        }
+
         public void map (LongWritable key, Text value, OutputCollector<Text, TagRankWritable> output, Reporter reporter) throws IOException {
 
             Double[] weights = {1.0, 1.0, 1.0};
@@ -35,10 +40,9 @@ public class CBMapReduce {
 
             Object [] termSets = {getUniqueTermSet(records[1]), getUniqueTermSet(records[2]), getUniqueTermSet(records[3])};
 
-            // TODO read allTagsSet from DistributedCache
-            String[] allTagsSet = {};
+            CBTrainModel model = this.readModel();
 
-            for (String tag : allTagsSet) {
+            for (String tag : model.getAllTagsSet()) {
                 double rank = 0.0;
                 double tagTf = 0.0;
 
@@ -47,15 +51,14 @@ public class CBMapReduce {
                         if (term.equals(tag))
                             tagTf ++;
 
-                        // TODO add Association, getAssociation, getStrengthAssociation from CognitiveBayesian
-                        Association association = cb.getAssociation(i, term);
+                        Association association = model.getAssociation(i, term);
                         if (association != null)
-                            rank += weights[i] * cb.getStrengthAssociation(i, term, tag) * association.getAttentionWeight();
+                            rank += weights[i] * model.getStrengthAssociation(i, term, tag) * association.getAttentionWeight();
                     }
                 }
 
                 // send TagRank to reducer instead of priority queue
-                rank += Math.log(tagTf + 1) * cb.getTagIdf(tag));
+                rank += Math.log(tagTf + 1) * model.getTagIdf(tag));
                 TagRank tagRank = new TagRank(tag, rank);
                 output.collect(id, new TagRankWritable(tagRank));
 

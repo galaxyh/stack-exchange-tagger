@@ -91,12 +91,12 @@ public class CognitiveBayesian implements Model {
 					for (String uniqueTerm : getUniqueTermSet(reader.get(i))) {
 						if ((termToAssociation = termMapping.get(i - 1).get(uniqueTerm)) != null) {
 							// the term is qualified because its idf < idfBound
-							termToAssociation.tfInDoc ++;
+							termToAssociation.setTfInDoc(termToAssociation.getTfInDoc() ++);
 							for (String tag : tags) {
-								if ((termAndTagCooccurrence = termToAssociation.tagToCooccurrence.get(tag)) != null) {
-									termToAssociation.tagToCooccurrence.put(tag, termAndTagCooccurrence + 1);								
+								if ((termAndTagCooccurrence = termToAssociation.getTagToCooccurrence().get(tag)) != null) {
+									termToAssociation.getTagToCooccurrence().put(tag, termAndTagCooccurrence + 1);								
 								} else {
-									termToAssociation.tagToCooccurrence.put(tag, 1);									
+									termToAssociation.getTagToCooccurrence().put(tag, 1);									
 								}
 							}
 						}
@@ -339,7 +339,7 @@ public class CognitiveBayesian implements Model {
 		// index 0: title, index 1: body, index 2 : code
 		double probabilityOfTagOverTerm = termMapping.get(index).get(term).getProbabilityOfTagOverTerm(tag);
 		if (probabilityOfTagOverTerm != 0.0)
-			return Math.log(probabilityOfTagOverTerm / ((double) tagToDocumentFrequency.get(tag) / numberOfDocuments));		
+			return Math.log(probabilityOfTagOverTerm / ((double) tagToDocumentFrequency.get(tag) / numberOfDocuments));
 		return 0.0;
 	}
 

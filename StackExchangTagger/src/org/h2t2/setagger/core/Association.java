@@ -1,13 +1,24 @@
 package org.h2t2.setagger.core;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class Association {
-    public int tfInDoc = 0;
-    public HashMap<String, Integer> tagToCooccurrence;
-    public Double attentionWeight;
+public class Association implements Serializable {
+
+    private int tfInDoc;
+
+    private HashMap<String, Integer> tagToCooccurrence;
+
+    private Double attentionWeight;
+
     public Association () {
-        this.tagToCooccurrence = new HashMap<String, Integer>();
+        this(0, new HashMap<String, Integer>(), null);
+    }
+
+    public Association (int tfInDoc, HashMap<String, Integer> tagToCooccurrence, Double attentionWeight) {
+        this.tfInDoc = tfInDoc;
+        this.tagToCooccurrence = tagToCooccurrence;
+        this.attentionWeight = attentionWeight;
     }
 
     public double getProbabilityOfTagOverTerm (String tag) {
@@ -38,11 +49,27 @@ public class Association {
         return this.attentionWeight;
     }
 
-    public void setAttentionWeight (double attentionWeight) {
+    public void setAttentionWeight (Double attentionWeight) {
         this.attentionWeight = attentionWeight;
     }
 
-    public double getAttentionWeight () {
+    public Double getAttentionWeight () {
         return attentionWeight;
+    }
+
+    public HashMap<String, Integer> getTagToCooccurrence () {
+        return this.tagToCooccurrence;
+    }
+
+    public void setTagToCooccurrence (HashMap<String, Integer> tagToCooccurrence) {
+        this.tagToCooccurrence = tagToCooccurrence;
+    }
+
+    public int getTfInDoc () {
+        return this.tfInDoc;
+    }
+
+    public void setTfInDoc (int tfInDoc) {
+        this.tfInDoc = tfInDoc;
     }
 }
