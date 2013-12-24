@@ -91,7 +91,7 @@ public class CognitiveBayesian implements Model {
 					for (String uniqueTerm : getUniqueTermSet(reader.get(i))) {
 						if ((termToAssociation = termMapping.get(i - 1).get(uniqueTerm)) != null) {
 							// the term is qualified because its idf < idfBound
-							termToAssociation.setTfInDoc(termToAssociation.getTfInDoc() ++);
+							termToAssociation.setTfInDoc(termToAssociation.getTfInDoc() +1);
 							for (String tag : tags) {
 								if ((termAndTagCooccurrence = termToAssociation.getTagToCooccurrence().get(tag)) != null) {
 									termToAssociation.getTagToCooccurrence().put(tag, termAndTagCooccurrence + 1);								
@@ -285,6 +285,7 @@ public class CognitiveBayesian implements Model {
 			while((line = bf.readLine()) != null){
 				processedRecord.add(Integer.parseInt(line.split(",")[0]));
 			}
+			bf.close();
 			int topNumber = 5;
 			
 			while (testReader.readRecord()) {
@@ -298,7 +299,6 @@ public class CognitiveBayesian implements Model {
 				Object [] termSets = {getUniqueTermSet(testReader.get(1)), getUniqueTermSet(testReader.get(2)), getUniqueTermSet(testReader.get(3))};
 				Double [] weights = {1.0, 1.0, 1.0};
 
-				int index = 0;
 
 				for (String tag : allTagsSet) {
 					double rank = 0.0;

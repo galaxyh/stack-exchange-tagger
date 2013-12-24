@@ -5,7 +5,12 @@ import java.util.*;
 
 public class Association implements Serializable {
 
-    private int tfInDoc;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -7008200310988834743L;
+
+	private int tfInDoc;
 
     private HashMap<String, Integer> tagToCooccurrence;
 

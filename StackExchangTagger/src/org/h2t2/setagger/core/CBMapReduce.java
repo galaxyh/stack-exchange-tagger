@@ -58,7 +58,7 @@ public class CBMapReduce {
                 }
 
                 // send TagRank to reducer instead of priority queue
-                rank += Math.log(tagTf + 1) * model.getTagIdf(tag));
+                rank += Math.log(tagTf + 1) * model.getTagIdf(tag);
                 TagRank tagRank = new TagRank(tag, rank);
                 output.collect(id, new TagRankWritable(tagRank));
 
@@ -83,7 +83,7 @@ public class CBMapReduce {
             String[] topTags = priorityQueue.getHighest(TOPNUMBER);
             String tags = "";
             for (int i = 0; i < TOPNUMBER; i ++) {
-                tags += toptags[i];
+                tags += topTags[i];
                 if (i != TOPNUMBER - 1)
                     tags += " ";
             }
@@ -93,7 +93,7 @@ public class CBMapReduce {
 
     }
 
-    public static run (String inputPaths, String outputPath) {
+    public static void run (String inputPaths, String outputPath) throws IOException {
         JobConf conf = new JobConf(CBMapReduce.class);
         conf.setJobName("Cognitive Bayesian for StackExchange Tagger");
 
