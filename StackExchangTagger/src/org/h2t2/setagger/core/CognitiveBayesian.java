@@ -137,7 +137,7 @@ public class CognitiveBayesian implements Model {
 			// write train model to file
 			// TODO how to determine model path?
 			String modelPath = "";
-			CBTrainModel model = new CBTrainModel(termMapping, tagToDocumentFrequency, (Long) numberOfDocuments, allTagsSet);
+			CBTrainModel model = new CBTrainModel(termMapping, tagToDocumentFrequency, (long) numberOfDocuments, allTagsSet);
 			CBTrainModel.writeToFile(modelPath, model);
 
 		} catch (Exception e) {

@@ -1,6 +1,8 @@
 package org.h2t2.setagger.core;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 
 import org.apache.hadoop.fs.*;
@@ -29,7 +31,7 @@ public class CBMapReduce {
         }
 
         private CBTrainModel readModel () {
-            CBTrainModel model;
+            CBTrainModel model = null;
             try {
                 model = CBTrainModel.readFromFile(this.file);
             } catch (Exception e) {
@@ -38,10 +40,10 @@ public class CBMapReduce {
             return model;
         }
 
-        @override
+        @Override
         public void configure (JobConf job) {
             try {
-                public Path[] localFiles = DistributedCache.getLocalCacheFiles(job);
+                Path[] localFiles = DistributedCache.getLocalCacheFiles(job);
                 if (localFiles != null && localFiles.length > 0) {
                     this.file = localFiles[0].toString();
                 }
