@@ -11,6 +11,7 @@ import org.apache.hadoop.util.*;
 
 import org.h2t2.setagger.util.TagRank;
 import org.h2t2.setagger.util.TagRankWritable;
+import org.h2t2.setagger.util.RankPriorityQueue;
 
 public class CBMapReduce {
 
@@ -54,6 +55,7 @@ public class CBMapReduce {
                 }
 
                 // send TagRank to reducer instead of priority queue
+                rank += Math.log(tagTf + 1) * cb.getTagIdf(tag));
                 TagRank tagRank = new TagRank(tag, rank);
                 output.collect(id, new TagRankWritable(tagRank));
 
@@ -64,14 +66,26 @@ public class CBMapReduce {
 
     public static class Reduce extends MapReduceBase implements Reducer<Text, TagRankWritable, Text, Text> {
 
+        private static final int TOPNUMBER = 5;
+
         public void reduce (Text key, Iterator<TagRankWritable> values, OutputCollector<Text, Text> output, Reporter reporter) throws IOException {
 
-            // TODO find top 5 TagRank from values
+            RankPriorityQueue priorityQueue = new RankPriorityQueue(TOPNUMBER);
+            TagRank value;
+            while (values.hasNext()) {
+                value = values.next().getTagRank();
+                priorityQueue.add(value.getTag(), value.getRank());
+            }
 
-            // TODO join 5 tags into 1 string
-            String top5Tags = "";
+            String[] topTags = priorityQueue.getHighest(TOPNUMBER);
+            String tags = "";
+            for (int i = 0; i < TOPNUMBER; i ++) {
+                tags += toptags[i];
+                if (i != TOPNUMBER - 1)
+                    tags += " ";
+            }
 
-            output.collect(key, new Text(top5Tags));
+            output.collect(key, new Text(tags));
         }
 
     }
