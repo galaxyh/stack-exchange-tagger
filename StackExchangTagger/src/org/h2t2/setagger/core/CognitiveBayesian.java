@@ -35,50 +35,6 @@ public class CognitiveBayesian implements Model {
 	private CsvReader testReader;
 	private BufferedWriter testWriter;
 
-	private class Association {
-		public int tfInDoc = 0;
-		public HashMap <String, Integer> tagToCooccurrence;
-		public Double attentionWeight;
-		public Association() {
-			tagToCooccurrence = new HashMap <String, Integer>();
-		}
-
-		public double getProbabilityOfTagOverTerm(String tag) {
-			if (tagToCooccurrence.get(tag) == null) {
-				return 0.0;
-			}
-			return (double) tagToCooccurrence.get(tag) / tfInDoc;
-		}
-		
-		// attentionWeight will represent entropy at an early stage
-		public double getEntropy() {
-			if (this.attentionWeight == null) {
-				this.attentionWeight = 0.0;
-				for (String tag : tagToCooccurrence.keySet()) {
-					double probabilityOfTagOverTerm = getProbabilityOfTagOverTerm(tag);
-					this.attentionWeight -= probabilityOfTagOverTerm * Math.log(probabilityOfTagOverTerm);
-				}
-			}
-			return this.attentionWeight;
-		}
-		// attentionWeight will represent scaledEntropy at an early stage
-		public void setScaledEntropy (double se) {
-			this.attentionWeight = se;
-		}
-		
-		public double getScaledEntropy () {
-			return this.attentionWeight;
-		}
-
-		public void setAttentionWeight (double aw) {
-			attentionWeight = aw;
-		}
-
-		public double getAttentionWeight () {
-			return attentionWeight;
-		}
-	}
-
 	private double getBaseLevel (String tag) {
 		Integer tagFrequency = this.tagToDocumentFrequency.get(tag);
 		if (tagFrequency != null && tagFrequency != 0) {
