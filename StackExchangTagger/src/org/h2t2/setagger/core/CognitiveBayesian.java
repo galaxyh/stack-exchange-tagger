@@ -133,6 +133,13 @@ public class CognitiveBayesian implements Model {
 					a.setAttentionWeight(attentionWeightBound * a.getScaledEntropy() / totalScaledEntropy);
 				}
 			}
+
+			// write train model to file
+			// TODO how to determine model path?
+			String modelPath = "";
+			CBTrainModel model = new CBTrainModel(termMapping, tagToDocumentFrequency, (Long) numberOfDocuments, allTagsSet);
+			CBTrainModel.writeToFile(modelPath, model);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

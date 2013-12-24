@@ -8,6 +8,7 @@ import org.apache.hadoop.conf.*;
 import org.apache.hadoop.io.*;
 import org.apache.hadoop.mapred.*;
 import org.apache.hadoop.util.*;
+import org.apache.hadoop.filecache.DistributedCache;
 
 import org.h2t2.setagger.util.TagRank;
 import org.h2t2.setagger.util.TagRankWritable;
@@ -17,6 +18,8 @@ public class CBMapReduce {
 
     public static class Map extends MapReduceBase implements Mapper<LongWritable, Text, Text, TagRankWritable> {
 
+        private String file;
+
         private HashSet<String> getUniqueTermSet (String content) {
             HashSet <String> set = new HashSet<String>();
             for (String term : content.split("\\s+")) {
@@ -25,9 +28,26 @@ public class CBMapReduce {
             return set;
         }
 
-        // TODO read model from DistributedCache
         private CBTrainModel readModel () {
-            return null;
+            CBTrainModel model;
+            try {
+                model = CBTrainModel.readFromFile(this.file);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return model;
+        }
+
+        @override
+        public void configure (JobConf job) {
+            try {
+                public Path[] localFiles = DistributedCache.getLocalCacheFiles(job);
+                if (localFiles != null && localFiles.length > 0) {
+                    this.file = localFiles[0].toString();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         public void map (LongWritable key, Text value, OutputCollector<Text, TagRankWritable> output, Reporter reporter) throws IOException {
@@ -93,7 +113,7 @@ public class CBMapReduce {
 
     }
 
-    public static void run (String inputPaths, String outputPath) throws IOException {
+    public static void run (String inputPaths, String outputPath, String modelPath) throws IOException, URISyntaxException {
         JobConf conf = new JobConf(CBMapReduce.class);
         conf.setJobName("Cognitive Bayesian for StackExchange Tagger");
 
@@ -108,6 +128,8 @@ public class CBMapReduce {
 
         FileInputFormat.setInputPaths(conf, new Path(inputPaths));
         FileOutputFormat.setOutputPath(conf, new Path(outputPath));
+
+        DistributedCache.addCacheFile(new URI(modelPath), conf);
 
         JobClient.runJob(conf);
     }
