@@ -43,22 +43,51 @@ public class KNN implements Model {
                     System.exit(1);
                 }
 
-                if(cnt % 1000 == 0) {
+                if(cnt % 10000 == 0) {
                     stopWatch.reset(); // analytic
                     stopWatch.start(); // analytic
                 }
 
-                knn.train(record);
+                knn.trainTfIdf(record);
 
-                if(cnt % 1000 == 999) {
+                if(cnt % 10000 == 9999) {
                     stopWatch.stop(); // analytic
                     System.out.println("record " + record[0] + " done");
-                    System.out.println("train time: " + stopWatch); // analytic
+                    System.out.println("add tfIdf time: " + stopWatch); // analytic
                 }
 
                 cnt++;
             }
-            knn.endTrain();
+            knn.endTrainTfIdf();
+
+            System.out.println();
+            System.out.println("train stage 1 done");
+            System.out.println();
+
+            reader = new BufferedReader(new FileReader(trainFileName));
+            cnt = 0;
+            while ((s = reader.readLine()) != null) {
+                record = s.split(",");
+                if(record.length != 5) {
+                    System.err.println("BufferedReader error");
+                    System.exit(1);
+                }
+
+                if(cnt % 10000 == 0) {
+                    stopWatch.reset(); // analytic
+                    stopWatch.start(); // analytic
+                }
+
+                knn.trainFeatureVector(record);
+
+                if(cnt % 10000 == 9999) {
+                    stopWatch.stop(); // analytic
+                    System.out.println("record " + record[0] + " done");
+                    System.out.println("add tfIdf time: " + stopWatch); // analytic
+                }
+
+                cnt++;
+            }
 
             reader.close();
         }
@@ -127,11 +156,11 @@ public class KNN implements Model {
                     for(String str : tmpEntry.getValue()) {
                         sb.append(str).append(" ");
                         cntTags++;
-                        if(cntTags >= 3) {
+                        if(cntTags >= 2) {
                             break;
                         }
                     }
-                    if(cntTags >= 3) {
+                    if(cntTags >= 2) {
                         break;
                     }
                 }

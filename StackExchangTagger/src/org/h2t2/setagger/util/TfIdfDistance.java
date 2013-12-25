@@ -57,7 +57,23 @@ public class TfIdfDistance implements Serializable {
         docCount++;
     }
 
-    public double proximity(FeatureVector doc1, FeatureVector doc2) {
+    public double proximity(HashMap<String, Double> doc1, HashMap<String, Double> doc2) {
+        double proximity = 0;
+
+        if(doc1.size() == 0 && doc2.size() == 0)
+            return 1.0;
+
+        for(Map.Entry<String, Double> entry : doc1.entrySet()) {
+            Double value;
+            if((value = doc2.get(entry.getKey())) != null) {
+                proximity += value * entry.getValue();
+            }
+        }
+
+        return proximity;
+    }
+
+    /*public double proximity(FeatureVector doc1, FeatureVector doc2) {
         double dotProduct = 0;
 
         for(Map.Entry<String, Double> entry : doc1.vector.entrySet()) {
@@ -72,16 +88,16 @@ public class TfIdfDistance implements Serializable {
         if(doc2.length == 0)
             return 0;
         return dotProduct / (doc1.length * doc2.length);
-    }
+    }*/
 
-    public double proximity(HashMap<String, Double> doc1, HashMap<String, Double> doc2) {
+    /*public double proximity(HashMap<String, Double> doc1, HashMap<String, Double> doc2) {
         double len1 = 0, len2 = 0, dotProduct = 0;
 
         for(Map.Entry<String, Double> entry : doc1.entrySet()) {
             String term = entry.getKey();
             double idf = idf(term);
             double tf1  = entry.getValue();
-            /* logical view */
+            [> logical view <]
             // double tfIdf1 = Math.sqrt(tf1*idf);
             // len1 += tfIdf1*tfIdf1;
             // Integer tf2 = doc2.get(term);
@@ -101,7 +117,7 @@ public class TfIdfDistance implements Serializable {
         for(Map.Entry<String, Double> entry : doc2.entrySet()) {
             String term = entry.getKey();
             double tf2 = entry.getValue();
-            /* logical view */
+            [> logical view <]
             // double tfIdf2 = Math.sqrt(tf2*idf(term));
             // len2 += tfIdf2*tfIdf2;
             len2 += tf2*idf(term);
@@ -112,5 +128,5 @@ public class TfIdfDistance implements Serializable {
         if(len2 == 0)
             return 0;
         return dotProduct / Math.sqrt(len1 * len2);
-    }
+    }*/
 }
