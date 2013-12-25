@@ -51,8 +51,10 @@ public class KNN implements Model {
 
                 if(cnt % 1000 == 999) {
                     stopWatch.stop(); // analytic
-                    System.out.println("train time " + ++cnt + " : " + stopWatch); // analytic
+                    System.out.println("train time: " + stopWatch); // analytic
                 }
+
+                cnt++;
             }
             knn.endTrain();
 
@@ -94,8 +96,10 @@ public class KNN implements Model {
 
                 if(cnt % 1000 == 999) {
                     stopWatch.stop(); // analytic
-                    System.out.println("classify time " + ++cnt + " : " + stopWatch); // analytic
+                    System.out.println("classify time: " + stopWatch); // analytic
                 }
+
+                cnt++;
 
                 TreeMap<String, Double> tagRank = new TreeMap<String, Double>();
                 TreeMap<Double, String> maxTags = new TreeMap<Double, String>();
