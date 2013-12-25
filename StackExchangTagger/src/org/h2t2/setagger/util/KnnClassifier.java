@@ -5,6 +5,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.Vector;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import java.util.StringTokenizer;
 
@@ -14,8 +16,8 @@ public class KnnClassifier implements Serializable {
 
     private int K = 10;
     public TfIdfDistance tfIdf = new TfIdfDistance(); // private -> public
-    private Vector<String[]> tag = new Vector<String[]>();
-    private Vector<FeatureVector> doc = new Vector<FeatureVector>();
+    private ArrayList<ArrayList<String>> tag = new ArrayList<ArrayList<String>>();
+    private ArrayList<FeatureVector> doc = new ArrayList<FeatureVector>();
 
     public KnnClassifier() {}
     public KnnClassifier(int K) {this.K = K;}
@@ -39,7 +41,7 @@ public class KnnClassifier implements Serializable {
     public void train(String[] record) {
         HashMap<String, Double> map = stringToMap(record[1] + " " + record[2]);
         doc.add(new FeatureVector(map));
-        tag.add(record[4].split("\\s+"));
+        tag.add(new ArrayList<String>(Arrays.asList(record[4].split("\\s+"))));
         tfIdf.addDoc(map);
     }
 
@@ -50,21 +52,33 @@ public class KnnClassifier implements Serializable {
         }
     }
 
-    public TreeMap<Double, String[]> classify(String[] record) {
+    public TreeMap<Double, ArrayList<String>> classify(String[] record) {
         FeatureVector input = new FeatureVector(stringToMap(record[1] + " " + record[2]));
         input.refine(tfIdf);
-        TreeMap<Double, String[]> nearestNeighbor = new TreeMap<Double, String[]>(); // should use multimap
+        TreeMap<Double, ArrayList<String>> nearestNeighbor = new TreeMap<Double, ArrayList<String>>(); // should use multimap
 
         int i;
         int initSize = (K < doc.size()) ? K : doc.size() ;
+        ArrayList<String> oldTags;
         for(i = 0;i < initSize;i++) {
-            nearestNeighbor.put(tfIdf.proximity(doc.elementAt(i), input), tag.elementAt(i));
+            double proximity = tfIdf.proximity(doc.get(i), input);
+            if((oldTags = nearestNeighbor.get(proximity)) != null) {
+                oldTags.addAll(tag.get(i));
+            }
+            else {
+                nearestNeighbor.put(proximity, tag.get(i));
+            }
         }
         for(;i < doc.size();i++) {
-            double proximity = tfIdf.proximity(doc.elementAt(i), input);
+            double proximity = tfIdf.proximity(doc.get(i), input);
             if(proximity > nearestNeighbor.firstKey()) {
                 nearestNeighbor.pollFirstEntry();
-                nearestNeighbor.put(proximity, tag.elementAt(i));
+                if((oldTags = nearestNeighbor.get(proximity)) != null) {
+                    oldTags.addAll(tag.get(i));
+                }
+                else {
+                    nearestNeighbor.put(proximity, tag.get(i));
+                }
             }
         }
 

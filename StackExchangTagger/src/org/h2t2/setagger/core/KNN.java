@@ -51,6 +51,7 @@ public class KNN implements Model {
 
                 if(cnt % 1000 == 999) {
                     stopWatch.stop(); // analytic
+                    System.out.println("record " + record[0] + " done");
                     System.out.println("train time: " + stopWatch); // analytic
                 }
 
@@ -79,7 +80,6 @@ public class KNN implements Model {
 
             String s;
             String[] record;
-            int cnt = 0;
             while ((s = reader.readLine()) != null) {
                 record = s.split(",");
                 if(record.length != 5){ // 5 for test, 4 for real
@@ -87,19 +87,13 @@ public class KNN implements Model {
                     System.exit(1);
                 }
 
-                if(cnt % 1000 == 0) {
-                    stopWatch.reset(); // analytic
-                    stopWatch.start(); // analytic
-                }
+                stopWatch.reset(); // analytic
+                stopWatch.start(); // analytic
 
                 TreeMap<Double, String[]> nearestNeighbor = knn.classify(record);
 
-                if(cnt % 1000 == 999) {
-                    stopWatch.stop(); // analytic
-                    System.out.println("classify time: " + stopWatch); // analytic
-                }
-
-                cnt++;
+                stopWatch.stop(); // analytic
+                System.out.println("classify time: " + stopWatch); // analytic
 
                 TreeMap<String, Double> tagRank = new TreeMap<String, Double>();
                 TreeMap<Double, String> maxTags = new TreeMap<Double, String>();
@@ -131,7 +125,7 @@ public class KNN implements Model {
                 writer.writeNext(idTags);
                 writer.flush();
 
-                // System.out.println("record " + record[0] + " done.");
+                System.out.println("record " + record[0] + " done.");
                 System.out.println();
             }
 
