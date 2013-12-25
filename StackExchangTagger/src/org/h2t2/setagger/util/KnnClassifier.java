@@ -55,7 +55,7 @@ public class KnnClassifier implements Serializable {
     public TreeMap<Double, ArrayList<String>> classify(String[] record) {
         FeatureVector input = new FeatureVector(stringToMap(record[1] + " " + record[2]));
         input.refine(tfIdf);
-        TreeMap<Double, ArrayList<String>> nearestNeighbor = new TreeMap<Double, ArrayList<String>>(); // should use multimap
+        TreeMap<Double, ArrayList<String>> nearestNeighbor = new TreeMap<Double, ArrayList<String>>();
 
         int i;
         int initSize = (K < doc.size()) ? K : doc.size() ;

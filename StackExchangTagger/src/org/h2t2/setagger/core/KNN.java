@@ -12,6 +12,7 @@ import java.io.ObjectInputStream;
 
 import java.util.TreeMap;
 import java.util.Map;
+import java.util.ArrayList;
 
 import org.apache.commons.lang3.time.StopWatch;
 
@@ -90,14 +91,14 @@ public class KNN implements Model {
                 stopWatch.reset(); // analytic
                 stopWatch.start(); // analytic
 
-                TreeMap<Double, String[]> nearestNeighbor = knn.classify(record);
+                TreeMap<Double, ArrayList<String>> nearestNeighbor = knn.classify(record);
 
                 stopWatch.stop(); // analytic
                 System.out.println("classify time: " + stopWatch); // analytic
 
                 TreeMap<String, Double> tagRank = new TreeMap<String, Double>();
-                TreeMap<Double, String> maxTags = new TreeMap<Double, String>();
-                for(Map.Entry<Double, String[]> entry : nearestNeighbor.entrySet()) {
+                TreeMap<Double, ArrayList<String>> maxTags = new TreeMap<Double, ArrayList<String>>();
+                for(Map.Entry<Double, ArrayList<String>> entry : nearestNeighbor.entrySet()) {
                     Double proximity = entry.getKey();
                     Double value;
                     for(String str : entry.getValue()) {
@@ -107,20 +108,37 @@ public class KNN implements Model {
                             tagRank.put(str, proximity);
                     }
                 }
+                ArrayList<String> tmpArrayList;
                 for(Map.Entry<String, Double> entry : tagRank.entrySet()) {
-                    maxTags.put(entry.getValue(), entry.getKey());
+                    if((tmpArrayList = maxTags.get(entry.getValue())) != null) {
+                        tmpArrayList.add(entry.getKey());
+                    }
+                    else {
+                        tmpArrayList = new ArrayList<String>();
+                        tmpArrayList.add(entry.getKey());
+                        maxTags.put(entry.getValue(), tmpArrayList);
+                    }
                 }
 
-                Map.Entry<Double, String> tmpEntry;
+                Map.Entry<Double, ArrayList<String>> tmpEntry;
+                StringBuilder sb = new StringBuilder();
+                int cntTags = 0;
+                while((tmpEntry = maxTags.pollLastEntry()) != null) {
+                    for(String str : tmpEntry.getValue()) {
+                        sb.append(str).append(" ");
+                        cntTags++;
+                        if(cntTags >= 3) {
+                            break;
+                        }
+                    }
+                    if(cntTags >= 3) {
+                        break;
+                    }
+                }
+
                 idTags = new String[2];
                 idTags[0] = record[0];
-                idTags[1] = maxTags.pollLastEntry().getValue();
-                if((tmpEntry = maxTags.pollLastEntry()) != null) {
-                    idTags[1] += " " + tmpEntry.getValue();
-                }
-                if((tmpEntry = maxTags.pollLastEntry()) != null) {
-                    idTags[1] += " " + tmpEntry.getValue();
-                }
+                idTags[1] = sb.toString();
 
                 writer.writeNext(idTags);
                 writer.flush();
