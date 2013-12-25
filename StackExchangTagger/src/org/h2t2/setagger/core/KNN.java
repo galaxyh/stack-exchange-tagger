@@ -42,11 +42,17 @@ public class KNN implements Model {
                     System.exit(1);
                 }
 
-                stopWatch.reset(); // analytic
-                stopWatch.start(); // analytic
+                if(cnt % 1000 == 0) {
+                    stopWatch.reset(); // analytic
+                    stopWatch.start(); // analytic
+                }
+
                 knn.train(record);
-                stopWatch.stop(); // analytic
-                System.out.println("train time " + ++cnt + " : " + stopWatch); // analytic
+
+                if(cnt % 1000 == 999) {
+                    stopWatch.stop(); // analytic
+                    System.out.println("train time " + ++cnt + " : " + stopWatch); // analytic
+                }
             }
             knn.endTrain();
 
@@ -71,6 +77,7 @@ public class KNN implements Model {
 
             String s;
             String[] record;
+            int cnt = 0;
             while ((s = reader.readLine()) != null) {
                 record = s.split(",");
                 if(record.length != 5){ // 5 for test, 4 for real
@@ -78,11 +85,18 @@ public class KNN implements Model {
                     System.exit(1);
                 }
 
-                stopWatch.reset(); // analytic
-                stopWatch.start(); // analytic
+                if(cnt % 1000 == 0) {
+                    stopWatch.reset(); // analytic
+                    stopWatch.start(); // analytic
+                }
+
                 TreeMap<Double, String[]> nearestNeighbor = knn.classify(record);
-                stopWatch.stop(); // analytic
-                System.out.println("classify time: " + stopWatch); // analytic
+
+                if(cnt % 1000 == 999) {
+                    stopWatch.stop(); // analytic
+                    System.out.println("classify time " + ++cnt + " : " + stopWatch); // analytic
+                }
+
                 TreeMap<String, Double> tagRank = new TreeMap<String, Double>();
                 TreeMap<Double, String> maxTags = new TreeMap<Double, String>();
                 for(Map.Entry<Double, String[]> entry : nearestNeighbor.entrySet()) {
@@ -113,7 +127,7 @@ public class KNN implements Model {
                 writer.writeNext(idTags);
                 writer.flush();
 
-                System.out.println("record " + record[0] + " done.");
+                // System.out.println("record " + record[0] + " done.");
                 System.out.println();
             }
 
