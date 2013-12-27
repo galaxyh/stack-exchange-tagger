@@ -17,36 +17,38 @@ public class KnnClassifier implements Serializable {
     private int K = 10;
     private TfIdfDistance tfIdf = new TfIdfDistance();
     private ArrayList<ArrayList<String>> tag = new ArrayList<ArrayList<String>>();
-    private ArrayList<HashMap<String, Double>> doc = new ArrayList<HashMap<String, Double>>();
+    private ArrayList<HashMap<Integer, Double>> doc = new ArrayList<HashMap<Integer, Double>>();
 
     public KnnClassifier() {}
     public KnnClassifier(int K) {this.K = K;}
 
-    private HashMap<String, Double> stringToMapRefine(String s) {
+    private HashMap<Integer, Double> stringToMapRefine(String s) {
         StringTokenizer tokenizer = new StringTokenizer(s);
 
-        HashMap<String, Double> map = new HashMap<String, Double>();
+        HashMap<Integer, Double> map = new HashMap<Integer, Double>();
         Double value;
         while(tokenizer.hasMoreTokens()) {
             String token = tokenizer.nextToken();
-            if(tfIdf.idf(token) == 0)
+            double idf;
+            if((idf = tfIdf.idf(token)) == 0)
                 continue;
-            if((value = map.get(token)) != null)
-                map.put(token, value+1);
+
+            int serialNumber = tfIdf.serialNumber(token);
+            if((value = map.get(serialNumber)) != null)
+                map.put(serialNumber, value+idf);
             else
-                map.put(token, 1.0);
+                map.put(serialNumber, idf);
         }
 
         double length = 0;
         double tmp;
-        for(Map.Entry<String, Double> entry : map.entrySet()) {
-            tmp = tfIdf.idf(entry.getKey());
-            tmp = Math.sqrt(entry.getValue() * tmp);
+        for(Map.Entry<Integer, Double> entry : map.entrySet()) {
+            tmp = Math.sqrt(entry.getValue());
             entry.setValue(tmp);
             length += tmp*tmp;
         }
         length = Math.sqrt(length);
-        for(Map.Entry<String, Double> entry : map.entrySet()) {
+        for(Map.Entry<Integer, Double> entry : map.entrySet()) {
             entry.setValue(entry.getValue()/length);
         }
 
@@ -76,30 +78,17 @@ public class KnnClassifier implements Serializable {
 
     public void endTrainTfIdf() {
         tfIdf.featureExtract(80);
+        tfIdf.generateSerialNumber();
     }
 
     public void trainFeatureVector(String[] record) {
-        HashMap<String, Double> map = stringToMapRefine(record[1] + " " + record[2]);
+        HashMap<Integer, Double> map = stringToMapRefine(record[1] + " " + record[2]);
         doc.add(map);
         tag.add(new ArrayList<String>(Arrays.asList(record[4].split("\\s+"))));
     }
 
-    /*public void train(String[] record) {
-        HashMap<String, Double> map = stringToMap(record[1] + " " + record[2]);
-        doc.add(new FeatureVector(map));
-        tag.add(new ArrayList<String>(Arrays.asList(record[4].split("\\s+"))));
-        tfIdf.addDoc(map);
-    }*/
-
-    /*public void endTrain() {
-        tfIdf.featureExtract(80);
-        for(FeatureVector fv : doc) {
-            fv.refine(tfIdf);
-        }
-    }*/
-
     public TreeMap<Double, ArrayList<String>> classify(String[] record) {
-        HashMap<String, Double> input = stringToMapRefine(record[1] + " " + record[2]);
+        HashMap<Integer, Double> input = stringToMapRefine(record[1] + " " + record[2]);
         TreeMap<Double, ArrayList<String>> nearestNeighbor = new TreeMap<Double, ArrayList<String>>();
 
         int i;

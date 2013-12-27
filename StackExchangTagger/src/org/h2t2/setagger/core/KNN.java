@@ -156,11 +156,11 @@ public class KNN implements Model {
                     for(String str : tmpEntry.getValue()) {
                         sb.append(str).append(" ");
                         cntTags++;
-                        if(cntTags >= 2) {
+                        if(cntTags >= 3) {
                             break;
                         }
                     }
-                    if(cntTags >= 2) {
+                    if(cntTags >= 3) {
                         break;
                     }
                 }
