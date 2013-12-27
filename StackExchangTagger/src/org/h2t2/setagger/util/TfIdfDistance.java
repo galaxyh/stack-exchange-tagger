@@ -83,7 +83,10 @@ public class TfIdfDistance implements Serializable {
         return proximity;
     }
 
-    private class Pair {
+    private class Pair implements Serializable {
+
+        static final long serialVersionUID = 2428078498349082390L;
+
         private Double first;
         private Integer second;
 
