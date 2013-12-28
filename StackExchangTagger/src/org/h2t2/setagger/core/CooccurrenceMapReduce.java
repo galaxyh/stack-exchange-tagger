@@ -35,7 +35,7 @@ import org.h2t2.setagger.util.TagRankWritable;
 
 import com.csvreader.CsvReader;
 
-public class CoocurrenceMapReduce {
+public class CooccurrenceMapReduce {
 
 	public static class CoocurrenceMapper extends MapReduceBase implements
 	        Mapper<LongWritable, Text, Text, TagRankWritable> {
@@ -157,7 +157,7 @@ public class CoocurrenceMapReduce {
 
 	public static void run(String inputPaths, String outputPath, String modelPath) throws IOException,
 	        URISyntaxException {
-		JobConf conf = new JobConf(CoocurrenceMapReduce.class);
+		JobConf conf = new JobConf(CooccurrenceMapReduce.class);
 		conf.setJobName("Coocurrence for StackExchange Tagger");
 
 		conf.setOutputKeyClass(Text.class);

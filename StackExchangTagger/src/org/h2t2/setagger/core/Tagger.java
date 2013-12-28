@@ -123,7 +123,7 @@ public class Tagger {
 			stopWatch.start();
 			try {
 				// Arguments: inputPath, outputPath, modelPath
-				CoocurrenceMapReduce.run(args[1], args[2], args[3]);
+				CooccurrenceMapReduce.run(args[1], args[2], args[3]);
 			} catch (IOException | URISyntaxException e) {
 				e.printStackTrace();
 			}
