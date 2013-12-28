@@ -1,0 +1,1 @@
+nohup java -cp ./lib/commons-lang3-3.1.jar:./lib/opencsv-2.3.jar:./lib/lingpipe-4.1.0.jar:./lib/javacsv-2.1.jar:. org/h2t2/setagger/core/Tagger -pre test/head_2000.csv test/preprocess_head_2000.csv > preprocess.out 2>&1 &

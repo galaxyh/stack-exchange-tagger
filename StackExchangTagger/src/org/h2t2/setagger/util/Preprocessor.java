@@ -14,6 +14,8 @@ import java.io.FileOutputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import au.com.bytecode.opencsv.CSVReader;
+import au.com.bytecode.opencsv.CSVWriter;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
@@ -44,11 +46,11 @@ public class Preprocessor {
 	 */
 	public void process(String input, String output) throws IOException {
 		CSVWriter writer = new CSVWriter(new OutputStreamWriter(new FileOutputStream(output), "UTF8"), ',');
-		//CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream(new File(input)), "UTF8"), ',', '"', '\0', 1);
-		Scanner scanner = new Scanner(new InputStreamReader(new FileInputStream(new File(input)), "UTF8"));
+		CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream(new File(input)), "UTF8"), ',', '"', '\0', 1);
+		// Scanner scanner = new Scanner(new InputStreamReader(new FileInputStream(new File(input)), "UTF8"));
 
 		String[] record;
-		while ((record = scanner.readNext()) != null) {
+		while ((record = reader.readNext()) != null) {
 			if(record.length < 3){
 				continue;
 			}
@@ -61,7 +63,7 @@ public class Preprocessor {
 		}
 
 		writer.close();
-		scanner.close();
+		reader.close();
 	}
 
 	/**
