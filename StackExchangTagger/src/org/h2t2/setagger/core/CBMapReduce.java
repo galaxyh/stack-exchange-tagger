@@ -150,7 +150,7 @@ public class CBMapReduce {
 
     public static void main (String[] args) {
         CognitiveBayesian cb = new CognitiveBayesian();
-        //args[1] : titleIdf, args[3] : bodyIdf, args[2] : codeIdf, 
+        //args[1] : titleIdf, args[2] : bodyIdf, args[3] : codeIdf, 
         cb.train(args[0], args, args[4]);
         try {
 			run(args[5], args[6], args[4]);
