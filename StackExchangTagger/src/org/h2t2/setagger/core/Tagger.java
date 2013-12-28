@@ -1,6 +1,7 @@
 package org.h2t2.setagger.core;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import org.apache.commons.lang3.time.StopWatch;
 import org.h2t2.setagger.util.DocumentVectorProcessor;
@@ -117,6 +118,17 @@ public class Tagger {
 			model.predict(args[3], args[4], predictArgs);
 			stopWatch.stop();
 			System.out.println("Done. (" + stopWatch.toString() + ")\n");
+		} else if ("-comr".equals(args[0])) {
+			System.out.println("Predicting...");
+			stopWatch.start();
+			try {
+				// Arguments: inputPath, outputPath, modelPath
+				CoocurrenceMapReduce.run(args[1], args[2], args[3]);
+			} catch (IOException | URISyntaxException e) {
+				e.printStackTrace();
+			}
+			stopWatch.stop();
+			System.out.println("Done. (" + stopWatch.toString() + ")\n");
 		} else if ("-eval".equals(args[0])) {
 			System.out.println("Evaluating using Macro-F1...");
 			stopWatch.start();
@@ -134,24 +146,23 @@ public class Tagger {
 		} else if ("-scan".equals(args[0])) {
 			try {
 				Scanner.scan(args[1], args[2]);
-			}catch(IOException e){
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		} else if("-vector".equals(args[0])) {
+		} else if ("-vector".equals(args[0])) {
 			try {
 				DocumentVectorProcessor dvp = new DocumentVectorProcessor(args[1], args[2], args[3], args[4]);
 				System.out.println(dvp.getNumberOfTerms());
 				dvp.makeVector(args[5], args[6]);
-				
-			}catch(Exception e){
+
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			
-			
-		} else if("-cb".equals(args[0])) {
+
+		} else if ("-cb".equals(args[0])) {
 			CognitiveBayesian cb = new CognitiveBayesian();
 			cb.train(args[4], args);
-			cb.predict(args[5], args[6] ,args);
+			cb.predict(args[5], args[6], args);
 		}
 	}
 
