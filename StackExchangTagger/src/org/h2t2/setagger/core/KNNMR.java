@@ -18,8 +18,8 @@ public class KNNMR {
         public void map(LongWritable key, Text value, OutputCollector<IntWritable, Text> output, Reporter reporter) throws IOException {
             String line = value.toString();
             String[] record;
-            record = s.split(",");
-            output.collect(new IntWritable(Integer.parseInt(record[0])), record[1]);
+            record = line.split(",");
+            output.collect(new IntWritable(Integer.parseInt(record[0])), new Text(record[1]));
 
             /*StringTokenizer tokenizer = new StringTokenizer(line);
             while (tokenizer.hasMoreTokens()) {
@@ -46,7 +46,7 @@ public class KNNMR {
     }
 
     public static void main(String[] args) throws Exception {
-        JobConf conf = new JobConf(Sort.class);
+        JobConf conf = new JobConf(KNNMR.class);
         conf.setJobName("KNNMR");
 
         conf.setMapOutputKeyClass(IntWritable.class);
