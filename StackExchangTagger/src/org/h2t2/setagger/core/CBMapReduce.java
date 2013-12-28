@@ -22,6 +22,8 @@ public class CBMapReduce {
 
         private String file;
 
+        private CBTrainModel model;
+
         private HashSet<String> getUniqueTermSet (String content) {
             HashSet <String> set = new HashSet<String>();
             for (String term : content.split("\\s+")) {
@@ -30,14 +32,12 @@ public class CBMapReduce {
             return set;
         }
 
-        private CBTrainModel readModel () {
-            CBTrainModel model = null;
+        private void readModel () {
             try {
-                model = CBTrainModel.readFromFile(this.file);
+                this.model = CBTrainModel.readFromFile(this.file);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            return model;
         }
 
         @Override
@@ -46,6 +46,7 @@ public class CBMapReduce {
                 Path[] localFiles = DistributedCache.getLocalCacheFiles(job);
                 if (localFiles != null && localFiles.length > 0) {
                     this.file = localFiles[0].toString();
+                    readModel();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -62,7 +63,7 @@ public class CBMapReduce {
 
             Object [] termSets = {getUniqueTermSet(records[1]), getUniqueTermSet(records[2]), getUniqueTermSet(records[3])};
 
-            CBTrainModel model = this.readModel();
+            CBTrainModel model = this.model;
 
             for (String tag : model.getAllTagsSet()) {
                 double rank = 0.0;
