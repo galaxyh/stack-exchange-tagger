@@ -56,6 +56,11 @@ public class CognitiveBayesian implements Model {
 	@Override
 	// args[1] : titleIdf, args[2] : bodyIdf , args[3] : codeIdf
 	public void train (String trainFileName, String[] args) {
+		this.train(trainFileName, args, null);
+	}
+
+	// Refactored to adopted modelName argument
+	public void train (String trainFileName, String[] args, String modelPath) {
 		try {
 			termMapping = new ArrayList <HashMap <String, Association>>(3);
 			for (int i = 1; i <= 3; i ++) {
@@ -134,11 +139,10 @@ public class CognitiveBayesian implements Model {
 				}
 			}
 
-			// write train model to file
-			// TODO how to determine model path?
-			String modelPath = "";
-			CBTrainModel model = new CBTrainModel(termMapping, tagToDocumentFrequency, (long) numberOfDocuments, allTagsSet);
-			CBTrainModel.writeToFile(modelPath, model);
+			if (modelPath != null && !modelPath.equals("")) {
+				CBTrainModel model = new CBTrainModel(termMapping, tagToDocumentFrequency, (long) numberOfDocuments, allTagsSet);
+				CBTrainModel.writeToFile(modelPath, model);
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();

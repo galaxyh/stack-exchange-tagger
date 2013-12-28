@@ -1,5 +1,8 @@
 package org.h2t2.setagger.core;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -15,6 +18,8 @@ import org.apache.hadoop.filecache.DistributedCache;
 import org.h2t2.setagger.util.TagRank;
 import org.h2t2.setagger.util.TagRankWritable;
 import org.h2t2.setagger.util.RankPriorityQueue;
+
+import com.csvreader.CsvReader;
 
 public class CBMapReduce {
 
@@ -40,6 +45,12 @@ public class CBMapReduce {
             }
         }
 
+        private String[] readRecords (Text recordText) {
+            CsvReader reader = new CsvReader(new BufferedReader(new InputStreamReader(new ByteArrayInputStream(recordText.getBytes()))));
+            reader.readRecord();
+            return reader.getValues();
+        }
+
         @Override
         public void configure (JobConf job) {
             try {
@@ -57,7 +68,7 @@ public class CBMapReduce {
 
             Double[] weights = {1.0, 1.0, 1.0};
 
-            String[] records = value.toString().split(","); // read from csv
+            String[] records = readRecords(value);
 
             Text id = new Text(records[0]);
 
@@ -135,5 +146,11 @@ public class CBMapReduce {
         DistributedCache.addCacheFile(new URI(modelPath), conf);
 
         JobClient.runJob(conf);
+    }
+
+    public static void main (String[] args) {
+        CognitiveBayesian cb = new CognitiveBayesian();
+        cb.train(args[0], args[1], args[2]);
+        this.run(args[3], args[4], args[2]);
     }
 }
