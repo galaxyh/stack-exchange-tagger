@@ -45,7 +45,7 @@ public class CBMapReduce {
             }
         }
 
-        private String[] readRecords (Text recordText) {
+        private String[] readRecords (Text recordText) throws IOException {
             CsvReader reader = new CsvReader(new BufferedReader(new InputStreamReader(new ByteArrayInputStream(recordText.getBytes()))));
             reader.readRecord();
             return reader.getValues();
@@ -150,7 +150,16 @@ public class CBMapReduce {
 
     public static void main (String[] args) {
         CognitiveBayesian cb = new CognitiveBayesian();
-        cb.train(args[0], args[1], args[2]);
-        this.run(args[3], args[4], args[2]);
+        //args[1] : titleIdf, args[3] : bodyIdf, args[2] : codeIdf, 
+        cb.train(args[0], args, args[4]);
+        try {
+			run(args[5], args[6], args[4]);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 }
