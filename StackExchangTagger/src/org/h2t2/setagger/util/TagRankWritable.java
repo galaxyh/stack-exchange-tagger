@@ -7,6 +7,10 @@ public class TagRankWritable extends MapWritable {
 	private static final Text TAG = new Text("TAG");
 	private static final Text RANK = new Text("RANK");
 
+	public TagRankWritable() {
+		super();
+	}
+
 	public TagRankWritable(TagRank tagRank) {
 		this.put(TAG, new Text(tagRank.getTag()));
 		this.put(RANK, new DoubleWritable(tagRank.getRank()));
