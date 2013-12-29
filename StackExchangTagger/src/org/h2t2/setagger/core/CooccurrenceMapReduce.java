@@ -9,13 +9,14 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.hadoop.filecache.DistributedCache;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.FileInputFormat;
@@ -63,6 +64,7 @@ public class CooccurrenceMapReduce {
 				Path[] localFiles = DistributedCache.getLocalCacheFiles(job);
 				if (localFiles != null && localFiles.length > 0) {
 					modelFile = localFiles[0].toString();
+					System.out.println("modelFile: " + modelFile);
 				}
 
 				// Load model from distributed cache file
@@ -180,14 +182,15 @@ public class CooccurrenceMapReduce {
 		FileOutputFormat.setOutputPath(conf, new Path(outputPath));
 
 		DistributedCache.addCacheFile(new URI(modelPath), conf);
+		DistributedCache.addFileToClassPath(new Path("/lib/javacsv-2.1.jar"), conf, new DistributedFileSystem());
 
 		JobClient.runJob(conf);
 	}
 
 	public static void main(String[] args) {
-		System.out.println(args[2] + " " + args[3] + "" + args[4]);
+		System.out.println(args[0] + " " + args[1] + " " + args[2]);
 		try {
-			run(args[2], args[3], args[4]);
+			run(args[0], args[1], args[2]);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
