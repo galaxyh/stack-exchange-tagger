@@ -118,17 +118,6 @@ public class Tagger {
 			model.predict(args[3], args[4], predictArgs);
 			stopWatch.stop();
 			System.out.println("Done. (" + stopWatch.toString() + ")\n");
-		} else if ("comr".equals(args[0])) {
-			System.out.println("Predicting...");
-			stopWatch.start();
-			try {
-				// Arguments: inputPath, outputPath, modelPath
-				CooccurrenceMapReduce.run(args[1], args[2], args[3]);
-			} catch (IOException | URISyntaxException e) {
-				e.printStackTrace();
-			}
-			stopWatch.stop();
-			System.out.println("Done. (" + stopWatch.toString() + ")\n");
 		} else if ("-eval".equals(args[0])) {
 			System.out.println("Evaluating using Macro-F1...");
 			stopWatch.start();
