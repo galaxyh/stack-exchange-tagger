@@ -183,4 +183,17 @@ public class CooccurrenceMapReduce {
 
 		JobClient.runJob(conf);
 	}
+
+	public static void main(String[] args) {
+		System.out.println(args[1] + " " + args[2] + "" + args[3]);
+		try {
+			run(args[0], args[1], args[2]);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }
