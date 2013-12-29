@@ -1,1 +1,1 @@
-nohup java -cp ./lib/commons-lang3-3.1.jar:./lib/opencsv-2.3.jar:./lib/lingpipe-4.1.0.jar:./lib/javacsv-2.1.jar:. org/h2t2/setagger/core/Tagger -t cooccurrence test/head_100000.csv test/cooccurrence_head_100000.model > train.out 2>&1 &
+nohup java -cp ./lib/commons-lang3-3.1.jar:./lib/opencsv-2.3.jar:./lib/lingpipe-4.1.0.jar:./lib/javacsv-2.1.jar:./CoocurrenceMR.jar:. org/h2t2/setagger/core/Tagger -t cooccurrence test/head_100000.csv test/cooccurrence_head_100000.model > train.out 2>&1 &
