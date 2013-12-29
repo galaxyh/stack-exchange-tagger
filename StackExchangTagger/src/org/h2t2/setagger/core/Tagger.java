@@ -118,7 +118,7 @@ public class Tagger {
 			model.predict(args[3], args[4], predictArgs);
 			stopWatch.stop();
 			System.out.println("Done. (" + stopWatch.toString() + ")\n");
-		} else if ("-comr".equals(args[0])) {
+		} else if ("comr".equals(args[0])) {
 			System.out.println("Predicting...");
 			stopWatch.start();
 			try {
