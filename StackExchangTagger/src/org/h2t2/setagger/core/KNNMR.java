@@ -1,5 +1,7 @@
 package org.h2t2.setagger.core;
 
+import org.h2t2.setagger.util.KnnClassifier;
+
 import java.io.*;
 import java.util.*;
 
@@ -16,19 +18,43 @@ public class KNNMR {
 
     public static class Map extends MapReduceBase implements Mapper<LongWritable, Text, IntWritable, Text> {
         private Path[] localFiles;
+        private KnnClassifier knn;
 
         public void configure(JobConf job) {
             try {
                 localFiles = DistributedCache.getLocalCacheFiles(job);
-                BufferedReader br = new BufferedReader(new FileReader(localFiles[0].toString()));
-                String line;
-                while((line = br.readLine()) != null) {
-                    System.out.println(line);
+                BufferedReader reader = new BufferedReader(new FileReader(localFiles[0].toString()));
+                knn = new KnnClassifier();
+
+                String s;
+                String[] record;
+                while ((s = reader.readLine()) != null) {
+                    record = s.split(",");
+                    if(record.length != 5) {
+                        System.err.println("BufferedReader error");
+                        System.exit(1);
+                    }
+
+                    knn.trainTfIdf(record);
                 }
-                br.close();
+                knn.endTrainTfIdf();
+
+                reader = new BufferedReader(new FileReader(localFiles[0].toString()));
+                while ((s = reader.readLine()) != null) {
+                    record = s.split(",");
+                    if(record.length != 5) {
+                        System.err.println("BufferedReader error");
+                        System.exit(1);
+                    }
+
+                    knn.trainFeatureVector(record);
+                }
+
+                reader.close();
             }
             catch(IOException e) {
                 System.out.println("IOException");
+                e.printStackTrace();
             }
         }
 
@@ -62,7 +88,7 @@ public class KNNMR {
         FileInputFormat.setInputPaths(conf, new Path(args[0]));
         FileOutputFormat.setOutputPath(conf, new Path(args[1]));
 
-        DistributedCache.addCacheFile(new URI("./oneLine"), conf);
+        DistributedCache.addCacheFile(new URI("./Train.10w.pre"), conf);
 
         JobClient.runJob(conf);
     }
