@@ -18,7 +18,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
  */
-package com.csvreader;
+package org.h2t2.setagger.util;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -64,7 +64,7 @@ public class CsvWriter {
 	public static final int ESCAPE_MODE_BACKSLASH = 2;
 
 	/**
-	 * Creates a {@link com.csvreader.CsvWriter CsvWriter} object using a file
+	 * Creates a {@link org.h2t2.setagger.util.CsvWriter CsvWriter} object using a file
 	 * as the data destination.
 	 * 
 	 * @param fileName
@@ -90,7 +90,7 @@ public class CsvWriter {
 	}
 
 	/**
-	 * Creates a {@link com.csvreader.CsvWriter CsvWriter} object using a file
+	 * Creates a {@link org.h2t2.setagger.util.CsvWriter CsvWriter} object using a file
 	 * as the data destination.&nbsp;Uses a comma as the column delimiter and
 	 * ISO-8859-1 as the {@link java.nio.charset.Charset Charset}.
 	 * 
@@ -102,7 +102,7 @@ public class CsvWriter {
 	}
 
 	/**
-	 * Creates a {@link com.csvreader.CsvWriter CsvWriter} object using a Writer
+	 * Creates a {@link org.h2t2.setagger.util.CsvWriter CsvWriter} object using a Writer
 	 * to write data to.
 	 * 
 	 * @param outputStream
@@ -121,7 +121,7 @@ public class CsvWriter {
 	}
 
 	/**
-	 * Creates a {@link com.csvreader.CsvWriter CsvWriter} object using an
+	 * Creates a {@link org.h2t2.setagger.util.CsvWriter CsvWriter} object using an
 	 * OutputStream to write data to.
 	 * 
 	 * @param outputStream

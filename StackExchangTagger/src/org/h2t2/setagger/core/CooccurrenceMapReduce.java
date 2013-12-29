@@ -29,11 +29,11 @@ import org.apache.hadoop.mapred.Reducer;
 import org.apache.hadoop.mapred.Reporter;
 import org.apache.hadoop.mapred.TextInputFormat;
 import org.apache.hadoop.mapred.TextOutputFormat;
+import org.h2t2.setagger.util.CsvReader;
 import org.h2t2.setagger.util.RankPriorityQueue;
 import org.h2t2.setagger.util.TagRank;
 import org.h2t2.setagger.util.TagRankWritable;
 
-import com.csvreader.CsvReader;
 
 public class CooccurrenceMapReduce {
 

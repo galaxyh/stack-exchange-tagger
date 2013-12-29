@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.h2t2.setagger.util.CsvReader;
 import org.h2t2.setagger.util.RankPriorityQueue;
 
 import com.aliasi.spell.TfIdfDistance;
@@ -23,7 +24,6 @@ import com.aliasi.tokenizer.EnglishStopTokenizerFactory;
 import com.aliasi.tokenizer.IndoEuropeanTokenizerFactory;
 import com.aliasi.tokenizer.LowerCaseTokenizerFactory;
 import com.aliasi.tokenizer.PorterStemmerTokenizerFactory;
-import com.csvreader.CsvReader;
 
 /**
  * An implementation of co-occurrence model
