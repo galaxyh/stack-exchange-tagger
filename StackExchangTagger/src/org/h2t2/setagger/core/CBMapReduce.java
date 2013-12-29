@@ -64,6 +64,7 @@ public class CBMapReduce {
             }
         }
 
+        @SuppressWarnings("unchecked")
         public void map (LongWritable key, Text value, OutputCollector<Text, TagRankWritable> output, Reporter reporter) throws IOException {
 
             Double[] weights = {1.0, 1.0, 1.0};

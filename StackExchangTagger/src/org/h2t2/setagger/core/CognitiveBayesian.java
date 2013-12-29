@@ -283,6 +283,8 @@ public class CognitiveBayesian implements Model {
 			e.printStackTrace();
 		}
 	}
+
+	@SuppressWarnings("unchecked")
 	public void patch (String predictFileName, String outputFileName, String[] args) {
 		try {
 			// main THREAD must have only one reader  
