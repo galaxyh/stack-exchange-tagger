@@ -182,7 +182,7 @@ public class CooccurrenceMapReduce {
 		FileOutputFormat.setOutputPath(conf, new Path(outputPath));
 
 		DistributedCache.addCacheFile(new URI(modelPath), conf);
-		DistributedCache.addFileToClassPath(new Path("/lib/javacsv-2.1.jar"), conf, new DistributedFileSystem());
+		DistributedCache.addFileToClassPath(new Path("/lib/javacsv-2.1.jar"), conf);
 
 		JobClient.runJob(conf);
 	}
