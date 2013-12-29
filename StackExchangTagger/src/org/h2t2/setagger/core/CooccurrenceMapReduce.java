@@ -16,7 +16,6 @@ import java.util.Set;
 
 import org.apache.hadoop.filecache.DistributedCache;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.FileInputFormat;
@@ -182,7 +181,6 @@ public class CooccurrenceMapReduce {
 		FileOutputFormat.setOutputPath(conf, new Path(outputPath));
 
 		DistributedCache.addCacheFile(new URI(modelPath), conf);
-		DistributedCache.addFileToClassPath(new Path("lib/javacsv-2.1.jar"), conf);
 
 		JobClient.runJob(conf);
 	}
